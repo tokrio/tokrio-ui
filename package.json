@@ -1,27 +1,25 @@
 {
-  "name": "www.tokrio.io",
+  "name": "your-project-name",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "@react-three/fiber": "^8.x.x",
+    "@types/node": "^16.x.x",
+    "@types/react": "^18.x.x",
+    "@types/react-dom": "^18.x.x",
+    "framer-motion": "^10.x.x",
+    "react": "^18.x.x",
+    "react-countup": "^6.x.x",
+    "react-dom": "^18.x.x",
+    "react-scripts": "5.x.x",
+    "three": "^0.x.x",
+    "typescript": "^4.x.x"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=4000 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -34,5 +32,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15"
   }
 }
