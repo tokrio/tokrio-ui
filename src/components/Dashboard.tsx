@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import ApiKeyManager, { ApiKey } from './ApiKeyManager';
+import ApiKeyManager from './ApiKeyManager';
 import TradingPairManager from './TradingPairManager';
 import { TradingPairConfig, NewTradingPairConfig, TradeHistory } from '../types/trading';
 import TradingHistory from './TradingHistory';
+import { api, PortfolioOverview, Position, ApiKey, CreateApiKeyRequest } from '../services/api';
 
 type TabType = 'trading' | 'apikeys';
 
@@ -11,24 +12,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>('trading');
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
   const [isTradingPairManagerOpen, setIsTradingPairManagerOpen] = useState(false);
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>([
-    {
-      id: '1',
-      name: 'Binance Main Account',
-      exchange: 'Binance',
-      apiKey: 'hj2h3v4jh23v4jh23v4',
-      apiSecret: '********************************',
-      createdAt: new Date('2024-03-15')
-    },
-    {
-      id: '2',
-      name: 'Binance Test Account',
-      exchange: 'Binance',
-      apiKey: '98h98h3f98h3f98h3',
-      apiSecret: '********************************',
-      createdAt: new Date('2024-03-16')
-    }
-  ]);
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [tradingPairs, setTradingPairs] = useState<TradingPairConfig[]>([
     {
       id: '1',
@@ -138,9 +122,77 @@ const Dashboard = () => {
       }
     ]
   });
+  const [portfolioData, setPortfolioData] = useState<PortfolioOverview | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleApiKeySave = (newApiKey: ApiKey) => {
-    setApiKeys([...apiKeys, newApiKey]);
+  // 获取 Portfolio Overview 数据
+  const fetchPortfolioData = async () => {
+    try {
+      const response = await api.getPortfolioOverview();
+      if (response.code === 200) {
+        setPortfolioData(response.body);
+      }
+    } catch (error) {
+      console.error('Failed to fetch portfolio data:', error);
+    }
+  };
+
+  // 获取 API Keys 列表
+  const fetchApiKeys = async () => {
+    try {
+      setLoading(true);
+      const response = await api.listApiKeys();
+      if (response.code === 200) {
+        setApiKeys(response.body.items || []);  // 确保始终有一个数组
+      }
+    } catch (error) {
+      console.error('Failed to fetch API keys:', error);
+      setApiKeys([]); // 错误时设置为空数组
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 当切换到 API Keys tab 时加载数据
+  useEffect(() => {
+    if (activeTab === 'apikeys') {
+      fetchApiKeys();
+    }
+  }, [activeTab]);
+
+  // 组件加载时获取 Portfolio 数据
+  useEffect(() => {
+    fetchPortfolioData();
+    const intervalId = setInterval(fetchPortfolioData, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // 处理添加 API Key
+  const handleApiKeySave = async (data: CreateApiKeyRequest) => {
+    try {
+      const response = await api.createApiKey(data);
+      if (response.code === 200) {
+        fetchApiKeys(); // 重新获取列表
+        setIsApiKeyManagerOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to create API key:', error);
+    }
+  };
+
+  // 处理删除 API Key
+  const handleDeleteApiKey = async (id: number) => {
+    try {
+      const response = await api.deleteApiKey(id);
+      if (response.code === 200) {
+        // 重新获取 API Keys 列表
+        await fetchApiKeys();
+        // 重新获取 Portfolio 数据
+        await fetchPortfolioData();
+      }
+    } catch (error) {
+      console.error('Failed to delete API key:', error);
+    }
   };
 
   const handleTradingPairApiKeyChange = (index: number, apiKeyId: string) => {
@@ -181,6 +233,109 @@ const Dashboard = () => {
     setIsHistoryOpen(true);
   };
 
+  // 修改打开 TradingPairManager 的处理函数
+  const handleOpenTradingPairManager = async () => {
+    try {
+      // 先获取 API Keys 列表
+      const response = await api.listApiKeys();
+      if (response.code === 200) {
+        setApiKeys(response.body.items || []);
+      }
+      // 然后打开对话框
+      setIsTradingPairManagerOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch API keys:', error);
+    }
+  };
+
+  // 修改按钮的点击处理函数
+  <button
+    onClick={handleOpenTradingPairManager}  // 使用新的处理函数
+    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+  >
+    Add Trading Pair
+  </button>
+
+  // 修改 Overview Cards 部分，使用接口数据
+  const renderOverviewCards = () => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      {/* Market Trend Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gray-800 rounded-lg p-6 md:col-span-3"
+      >
+        {portfolioData?.positions[0] ? (
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-medium text-white">Market Trend</h3>
+              <p className="text-sm text-gray-400 mt-1">
+                Last updated: {portfolioData.positions[0].trendingUpdateTime}
+              </p>
+            </div>
+            <div className="flex items-center space-x-6">
+              <div>
+                <div className="text-sm text-gray-400 mb-1">Current Trend</div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl font-bold text-green-400">
+                    {portfolioData.positions[0].trendingStrength > 0 ? '↗' : '↘'}
+                  </span>
+                  <span className="text-white font-medium">
+                    {portfolioData.positions[0].trending}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-4 text-gray-400">No trend data available</div>
+        )}
+      </motion.div>
+
+      {/* Portfolio Overview */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-gray-800 rounded-lg p-6"
+      >
+        <h3 className="text-lg font-medium text-white mb-4">Portfolio Overview</h3>
+        <div className="text-3xl font-bold text-primary">
+          ${portfolioData?.totalValue.toFixed(2) || '0.00'}
+        </div>
+        <div className={`text-sm ${(portfolioData?.profitRate || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {(portfolioData?.profitRate || 0) >= 0 ? '+' : ''}{portfolioData?.profitRate || 0}% total
+        </div>
+      </motion.div>
+
+      {/* Active Trades */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-gray-800 rounded-lg p-6"
+      >
+        <h3 className="text-lg font-medium text-white mb-4">Active Trades</h3>
+        <div className="text-3xl font-bold text-primary">{portfolioData?.activeTrades || 0}</div>
+        <div className="text-gray-400 text-sm">Running strategies</div>
+      </motion.div>
+
+      {/* Total Profit */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="bg-gray-800 rounded-lg p-6"
+      >
+        <h3 className="text-lg font-medium text-white mb-4">Total Profit</h3>
+        <div className={`text-3xl font-bold ${(portfolioData?.totalProfit || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          {(portfolioData?.totalProfit || 0) >= 0 ? '+' : ''}{portfolioData?.totalProfit.toFixed(2) || '0.00'}
+        </div>
+        <div className="text-gray-400 text-sm">All time</div>
+      </motion.div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-900">
       <nav className="bg-gray-800 border-b border-gray-700">
@@ -203,72 +358,7 @@ const Dashboard = () => {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {/* Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gray-800 rounded-lg p-6 md:col-span-3"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-lg font-medium text-white">Market Trend</h3>
-                  <p className="text-sm text-gray-400 mt-1">Last updated: {new Date().toLocaleTimeString()}</p>
-                </div>
-                <div className="flex items-center space-x-6">
-                  <div>
-                    <div className="text-sm text-gray-400 mb-1">24h Trend</div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl font-bold text-green-400">↗</span>
-                      <span className="text-white font-medium">Strong Bullish</span>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-400 mb-1">7d Prediction</div>
-                    <div className="flex items-center space-x-2">
-                      <span className="px-3 py-1 rounded-full text-sm bg-green-500/20 text-green-400 font-medium">
-                        Uptrend +5.2%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-gray-800 rounded-lg p-6"
-            >
-              <h3 className="text-lg font-medium text-white mb-4">Portfolio Overview</h3>
-              <div className="text-3xl font-bold text-primary">$25,432.89</div>
-              <div className="text-green-400 text-sm">+2.45% today</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-gray-800 rounded-lg p-6"
-            >
-              <h3 className="text-lg font-medium text-white mb-4">Active Trades</h3>
-              <div className="text-3xl font-bold text-primary">12</div>
-              <div className="text-gray-400 text-sm">Running strategies</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-gray-800 rounded-lg p-6"
-            >
-              <h3 className="text-lg font-medium text-white mb-4">Total Profit</h3>
-              <div className="text-3xl font-bold text-green-400">+$1,432.89</div>
-              <div className="text-gray-400 text-sm">All time</div>
-            </motion.div>
-          </div>
-
+          {renderOverviewCards()}
           {/* Tabs */}
           <div className="mb-6">
             <div className="border-b border-gray-700">
@@ -283,7 +373,7 @@ const Dashboard = () => {
                 >
                   Trading Pairs
                   <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-gray-800">
-                    {tradingPairs.length}
+                    {portfolioData?.positions?.length || 0}
                   </span>
                 </button>
                 <button
@@ -296,7 +386,7 @@ const Dashboard = () => {
                 >
                   API Keys
                   <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-gray-800">
-                    {apiKeys.length}
+                    {apiKeys?.length || 0}
                   </span>
                 </button>
               </nav>
@@ -316,61 +406,79 @@ const Dashboard = () => {
                   <div>
                     <h3 className="text-lg font-medium text-white">Trading Pairs</h3>
                     <p className="text-sm text-gray-400 mt-1">
-                      Active: {tradingPairs.filter(p => p.enabled).length} / Total: {tradingPairs.length}
+                      Active: {portfolioData?.activeTrades || 0} / Total: {portfolioData?.positions.length || 0}
                     </p>
                   </div>
                   <button
-                    onClick={() => setIsTradingPairManagerOpen(true)}
+                    onClick={handleOpenTradingPairManager}
                     className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
                   >
                     Add Trading Pair
                   </button>
                 </div>
                 
-                {tradingPairs.length === 0 ? (
+                {!portfolioData?.positions.length ? (
                   <div className="text-center py-8 text-gray-400">
                     No trading pairs configured yet. Click the button above to add one.
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {tradingPairs.map((pair) => (
+                    {portfolioData.positions.map((position) => (
                       <div 
-                        key={pair.id} 
+                        key={position.tokenSymbol} 
                         className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
                       >
                         <div className="flex justify-between items-start mb-6">
                           <div className="flex items-center space-x-4">
                             <div>
-                              <div className="text-xl font-medium text-white">{pair.symbol}</div>
+                              <div className="text-xl font-medium text-white">{position.tokenSymbol}</div>
                               <div className="text-sm text-gray-400 mt-1">
-                                Initial: {pair.initialUSDT} USDT
+                                Initial: {position.initialUSDT} USDT
                               </div>
                             </div>
                             <div className={`px-3 py-1 rounded-full text-sm ${
-                              pair.trend === 'Bullish' ? 'bg-green-500/20 text-green-400' :
-                              pair.trend === 'Bearish' ? 'bg-red-500/20 text-red-400' :
+                              position.trendingStrength > 0 ? 'bg-green-500/20 text-green-400' :
+                              position.trendingStrength < 0 ? 'bg-red-500/20 text-red-400' :
                               'bg-yellow-500/20 text-yellow-400'
                             }`}>
-                              {pair.trend}
+                              {position.trending}
                             </div>
                           </div>
 
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => handleViewHistory(pair)}
+                              onClick={() => handleViewHistory({
+                                id: position.id || position.tokenSymbol, // 使用 tokenSymbol 作为备用 ID
+                                symbol: position.tokenSymbol,
+                                initialUSDT: position.initialUSDT,
+                                apiKeyId: '1', // 默认值
+                                enabled: position.enabled,
+                                trend: position.trending,
+                                createdAt: new Date(position.trendingUpdateTime),
+                                balance: {
+                                  usdt: position.value,
+                                  token: position.tokenAmount,
+                                  tokenPrice: position.currentPrice
+                                },
+                                performance: {
+                                  totalValue: position.value,
+                                  pnl: position.profitRate,
+                                  pnlAmount: position.profit
+                                }
+                              })}
                               className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
                             >
                               History
                             </button>
                             <button
-                              onClick={() => handleTradingPairToggle(pair.id)}
+                              onClick={() => handleTradingPairToggle(position.id || position.tokenSymbol)}
                               className={`px-4 py-1.5 rounded-lg text-sm font-medium ${
-                                pair.enabled
+                                position.enabled
                                   ? 'bg-primary text-white'
                                   : 'bg-gray-700 text-gray-400'
                               }`}
                             >
-                              {pair.enabled ? 'Enabled' : 'Disabled'}
+                              {position.enabled ? 'Enabled' : 'Disabled'}
                             </button>
                             <button className="px-3 py-1.5 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-900/50 text-sm">
                               Delete
@@ -386,15 +494,15 @@ const Dashboard = () => {
                               <div>
                                 <div className="text-sm text-gray-400">USDT</div>
                                 <div className="text-white font-medium">
-                                  ${pair.balance.usdt.toFixed(2)}
+                                  ${position.value.toFixed(2)}
                                 </div>
                               </div>
                               <div>
-                                <div className="text-sm text-gray-400">{pair.symbol.split('/')[0]}</div>
+                                <div className="text-sm text-gray-400">{position.tokenSymbol.split('USDT')[0]}</div>
                                 <div className="text-white font-medium">
-                                  {pair.balance.token.toFixed(6)}
+                                  {position.tokenAmount.toFixed(6)}
                                   <span className="text-sm text-gray-400 ml-1">
-                                    (${(pair.balance.token * pair.balance.tokenPrice).toFixed(2)})
+                                    (${(position.tokenAmount * position.currentPrice).toFixed(2)})
                                   </span>
                                 </div>
                               </div>
@@ -408,17 +516,17 @@ const Dashboard = () => {
                               <div>
                                 <div className="text-sm text-gray-400">Total Value</div>
                                 <div className="text-white font-medium">
-                                  ${pair.performance.totalValue.toFixed(2)}
+                                  ${position.value.toFixed(2)}
                                 </div>
                               </div>
                               <div>
                                 <div className="text-sm text-gray-400">PNL</div>
                                 <div className={`font-medium ${
-                                  pair.performance.pnl >= 0 ? 'text-green-400' : 'text-red-400'
+                                  position.profitRate >= 0 ? 'text-green-400' : 'text-red-400'
                                 }`}>
-                                  {pair.performance.pnl >= 0 ? '+' : ''}{pair.performance.pnl}%
+                                  {position.profitRate >= 0 ? '+' : ''}{position.profitRate}%
                                   <span className="block text-sm">
-                                    ${Math.abs(pair.performance.pnlAmount).toFixed(2)}
+                                    ${Math.abs(position.profit).toFixed(2)}
                                   </span>
                                 </div>
                               </div>
@@ -428,7 +536,7 @@ const Dashboard = () => {
 
                         <div className="mt-4 pt-4 border-t border-gray-700">
                           <div className="text-sm text-gray-400">
-                            Using API Key: {apiKeys.find(k => k.id === pair.apiKeyId)?.name}
+                            Last Update: {position.trendingUpdateTime}
                           </div>
                         </div>
                       </div>
@@ -441,7 +549,9 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-lg font-medium text-white">API Keys</h3>
-                    <p className="text-sm text-gray-400 mt-1">Total: {apiKeys.length} keys</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Total: {apiKeys.length} keys
+                    </p>
                   </div>
                   <button
                     onClick={() => setIsApiKeyManagerOpen(true)}
@@ -451,7 +561,11 @@ const Dashboard = () => {
                   </button>
                 </div>
                 
-                {apiKeys.length === 0 ? (
+                {loading ? (
+                  <div className="text-center py-8 text-gray-400">
+                    Loading API keys...
+                  </div>
+                ) : apiKeys.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     No API keys added yet. Click the button above to add one.
                   </div>
@@ -464,9 +578,9 @@ const Dashboard = () => {
                       >
                         <div>
                           <div className="text-white font-medium flex items-center">
-                            {apiKey.name}
+                            {apiKey.apiName}
                             <span className="ml-2 px-2 py-1 bg-gray-800 rounded text-xs text-primary">
-                              {apiKey.exchange}
+                              {apiKey.platform}
                             </span>
                           </div>
                           <div className="text-gray-400 text-sm mt-1">
@@ -475,13 +589,13 @@ const Dashboard = () => {
                         </div>
                         <div className="flex flex-col items-end">
                           <div className="text-gray-400 text-sm">
-                            Added {apiKey.createdAt.toLocaleDateString()}
+                            Secret: {apiKey.maskedSecret}
                           </div>
                           <div className="flex space-x-2 mt-2">
-                            <button className="text-xs px-3 py-1 bg-gray-800 text-gray-300 rounded hover:bg-gray-900">
-                              View Details
-                            </button>
-                            <button className="text-xs px-3 py-1 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50">
+                            <button 
+                              onClick={() => handleDeleteApiKey(apiKey.id)}
+                              className="text-xs px-3 py-1 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
+                            >
                               Delete
                             </button>
                           </div>

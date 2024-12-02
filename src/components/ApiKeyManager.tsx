@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-
-export interface ApiKey {
-  id: string;
-  name: string;
-  exchange: string;
-  apiKey: string;
-  apiSecret: string;
-  createdAt: Date;
-}
+import { CreateApiKeyRequest } from '../services/api';
 
 interface ApiKeyManagerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (apiKey: ApiKey) => void;
+  onSave: (data: CreateApiKeyRequest) => void;
 }
 
 const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isOpen, onClose, onSave }) => {
-  const [formData, setFormData] = useState<Omit<ApiKey, 'id' | 'createdAt'>>({
-    name: '',
-    exchange: 'Binance',
+  const [formData, setFormData] = useState<CreateApiKeyRequest>({
     apiKey: '',
-    apiSecret: ''
+    apiSecretKey: '',
+    platform: 'binance',
+    apiName: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      id: Date.now().toString(),
-      createdAt: new Date()
+    onSave(formData);
+    setFormData({
+      apiKey: '',
+      apiSecretKey: '',
+      platform: 'binance',
+      apiName: ''
     });
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -48,30 +41,28 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isOpen, onClose, onSave }
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Name
+              API Key Name
             </label>
             <input
               type="text"
-              placeholder="My Binance Account"
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.apiName}
+              onChange={(e) => setFormData({ ...formData, apiName: e.target.value })}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Exchange
+              Platform
             </label>
             <select
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-              value={formData.exchange}
-              onChange={(e) => setFormData({ ...formData, exchange: e.target.value })}
+              value={formData.platform}
+              onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
+              required
             >
-              <option value="Binance">Binance</option>
-              <option value="Huobi">Huobi</option>
-              <option value="OKX">OKX</option>
+              <option value="binance">Binance</option>
             </select>
           </div>
 
@@ -81,7 +72,6 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isOpen, onClose, onSave }
             </label>
             <input
               type="text"
-              placeholder="Enter your API key"
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
               value={formData.apiKey}
               onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
@@ -95,10 +85,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isOpen, onClose, onSave }
             </label>
             <input
               type="password"
-              placeholder="Enter your API secret"
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-              value={formData.apiSecret}
-              onChange={(e) => setFormData({ ...formData, apiSecret: e.target.value })}
+              value={formData.apiSecretKey}
+              onChange={(e) => setFormData({ ...formData, apiSecretKey: e.target.value })}
               required
             />
           </div>
