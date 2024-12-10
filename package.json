@@ -17,8 +17,10 @@
     "typescript": "^4.x.x"
   },
   "scripts": {
-    "start": "set PORT=4000 && react-scripts start",
-    "build": "react-scripts build",
+    "start": "cross-env REACT_APP_ENV=development react-scripts start",
+    "build:dev": "cross-env REACT_APP_ENV=development react-scripts build",
+    "build:beta": "cross-env REACT_APP_ENV=beta react-scripts build",
+    "build:prod": "cross-env REACT_APP_ENV=production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "generate-icons": "ts-node scripts/generate-favicons.ts"
@@ -40,6 +42,7 @@
     "@types/sharp": "^0.32.0",
     "@types/three": "^0.170.0",
     "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
     "ico-endec": "^0.1.6",
     "postcss": "^8.4.49",
     "sharp": "^0.33.5",

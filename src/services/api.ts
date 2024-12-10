@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { config } from '../config/env';
 
-const API_BASE_URL = 'http://localhost:6500/api';
+const API_BASE_URL = config.API_BASE_URL;
 
 // API 响应接口
 interface ApiResponse<T> {
