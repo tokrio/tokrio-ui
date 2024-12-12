@@ -4,9 +4,10 @@ import ApiKeyManager from './ApiKeyManager';
 import TradingPairManager from './TradingPairManager';
 import { TradingPairConfig, NewTradingPairConfig, TradeHistory } from '../types/trading';
 import TradingHistory from './TradingHistory';
-import { api, PortfolioOverview, Position, ApiKey, CreateApiKeyRequest } from '../services/api';
+import { api, PortfolioOverview, Position, ApiKey, CreateApiKeyRequest, TokenPair } from '../services/api';
+import SimulateTrading from './SimulateTrading';
 
-type TabType = 'trading' | 'apikeys';
+type TabType = 'trading' | 'apikeys' | 'simulate';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>('trading');
@@ -124,6 +125,7 @@ const Dashboard = () => {
   });
   const [portfolioData, setPortfolioData] = useState<PortfolioOverview | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
 
   // 获取 Portfolio Overview 数据
   const fetchPortfolioData = async () => {
@@ -336,6 +338,24 @@ const Dashboard = () => {
     </div>
   );
 
+  // 获取交易对列表
+  useEffect(() => {
+    const fetchTokenPairs = async () => {
+      try {
+        const response = await api.listTokenPairs();
+        if (response.code === 200) {
+          setTokenPairs(response.body.pairs);
+        }
+      } catch (error) {
+        console.error('Failed to fetch token pairs:', error);
+      }
+    };
+
+    if (activeTab === 'simulate') {
+      fetchTokenPairs();
+    }
+  }, [activeTab]);
+
   return (
     <div className="min-h-screen bg-gray-900">
       <nav className="bg-gray-800 border-b border-gray-700">
@@ -389,6 +409,16 @@ const Dashboard = () => {
                     {apiKeys?.length || 0}
                   </span>
                 </button>
+                <button
+                  onClick={() => setActiveTab('simulate')}
+                  className={`${
+                    activeTab === 'simulate'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
+                >
+                  Simulate
+                </button>
               </nav>
             </div>
           </div>
@@ -400,7 +430,7 @@ const Dashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'trading' ? (
+            {activeTab === 'trading' && (
               <div className="bg-gray-800 rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
@@ -544,7 +574,9 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-            ) : (
+            )}
+            
+            {activeTab === 'apikeys' && (
               <div className="bg-gray-800 rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
@@ -605,6 +637,10 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+            )}
+            
+            {activeTab === 'simulate' && (
+              <SimulateTrading tokenPairs={tokenPairs} />
             )}
           </motion.div>
         </div>
