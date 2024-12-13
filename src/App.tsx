@@ -6,6 +6,10 @@ import StatsPanel from './components/StatsPanel';
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import PricingSection from './components/PricingSection';
+import DocumentationSection from './components/DocumentationSection';
+import FeaturesSection from './components/FeaturesSection';
+import HowItWorks from './components/HowItWorks';
 
 function App() {
   return (
@@ -16,6 +20,10 @@ function App() {
             <Navbar />
             <HeroSection />
             <StatsPanel />
+            <FeaturesSection />
+            <HowItWorks />
+            <DocumentationSection />
+            <PricingSection />
           </div>
         } />
         <Route path="/login" element={<LoginPage />} />
