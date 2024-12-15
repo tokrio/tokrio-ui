@@ -6,10 +6,16 @@ import { TradingPairConfig, NewTradingPairConfig, TradeHistory } from '../types/
 import TradingHistory from './TradingHistory';
 import { api, PortfolioOverview, Position, ApiKey, CreateApiKeyRequest, TokenPair } from '../services/api';
 import SimulateTrading from './SimulateTrading';
+import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 
 type TabType = 'trading' | 'apikeys' | 'simulate';
 
 const Dashboard = () => {
+
+  console.log("Dashboard")
+
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('trading');
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
   const [isTradingPairManagerOpen, setIsTradingPairManagerOpen] = useState(false);
@@ -358,11 +364,13 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <nav className="bg-gray-800 border-b border-gray-700">
+      {/* <nav className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <div className="text-xl font-bold text-primary">Tokrio</div>
+              <div onClick={()=>{
+                navigate("/")
+              }} className="text-xl font-bold text-primary">Tokrio</div>
             </div>
             <div className="flex items-center space-x-4">
               <button className="text-gray-300 hover:text-white px-3 py-2">
@@ -374,9 +382,10 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </nav>
+      </nav> */}
+      <Navbar showMenu={false} />
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-6xl mt-16 mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {renderOverviewCards()}
           {/* Tabs */}
