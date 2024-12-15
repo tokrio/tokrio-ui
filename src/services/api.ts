@@ -92,7 +92,7 @@ export interface SimulateResult {
 
 export const api = {
   // 登录接口
-  login: async (data: { walletAddress: string; signature: string }): Promise<ApiResponse<string>> => {
+  login: async (data: { walletAddress: string; signature: string, timestamp?: number }): Promise<ApiResponse<string>> => {
     const response = await axios.post(`${API_BASE_URL}/login`, data, {
       headers: {
         'Content-Type': 'application/json'
@@ -154,7 +154,7 @@ export const tokenStorage = {
 };
 
 // Axios 拦截器设置 Bearer token
-axios.interceptors.request.use(config => {
+axios.interceptors.request.use((config: any) => {
   const token = tokenStorage.getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
