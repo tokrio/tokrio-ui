@@ -11,7 +11,7 @@ import HowItWorks from './components/HowItWorks';
 import StakingPage from './pages/StakingPage';
 import SponsorPage from './pages/SponsorPage';
 import MarketPage from './pages/MarketPage';
-import SponsorSharePage from './pages/SponsorSharePage';
+//import SponsorSharePage from './pages/SponsorSharePage';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -57,10 +57,10 @@ function App() {
         </Suspense>
       )
     },
-    {
-      path: "/sponsor/share/:address",
-      element: <SponsorSharePage />
-    }
+    // {
+    //   path: "/sponsor/share/:address",
+    //   element: <SponsorSharePage />
+    // }
   ]);
 
   return <RouterProvider router={router} />;
