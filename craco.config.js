@@ -74,7 +74,7 @@ module.exports = {
 
         plugins: [
             //new WebpackBar(),
-            new BundleAnalyzerPlugin(),
+            // new BundleAnalyzerPlugin(),
             ...whenProd(
                 () => [
                     new WebpackBar(),

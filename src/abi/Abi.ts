@@ -1,4 +1,5 @@
-import TokrioEconomy from './TokrioEconomy.json'
+import TokrioEconomyAbi from './TokrioEconomy.json'
+import TokrioStakingAbi from './TokrioStaking.json'
 
-
-export { TokrioEconomy }
+export const TokrioEconomy = TokrioEconomyAbi
+export const TokrioStaking = TokrioStakingAbi
