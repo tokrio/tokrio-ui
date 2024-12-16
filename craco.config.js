@@ -8,6 +8,7 @@ const WebpackBar = require('webpackbar');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 const smp = new SpeedMeasurePlugin()
 const path = require("path")
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = {
 
@@ -73,6 +74,7 @@ module.exports = {
 
         plugins: [
             //new WebpackBar(),
+            new BundleAnalyzerPlugin(),
             ...whenProd(
                 () => [
                     new WebpackBar(),
