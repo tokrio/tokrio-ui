@@ -9,6 +9,8 @@ import SimulateTrading from './SimulateTrading';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import BigNumber from 'bignumber.js';
+import { toast } from 'react-hot-toast';
+import { useAccount } from 'wagmi';
 
 type TabType = 'trading' | 'apikeys' | 'simulate' | 'sponsor';
 
@@ -21,12 +23,119 @@ interface Sponsor {
   buyer?: string;
   createdAt: bigint;
   level: bigint;
+  endTime: bigint;
+  earnings: bigint;
 }
 
+interface CreateSponsorModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (level: number, amount: string, duration: number) => void;
+  loading: boolean;
+}
+
+const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose, onSubmit, loading }) => {
+  const [level, setLevel] = useState(1);
+  const [amount, setAmount] = useState('');
+  const [duration, setDuration] = useState(1);
+
+  const levelTokens = {
+    1: 100,
+    2: 200,
+    3: 400,
+    4: 800
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-gray-800 rounded-lg p-6 w-full max-w-md"
+      >
+        <h3 className="text-xl font-bold text-white mb-6">Create Sponsor</h3>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit(level, amount, duration);
+        }} className="space-y-6">
+          {/* 等级选择 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Sponsor Level
+            </label>
+            <select
+              value={level}
+              onChange={(e) => setLevel(Number(e.target.value))}
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            >
+              {Object.entries(levelTokens).map(([lvl, tokens]) => (
+                <option key={lvl} value={lvl}>
+                  Level {lvl} ({tokens} TOKR)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* USDT 金额输入 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Sponsor Amount (USDT)
+            </label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+              placeholder="Enter amount in USDT"
+              required
+            />
+          </div>
+
+          {/* 时长选择 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Duration (Months)
+            </label>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            >
+              {[1, 3, 6, 12].map((months) => (
+                <option key={months} value={months}>
+                  {months} {months === 1 ? 'Month' : 'Months'}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 按钮 */}
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading || !amount}
+              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+            >
+              {loading ? 'Creating...' : 'Create'}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+};
+
 const Dashboard = () => {
-
-  console.log("Dashboard")
-
+  const { address } = useAccount();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('trading');
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
@@ -145,7 +254,43 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [createdSponsors, setCreatedSponsors] = useState<Sponsor[]>([]);
+  const [createdSponsors, setCreatedSponsors] = useState<Sponsor[]>([
+    {
+      id: '1',
+      creator: address || '0x0',
+      tokenAmount: BigInt(100000000000000000000), // 100 TOKR
+      duration: BigInt(30),
+      isActive: true,
+      level: BigInt(1),
+      createdAt: BigInt(Math.floor(Date.now() / 1000)),
+      endTime: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60),
+      earnings: BigInt(5000000000000000000) // 5 TOKR
+    },
+    {
+      id: '2',
+      creator: address || '0x0',
+      tokenAmount: BigInt(200000000000000000000), // 200 TOKR
+      duration: BigInt(90),
+      isActive: false,
+      level: BigInt(2),
+      createdAt: BigInt(Math.floor(Date.now() / 1000) - 91 * 24 * 60 * 60),
+      endTime: BigInt(Math.floor(Date.now() / 1000) - 24 * 60 * 60), // 1天前结束
+      earnings: BigInt(15000000000000000000) // 15 TOKR
+    },
+    {
+      id: '3',
+      creator: address || '0x0',
+      tokenAmount: BigInt(400000000000000000000), // 400 TOKR
+      duration: BigInt(180),
+      isActive: false,
+      level: BigInt(3),
+      createdAt: BigInt(Math.floor(Date.now() / 1000) - 181 * 24 * 60 * 60),
+      endTime: BigInt(Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60), // 7天前结束
+      earnings: BigInt(45000000000000000000) // 45 TOKR
+    }
+  ]);
+  const [isCreateSponsorModalOpen, setIsCreateSponsorModalOpen] = useState(false);
+  const [createSponsorLoading, setCreateSponsorLoading] = useState(false);
 
   // 获取 Portfolio Overview 数据
   const fetchPortfolioData = async () => {
@@ -270,7 +415,7 @@ const Dashboard = () => {
     }
   };
 
-  // 修改按钮的点击处理函数
+  // 修改按钮的点击处��函数
   <button
     onClick={handleOpenTradingPairManager}  // 使用新的处理函数
     className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
@@ -375,6 +520,61 @@ const Dashboard = () => {
       fetchTokenPairs();
     }
   }, [activeTab]);
+
+  const handleCreateSponsor = async (level: number, amount: string, duration: number) => {
+    setCreateSponsorLoading(true);
+    try {
+      // 这里添加创建赞助的逻辑
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 模拟API调用
+      toast.success('Sponsor created successfully');
+      setIsCreateSponsorModalOpen(false);
+    } catch (error) {
+      toast.error('Failed to create sponsor');
+    } finally {
+      setCreateSponsorLoading(false);
+    }
+  };
+
+  // 添加分享处理函数
+  const handleShare = (sponsorId: string) => {
+    const url = `${window.location.origin}/sponsor/${sponsorId}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Sponsor link copied to clipboard');
+  };
+
+  // 添加删除处理函数
+  const handleDelete = async (sponsorId: string) => {
+    if (!window.confirm('Are you sure you want to delete this sponsor?')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 这里添加删除赞助的逻辑
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 模拟API调用
+      toast.success('Sponsor deleted successfully');
+      // 更新列表
+      setCreatedSponsors(prev => prev.filter(s => s.id !== sponsorId));
+    } catch (error) {
+      toast.error('Failed to delete sponsor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 添加提取处理函数
+  const handleWithdraw = async (sponsorId: string) => {
+    setLoading(true);
+    try {
+      // 这里添加提取代币的逻辑
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 模拟API调用
+      toast.success('Tokens withdrawn successfully');
+    } catch (error) {
+      toast.error('Failed to withdraw tokens');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -514,7 +714,7 @@ const Dashboard = () => {
                                 id: position.id || position.tokenSymbol, // 使用 tokenSymbol 作为备用 ID
                                 symbol: position.tokenSymbol,
                                 initialUSDT: position.initialUSDT,
-                                apiKeyId: '1', // ��认值
+                                apiKeyId: '1', // 默认值
                                 enabled: position.enabled,
                                 trend: position.trending,
                                 createdAt: new Date(position.trendingUpdateTime),
@@ -611,6 +811,25 @@ const Dashboard = () => {
             
             {activeTab === 'sponsor' && (
               <div className="bg-gray-800 rounded-lg p-6">
+                {/* 统计卡片 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-sm text-gray-400">Total Sponsors Created</div>
+                    <div className="text-2xl font-bold text-white">{createdSponsors.length}</div>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-sm text-gray-400">Active Sponsors</div>
+                    <div className="text-2xl font-bold text-green-400">
+                      {createdSponsors.filter(s => s.isActive).length}
+                    </div>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <div className="text-sm text-gray-400">Total Earnings</div>
+                    <div className="text-2xl font-bold text-primary">$1,234.56</div>
+                  </div>
+                </div>
+
+                {/* 创建按钮和列表 */}
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-lg font-medium text-white">My Sponsors</h3>
@@ -618,17 +837,25 @@ const Dashboard = () => {
                       Manage your created sponsorships
                     </p>
                   </div>
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
-                  >
-                    Create Sponsor
-                  </button>
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => navigate(`/sponsor/share/${address}`)}
+                      className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                    >
+                      Share All
+                    </button>
+                    <button
+                      onClick={() => setIsCreateSponsorModalOpen(true)}
+                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                    >
+                      Create Sponsor
+                    </button>
+                  </div>
                 </div>
 
-                {/* Sponsor List */}
+                {/* Sponsor 列表 */}
                 <div className="space-y-4">
-                  {createdSponsors.map((sponsor: Sponsor) => (
+                  {createdSponsors.map((sponsor) => (
                     <div key={sponsor.id} className="bg-gray-700 rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
@@ -638,15 +865,75 @@ const Dashboard = () => {
                           <div className="text-sm text-gray-400">
                             {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} TOKR
                           </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Duration: {sponsor.duration.toString()} Days
+                          </div>
                         </div>
                         <div className={`px-3 py-1 rounded-full text-sm ${
-                          sponsor.isActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                          sponsor.isActive 
+                            ? 'bg-green-500/20 text-green-400'
+                            : Number(sponsor.endTime) < Math.floor(Date.now() / 1000)
+                              ? 'bg-yellow-500/20 text-yellow-400'
+                              : 'bg-gray-500/20 text-gray-400'
                         }`}>
-                          {sponsor.isActive ? 'Active' : 'Available'}
+                          {sponsor.isActive 
+                            ? 'Active' 
+                            : Number(sponsor.endTime) < Math.floor(Date.now() / 1000)
+                              ? 'Ended'
+                              : 'Available'}
                         </div>
+                      </div>
+
+                      {/* 添加收益显示 */}
+                      <div className="mt-4 pt-4 border-t border-gray-600">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="text-sm text-gray-400">Total Earnings</div>
+                            <div className="text-lg font-medium text-primary">
+                              {new BigNumber(sponsor.earnings.toString()).div(1e18).toFixed(2)} TOKR
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-400">End Time</div>
+                            <div className="text-sm text-gray-300">
+                              {new Date(Number(sponsor.endTime) * 1000).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex justify-end space-x-3">
+                        <button
+                          onClick={() => handleShare(sponsor.id)}
+                          className="px-3 py-1.5 bg-gray-600 text-gray-300 rounded hover:bg-gray-500"
+                        >
+                          Share
+                        </button>
+                        {!sponsor.isActive && Number(sponsor.endTime) < Math.floor(Date.now() / 1000) && (
+                          <button
+                            onClick={() => handleWithdraw(sponsor.id)}
+                            className="px-3 py-1.5 bg-primary text-white rounded hover:bg-primary-dark"
+                          >
+                            Withdraw Tokens
+                          </button>
+                        )}
+                        {!sponsor.isActive && Number(sponsor.endTime) > Math.floor(Date.now() / 1000) && (
+                          <button
+                            onClick={() => handleDelete(sponsor.id)}
+                            className="px-3 py-1.5 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
+                          >
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
+
+                  {createdSponsors.length === 0 && (
+                    <div className="text-center py-8 text-gray-400">
+                      No sponsors created yet. Click "Create Sponsor" to get started.
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -745,6 +1032,13 @@ const Dashboard = () => {
           history={tradeHistory[selectedPair.id] || []}
         />
       )}
+
+      <CreateSponsorModal
+        isOpen={isCreateSponsorModalOpen}
+        onClose={() => setIsCreateSponsorModalOpen(false)}
+        onSubmit={handleCreateSponsor}
+        loading={createSponsorLoading}
+      />
     </div>
   );
 };
