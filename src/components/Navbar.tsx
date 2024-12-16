@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import Logo from './Logo';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { useAccount } from 'wagmi';
 import { tokenStorage } from '../services/api';
@@ -17,7 +16,7 @@ const Navbar = ({ showMenu = true }: Props) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor') {
+    if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor' && location.pathname !== '/market') {
       tokenStorage.removeToken();
       navigate("/")
     }
@@ -51,18 +50,18 @@ const Navbar = ({ showMenu = true }: Props) => {
                 {item}
               </a>
             ))}
-            <a
-              href="/staking"
+            <Link
+              to="/staking"
               className="text-gray-300 hidden md:block hover:text-primary transition-colors duration-200"
             >
               Staking
-            </a>
-            <a
-              href="/sponsor"
+            </Link>
+            <Link
+              to="/market"
               className="text-gray-300 hidden md:block hover:text-primary transition-colors duration-200"
             >
-              Sponsor
-            </a>
+              Market
+            </Link>
             <ConnectButtonComponents />
           </motion.div>
         </div>

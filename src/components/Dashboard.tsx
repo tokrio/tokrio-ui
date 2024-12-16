@@ -8,8 +8,20 @@ import { api, PortfolioOverview, Position, ApiKey, CreateApiKeyRequest, TokenPai
 import SimulateTrading from './SimulateTrading';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
+import BigNumber from 'bignumber.js';
 
-type TabType = 'trading' | 'apikeys' | 'simulate';
+type TabType = 'trading' | 'apikeys' | 'simulate' | 'sponsor';
+
+interface Sponsor {
+  id: string;
+  creator: string;
+  tokenAmount: bigint;
+  duration: bigint;
+  isActive: boolean;
+  buyer?: string;
+  createdAt: bigint;
+  level: bigint;
+}
 
 const Dashboard = () => {
 
@@ -132,6 +144,8 @@ const Dashboard = () => {
   const [portfolioData, setPortfolioData] = useState<PortfolioOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [createdSponsors, setCreatedSponsors] = useState<Sponsor[]>([]);
 
   // 获取 Portfolio Overview 数据
   const fetchPortfolioData = async () => {
@@ -406,6 +420,16 @@ const Dashboard = () => {
                   </span>
                 </button>
                 <button
+                  onClick={() => setActiveTab('sponsor')}
+                  className={`${
+                    activeTab === 'sponsor'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                  } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
+                >
+                  My Sponsors
+                </button>
+                <button
                   onClick={() => setActiveTab('apikeys')}
                   className={`${
                     activeTab === 'apikeys'
@@ -490,7 +514,7 @@ const Dashboard = () => {
                                 id: position.id || position.tokenSymbol, // 使用 tokenSymbol 作为备用 ID
                                 symbol: position.tokenSymbol,
                                 initialUSDT: position.initialUSDT,
-                                apiKeyId: '1', // 默认值
+                                apiKeyId: '1', // ��认值
                                 enabled: position.enabled,
                                 trend: position.trending,
                                 createdAt: new Date(position.trendingUpdateTime),
@@ -582,6 +606,48 @@ const Dashboard = () => {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+            
+            {activeTab === 'sponsor' && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-lg font-medium text-white">My Sponsors</h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Manage your created sponsorships
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                  >
+                    Create Sponsor
+                  </button>
+                </div>
+
+                {/* Sponsor List */}
+                <div className="space-y-4">
+                  {createdSponsors.map((sponsor: Sponsor) => (
+                    <div key={sponsor.id} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-lg font-medium text-white">
+                            Level {sponsor.level.toString()}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} TOKR
+                          </div>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-sm ${
+                          sponsor.isActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {sponsor.isActive ? 'Active' : 'Available'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
             

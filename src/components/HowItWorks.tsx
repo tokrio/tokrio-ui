@@ -6,22 +6,27 @@ const HowItWorks = () => {
     {
       number: "01",
       title: "Connect Your Wallet",
-      description: "Securely connect your crypto wallet to get started with automated trading"
+      description: "Securely connect your crypto wallet to get started"
     },
     {
       number: "02",
-      title: "Configure API Keys",
-      description: "Set up your exchange API keys with the necessary trading permissions"
+      title: "Get Level Access",
+      description: "Stake TOKR tokens or get sponsored to access trading features"
     },
     {
       number: "03",
-      title: "Select Trading Pairs",
-      description: "Choose your preferred trading pairs and set initial investment amounts"
+      title: "Configure API Keys",
+      description: "Set up your exchange API keys with trading permissions"
     },
     {
       number: "04",
+      title: "Select Trading Pairs",
+      description: "Choose your preferred trading pairs and set investment amounts"
+    },
+    {
+      number: "05",
       title: "Start Trading",
-      description: "Let our AI algorithms analyze the market and execute trades automatically"
+      description: "Let our AI algorithms analyze and execute trades automatically"
     }
   ];
 
