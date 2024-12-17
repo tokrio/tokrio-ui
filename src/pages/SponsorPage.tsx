@@ -112,11 +112,10 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
                   setSelectedOption(option);
                   setCustomAmount('');
                 }}
-                className={`p-4 rounded-lg border ${
-                  selectedOption === option
+                className={`p-4 rounded-lg border ${selectedOption === option
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-gray-600 hover:border-gray-500'
-                }`}
+                  }`}
               >
                 <div className="text-lg font-bold">{option.price} USDT</div>
                 <div className="text-sm text-gray-400">{option.duration} Days</div>
@@ -229,7 +228,7 @@ const SponsorPage = () => {
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   // 使用模拟数据
   const [activeSponsor] = useState<Sponsor | null>({
     id: '1',
@@ -240,7 +239,7 @@ const SponsorPage = () => {
     level: BigInt(2),
     createdAt: BigInt(Math.floor(Date.now() / 1000))
   });
-  
+
   const [createdSponsors] = useState<Sponsor[]>([
     {
       id: '2',
@@ -252,7 +251,7 @@ const SponsorPage = () => {
       createdAt: BigInt(Math.floor(Date.now() / 1000))
     }
   ]);
-  
+
   const [availableSponsors] = useState<Sponsor[]>([
     {
       id: '3',
@@ -270,9 +269,28 @@ const SponsorPage = () => {
     setLoading(true);
     try {
       // 模拟延迟
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Sponsor created successfully');
-      setIsModalOpen(false);
+    
+      const hash = await writeContract(chainConfig, {
+        address: config.SPONSOR as `0x${string}`,
+        abi: TokrioStaking,
+        functionName: 'createSponsorOffer',
+        args: [duration, tokenAmount]
+      });
+      const approveData: any = await waitForTransactionReceipt(chainConfig, {
+        hash: hash
+      })
+
+      if (approveData.status && approveData.status.toString() == "success") {
+        toast.success('Sponsor created successfully');
+        setIsModalOpen(false);
+      } else {
+        toast.error('Your wallet failed allowed assets deduction!');
+        //setLoading(0)
+        return
+
+      }
+
+     
     } catch (error) {
       toast.error('Failed to create sponsor');
     } finally {
@@ -386,9 +404,8 @@ const SponsorPage = () => {
                       {getBenefits(Number(sponsor.level.toString())).pairs}
                     </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm ${
-                    sponsor.isActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
-                  }`}>
+                  <div className={`px-3 py-1 rounded-full text-sm ${sponsor.isActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                    }`}>
                     {sponsor.isActive ? 'Active' : 'Available'}
                   </div>
                 </div>

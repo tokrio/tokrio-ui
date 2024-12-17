@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { api, SimulateResult, TokenPair } from '../services/api';
 
@@ -11,13 +11,16 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
   const [result, setResult] = useState<SimulateResult | null>(null);
   const [formData, setFormData] = useState({
     tokenSymbol: '',
-    usdtAmount: 1000,
+    usdtAmount: '',
     startDate: '2022-11-01',
-    endDate: '2023-11-01'
+    endDate: '2026-11-01'
   });
 
-  const handleSimulate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(()=>{
+    getSimulate()
+  },[])
+
+  const getSimulate = async() => {
     setLoading(true);
     try {
       const response = await api.simulate(formData);
@@ -29,6 +32,11 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
     } finally {
       setLoading(false);
     }
+  }
+
+  const handleSimulate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    getSimulate()
   };
 
   return (
@@ -68,7 +76,7 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
             type="number"
             className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
             value={formData.usdtAmount}
-            onChange={(e) => setFormData({ ...formData, usdtAmount: Number(e.target.value) })}
+            onChange={(e) => setFormData({ ...formData, usdtAmount: e.target.value })}
             required
           />
         </div>

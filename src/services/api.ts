@@ -70,7 +70,7 @@ export interface TokenPairsResponse {
 // 模拟交易接口
 export interface SimulateRequest {
   tokenSymbol: string;
-  usdtAmount: number;
+  usdtAmount: string;
   startDate: string;
   endDate: string;
 }

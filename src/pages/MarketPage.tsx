@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import BigNumber from 'bignumber.js';
+import { useAccount } from 'wagmi';
+import { readContract, writeContract, waitForTransactionReceipt } from "@wagmi/core";
+import { chainConfig } from '../WalletConfig';
+import { config } from '../config/env';
+import { TokrioSponsor } from '../abi/Abi';
+import TokenDecimals from '../components/TokenDecimals';
+import toast from 'react-hot-toast';
 
 interface Sponsor {
-  id: string;
   creator: string;
-  tokenAmount: bigint;
+  offerType: number;
+  targetLevel: bigint;
   duration: bigint;
-  isActive: boolean;
-  buyer?: string;
-  createdAt: bigint;
-  level: bigint;
+  tokenAmount: bigint;
+  usdtAmount: bigint;
+  active: boolean;
+  sponsor: string;
+  user: string;
+  startTime: string;
+  endTime: bigint;
+  earnings: bigint;
+  id: string
 }
 
 interface FilterOptions {
@@ -24,6 +36,8 @@ interface FilterOptions {
 
 const MarketPage = () => {
   const [loading, setLoading] = useState(false);
+  const [buyOfferLoading, setBuyOfferLoading] = useState(false);
+  const [offerId, setOfferId] = useState("");
   const [filters, setFilters] = useState<FilterOptions>({
     level: 'all',
     minAmount: '',
@@ -33,42 +47,95 @@ const MarketPage = () => {
   });
 
   // 模拟市场数据
-  const [sponsors] = useState<Sponsor[]>([
-    {
-      id: '1',
-      creator: '0x1234...5678',
-      tokenAmount: BigInt(256000000000000000000), // 256 TOKR
-      duration: BigInt(30),
-      isActive: false,
-      level: BigInt(1),
-      createdAt: BigInt(Math.floor(Date.now() / 1000))
-    },
-    {
-      id: '2',
-      creator: '0x8765...4321',
-      tokenAmount: BigInt(512000000000000000000), // 512 TOKR
-      duration: BigInt(90),
-      isActive: false,
-      level: BigInt(2),
-      createdAt: BigInt(Math.floor(Date.now() / 1000))
-    },
-    {
-      id: '3',
-      creator: '0x9876...1234',
-      tokenAmount: BigInt(1024000000000000000000), // 1024 TOKR
-      duration: BigInt(180),
-      isActive: false,
-      level: BigInt(3),
-      createdAt: BigInt(Math.floor(Date.now() / 1000))
+  const [sponsors, setSponsors] = useState<any>([]);
+
+  useEffect(() => {
+    getSponsors()
+  }, [])
+
+  const getSponsors = async () => {
+
+    const sponsorList: any = await readContract(chainConfig, {
+      address: config.SPONSOR as `0x${string}`,
+      abi: TokrioSponsor,
+      functionName: 'getActiveOffers',
+      args: [0, 100000]
+    });
+
+    let list = sponsorList[0]
+    let sponsorDetailList = []
+    let item: Sponsor
+
+    for (let index = 0; index < list.length; index++) {
+      const offerId = list[index];
+      const sponsorDetail: any = await readContract(chainConfig, {
+        address: config.SPONSOR as `0x${string}`,
+        abi: TokrioSponsor,
+        functionName: 'getOffer',
+        args: [offerId]
+      });
+      console.log("sponsorDetail=", sponsorDetail)
+      item = {
+        creator: sponsorDetail.creator,
+        offerType: sponsorDetail.offerType,
+        targetLevel: sponsorDetail.targetLevel,
+        duration: sponsorDetail.duration,
+        tokenAmount: sponsorDetail.tokenAmount,
+        usdtAmount: sponsorDetail.usdtAmount,
+        active: sponsorDetail.active,
+        sponsor: sponsorDetail.sponsor,
+        user: sponsorDetail.user,
+        startTime: sponsorDetail.startTime,
+        endTime: sponsorDetail.startTime ? BigInt(new BigNumber(sponsorDetail.startTime).plus(sponsorDetail.duration).toFixed()) : 0n,
+        earnings: 0n,
+        id: offerId + "",
+      }
+      sponsorDetailList.push(item)
+
     }
-  ]);
+
+    setSponsors([...sponsorDetailList])
+
+
+    console.log("sponsorList=", sponsorDetailList)
+
+
+  }
+
+  const buySponsor = async (offerId: string) => {
+    setBuyOfferLoading(true)
+    try {
+      const hash = await writeContract(chainConfig, {
+        address: config.SPONSOR as `0x${string}`,
+        abi: TokrioSponsor,
+        functionName: 'cancelOffer',
+        args: [offerId]
+      });
+      const approveData: any = await waitForTransactionReceipt(chainConfig, {
+        hash: hash
+      })
+
+      if (approveData.status && approveData.status.toString() == "success") {
+        toast.success('Buy sponsor successfully');
+        getSponsors()
+      } else {
+        toast.success('Buy sponsor failed');
+
+      }
+
+    } catch (error) {
+      toast.error('Failed to create sponsor');
+    } finally {
+      setBuyOfferLoading(false);
+    }
+  }
 
   // 过滤赞助列表
-  const filteredSponsors = sponsors.filter(sponsor => {
-    if (filters.level !== 'all' && Number(sponsor.level) !== filters.level) {
+  const filteredSponsors = sponsors.filter((sponsor: any) => {
+    if (filters.level !== 'all' && Number(sponsor.targetLevel) !== filters.level) {
       return false;
     }
-    
+
     const amount = Number(new BigNumber(sponsor.tokenAmount.toString()).div(1e18));
     if (filters.minAmount && amount < Number(filters.minAmount)) {
       return false;
@@ -77,7 +144,7 @@ const MarketPage = () => {
       return false;
     }
 
-    const duration = Number(sponsor.duration);
+    const duration = Number(Number(sponsor.duration.toString()) / 24 / 3600);
     if (filters.minDuration && duration < Number(filters.minDuration)) {
       return false;
     }
@@ -170,7 +237,7 @@ const MarketPage = () => {
 
         {/* Sponsor List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSponsors.map((sponsor, index) => (
+          {filteredSponsors.map((sponsor: Sponsor, index: number) => (
             <motion.div
               key={sponsor.id}
               initial={{ opacity: 0, y: 20 }}
@@ -181,7 +248,7 @@ const MarketPage = () => {
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <div className="text-xl font-bold text-white mb-1">
-                    Level {sponsor.level.toString()}
+                    Level {sponsor.targetLevel.toString()}
                   </div>
                   <div className="text-sm text-gray-400">
                     {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} TOKR
@@ -189,11 +256,21 @@ const MarketPage = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-sm text-gray-400">
-                    {sponsor.duration.toString()} Days
+                    {new BigNumber(sponsor.duration.toString()).dividedBy(24 * 3600).toFixed()} Days
                   </div>
                   <div className="text-xs text-green-400 mt-1">
                     Est. ROI: 15-40%
                   </div>
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <div className="text-sm text-gray-400">Price</div>
+                <div className="text-white truncate">
+
+                  {/* <CountUpAnimation end={1000000} prefix="$" /> */}
+                  <TokenDecimals token={config.USDT_TOKEN} amount={sponsor.usdtAmount.toString()} /> USDT
+
                 </div>
               </div>
 
@@ -205,10 +282,14 @@ const MarketPage = () => {
               </div>
 
               <button
-                disabled={loading}
+                onClick={() => {
+                  setOfferId(sponsor.id)
+                  buySponsor(sponsor.id)
+                }}
+                disabled={buyOfferLoading}
                 className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
               >
-                {loading ? 'Processing...' : 'Buy Sponsor'}
+                {buyOfferLoading && offerId == sponsor.id ? 'Processing...' : 'Buy Sponsor'}
               </button>
             </motion.div>
           ))}

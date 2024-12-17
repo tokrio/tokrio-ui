@@ -9,6 +9,7 @@ import { erc20Abi } from 'viem';
 import toast from 'react-hot-toast';
 import BigNumber from 'bignumber.js';
 import Navbar from '../components/Navbar';
+import { type ReadContractReturnType } from '@wagmi/core'
 
 interface StakingInfo {
   stakedAmount: bigint;
@@ -34,17 +35,31 @@ const StakingPage = () => {
   const [unstakeAmount, setUnstakeAmount] = useState('');
   const [allowance, setAllowance] = useState<bigint>(BigInt(0));
 
+
   // 获取质押信息
   const fetchStakingInfo = async () => {
     if (!address) return;
     try {
-      const info = await readContract(chainConfig, {
+      const info1: any = await readContract(chainConfig, {
+        address: config.STAKING as `0x${string}`,
+        abi: TokrioStaking,
+        functionName: 'pendingRewards',
+        args: [address]
+      });
+      console.log("info1:",info1)
+      const info: any = await readContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
         abi: TokrioStaking,
         functionName: 'getStakingInfo',
         args: [address]
       });
-      setStakingInfo(info as StakingInfo);
+      let stakeInfo = {
+        stakedAmount: info[0],
+        stakingStartTime: info[1],
+        pendingReward: info[2],
+        level: info[3]
+      }
+      setStakingInfo(stakeInfo as StakingInfo);
 
       const level = await readContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
@@ -52,7 +67,13 @@ const StakingPage = () => {
         functionName: 'getStakingLevel',
         args: [address]
       });
-      setLevelInfo(level as LevelInfo);
+      console.log("level=",level)
+      let levelInfo = {
+        level: info[0],
+        currentAmount: info[1],
+        nextLevelRequirement: info[2]
+      }
+      setLevelInfo(levelInfo as LevelInfo);
 
       const rate = await readContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
@@ -146,6 +167,7 @@ const StakingPage = () => {
     setLoading(true);
     try {
       const amount = BigInt(new BigNumber(unstakeAmount).multipliedBy(1e18).toString());
+      console.log("amount",amount)
       const hash = await writeContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
         abi: TokrioStaking,
@@ -210,23 +232,23 @@ const StakingPage = () => {
               <div className="flex justify-between">
                 <span className="text-gray-400">Staked Amount:</span>
                 <span className="text-white font-medium">
-                  {stakingInfo ? new BigNumber(stakingInfo.stakedAmount.toString()).div(1e18).toFixed(2) : '0'} TOKR
+                  {stakingInfo && stakingInfo.stakedAmount ? new BigNumber(stakingInfo.stakedAmount.toString()).div(1e18).toFixed(2) : '0'} TOKR
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Pending Rewards:</span>
                 <span className="text-primary font-medium">
-                  {stakingInfo ? new BigNumber(stakingInfo.pendingReward.toString()).div(1e18).toFixed(4) : '0'} TOKR
+                  {stakingInfo && stakingInfo.pendingReward ? new BigNumber(stakingInfo.pendingReward.toString()).div(1e18).toFixed(4) : '0'} TOKR
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Current Level:</span>
-                <span className="text-white font-medium">Level {stakingInfo?.level.toString() || '0'}</span>
+                <span className="text-white font-medium">Level {stakingInfo?.level?.toString() || '0'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Next Level At:</span>
                 <span className="text-white font-medium">
-                  {levelInfo ? new BigNumber(levelInfo.nextLevelRequirement.toString()).div(1e18).toFixed(0) : '0'} TOKR
+                  {levelInfo && levelInfo.nextLevelRequirement ? new BigNumber(levelInfo.nextLevelRequirement.toString()).div(1e18).toFixed(0) : '0'} TOKR
                 </span>
               </div>
               <div className="flex justify-between">
@@ -304,7 +326,7 @@ const StakingPage = () => {
               {/* Claim Rewards */}
               <button
                 onClick={handleClaim}
-                disabled={loading || !stakingInfo?.pendingReward || stakingInfo.pendingReward === BigInt(0)}
+                // disabled={loading || !stakingInfo?.pendingReward || stakingInfo.pendingReward === BigInt(0)}
                 className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
               >
                 {loading ? 'Claiming...' : 'Claim Rewards'}
