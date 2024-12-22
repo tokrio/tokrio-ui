@@ -47,9 +47,9 @@ const SponsorSharePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen">
       <Navbar showMenu={false} />
-      <div className="pt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* AI Trading Performance */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -130,7 +130,7 @@ const SponsorSharePage = () => {
                 </div>
 
                 <button
-                  className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+                  className="w-full px-4 py-2 cta-button"
                 >
                   Buy Sponsor
                 </button>
@@ -160,7 +160,7 @@ const SponsorSharePage = () => {
               </p>
               <a
                 href="/swap"
-                className="block w-full px-4 py-2 bg-primary text-white rounded text-center hover:bg-primary-dark"
+                className="block w-full px-4 py-2 common-button"
               >
                 Go to Swap
               </a>
@@ -177,7 +177,7 @@ const SponsorSharePage = () => {
               </p>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+                className="w-full px-4 py-2 cta-button"
               >
                 View Sponsors
               </button>

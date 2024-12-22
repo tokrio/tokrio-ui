@@ -102,7 +102,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isOpen, onClose, onSave }
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+              className="px-4 py-2 cta-button"
             >
               Save
             </button>

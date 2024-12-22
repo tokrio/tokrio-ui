@@ -208,11 +208,11 @@ const StakingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen">
       <Navbar showMenu={false} />
       <div className="pt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-white main-font mb-4">
             Staking & Rewards
           </h2>
           <p className="text-xl text-gray-400">
@@ -225,7 +225,7 @@ const StakingPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800 rounded-lg p-6"
+            className="bg-card rounded-lg p-6"
           >
             <h3 className="text-xl font-bold text-white mb-6">Your Staking Stats</h3>
             <div className="space-y-4">
@@ -253,7 +253,7 @@ const StakingPage = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Current APR:</span>
-                <span className="text-green-400 font-medium">{calculateAPR()}%</span>
+                <span className="text-green-400 font-bolder">{calculateAPR()}%</span>
               </div>
             </div>
           </motion.div>
@@ -263,7 +263,7 @@ const StakingPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gray-800 rounded-lg p-6"
+            className="bg-card rounded-lg p-6"
           >
             <h3 className="text-xl font-bold text-white mb-6">Staking Actions</h3>
             <div className="space-y-6">
@@ -284,7 +284,7 @@ const StakingPage = () => {
                     <button
                       onClick={handleApprove}
                       disabled={loading}
-                      className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+                      className="px-4 py-2 cta-button disabled:opacity-50"
                     >
                       {loading ? 'Approving...' : 'Approve'}
                     </button>
@@ -292,7 +292,7 @@ const StakingPage = () => {
                     <button
                       onClick={handleStake}
                       disabled={loading || !stakeAmount}
-                      className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+                      className="px-4 py-2 cta-button disabled:opacity-50"
                     >
                       {loading ? 'Staking...' : 'Stake'}
                     </button>
@@ -316,7 +316,7 @@ const StakingPage = () => {
                   <button
                     onClick={handleUnstake}
                     disabled={loading || !unstakeAmount}
-                    className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+                    className="px-4 py-2 cta-button disabled:opacity-50"
                   >
                     {loading ? 'Unstaking...' : 'Unstake'}
                   </button>
@@ -327,7 +327,7 @@ const StakingPage = () => {
               <button
                 onClick={handleClaim}
                 // disabled={loading || !stakingInfo?.pendingReward || stakingInfo.pendingReward === BigInt(0)}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                className="w-full px-4 py-2 cta-button disabled:opacity-50"
               >
                 {loading ? 'Claiming...' : 'Claim Rewards'}
               </button>
@@ -345,12 +345,12 @@ const StakingPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: level * 0.1 }}
-                className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+                className="bg-card rounded-lg p-6 border border-gray-700"
               >
                 <div className="text-2xl font-bold text-primary mb-4">Level {level}</div>
                 <ul className="space-y-2">
                   <li className="flex items-center text-gray-300">
-                    <svg className="w-5 h-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 text-[#FFA41C] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     {level === 1 && 'Basic trading features'}
@@ -358,7 +358,7 @@ const StakingPage = () => {
                     {level === 3 && 'Premium features access'}
                   </li>
                   <li className="flex items-center text-gray-300">
-                    <svg className="w-5 h-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 text-[#FFA41C] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     {level === 1 && 'Standard support'}

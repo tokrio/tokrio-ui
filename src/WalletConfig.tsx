@@ -66,7 +66,7 @@ export default function WalletConfig() {
             <RainbowKitProvider
                 theme={
                     darkTheme({
-                        accentColor: '#2563EB',
+                        accentColor: '#F0B90B',
                         accentColorForeground: '#fff',
                         borderRadius: 'small',
                         fontStack: 'system',

@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,13 +8,16 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#3B82F6',
+          DEFAULT: '#fff',
           dark: '#2563EB',
         },
         secondary: {
           DEFAULT: '#1E293B',
           dark: '#0F172A',
-        }
+        },
+        bgmain: '#020202',
+        sub: '#9997a4',
+
       },
       animation: {
         'gradient': 'gradient 8s linear infinite',

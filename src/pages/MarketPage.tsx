@@ -156,11 +156,11 @@ const MarketPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen">
       <Navbar showMenu={false} />
       <div className="py-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-white main-font mb-4">
             Sponsor Market
           </h2>
           <p className="text-xl text-gray-400">
@@ -169,7 +169,7 @@ const MarketPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-8">
+        <div className="bg-card rounded-lg p-6 mb-8">
           <h3 className="text-lg font-medium text-white mb-4">Filters</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -243,7 +243,7 @@ const MarketPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+              className="bg-card rounded-lg p-6 border"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -287,7 +287,7 @@ const MarketPage = () => {
                   buySponsor(sponsor.id)
                 }}
                 disabled={buyOfferLoading}
-                className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+                className="w-full px-4 py-2 cta-button disabled:opacity-50"
               >
                 {buyOfferLoading && offerId == sponsor.id ? 'Processing...' : 'Buy Sponsor'}
               </button>

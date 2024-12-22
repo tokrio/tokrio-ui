@@ -113,8 +113,8 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
           y2="100"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#3B82F6" />
-          <stop offset="100%" stopColor="#2563EB" />
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#fff" />
         </linearGradient>
 
         <linearGradient
@@ -125,8 +125,8 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
           y2="0"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#60A5FA" />
-          <stop offset="100%" stopColor="#3B82F6" />
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#fff" />
         </linearGradient>
 
         <linearGradient
@@ -137,8 +137,8 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
           y2="100"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#fff" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0.3" />
         </linearGradient>
 
         <linearGradient
@@ -149,8 +149,8 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
           y2="0"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#818CF8" />
-          <stop offset="100%" stopColor="#6366F1" />
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#fff" />
         </linearGradient>
 
         <linearGradient
@@ -161,8 +161,8 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
           y2="0"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0%" stopColor="#34D399" />
-          <stop offset="100%" stopColor="#10B981" />
+          <stop offset="0%" stopColor="#fff" />
+          <stop offset="100%" stopColor="#fff" />
         </linearGradient>
       </defs>
     </svg>

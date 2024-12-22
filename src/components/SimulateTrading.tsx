@@ -40,7 +40,7 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
+    <div className="bg-card  rounded-lg p-6">
       <div className="mb-6">
         <h3 className="text-lg font-medium text-white">Trading Simulator</h3>
         <p className="text-sm text-gray-400 mt-1">
@@ -111,7 +111,7 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50"
+            className="w-full px-4 py-2 cta-button disabled:opacity-50"
           >
             {loading ? 'Simulating...' : 'Run Simulation'}
           </button>

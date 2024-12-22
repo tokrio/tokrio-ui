@@ -13,36 +13,29 @@ const MatrixRain = () => {
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      // canvas.height = 3000;
     };
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // const tokens = [
-    //   "BTC", "ETH", "USDT", "BNB", "SOL", 
-    //   "XRP", "USDC", "ADA", "AVAX", "DOGE",
-    //   "DOT", "TRX", "LINK", "TON", "MATIC",
-    //   "UNI", "ICP", "SHIB", "LTC", "DAI",
-    //   "BCH", "ETC", "XLM", "NEAR", "INJ",
-    //   "OP", "XMR", "APT", "FIL", "ATOM",
-    //   "IMX", "CRO", "HBAR", "LDO", "SEI",
-    //   "VET", "ALGO", "ORDI", "GRT", "AAVE"
-    // ];
-
     const tokens = [
-      "BTC", "TOKRIO", "USDT", "AI","TRADING"
+      "BTC", "ETH", "USDT", "BNB", "SOL", 
+      "XRP", "USDC", "ADA", "AVAX", "DOGE",
+      "DOT", "TRX", "LINK", "TON", "MATIC",
+      "UNI", "ICP", "SHIB", "LTC", "DAI",
+      "BCH", "ETC", "XLM", "NEAR", "INJ",
+      "OP", "XMR", "APT", "FIL", "ATOM",
+      "IMX", "CRO", "HBAR", "LDO", "SEI",
+      "VET", "ALGO", "ORDI", "GRT", "AAVE"
     ];
 
     const colors = [
-      '#F0B90B',  // 青色
-      '#906423',  // 青色
-      '#412700',  // 青色
-      // '#3B82F6',  // 蓝色
-      '#888',  // 靛蓝色
-      // '#8B5CF6',  // 紫色
-      // '#0EA5E9',  // 天蓝色
-      // '#22D3EE'   // 浅青色
+      '#06B6D4',  // 青色
+      '#3B82F6',  // 蓝色
+      '#6366F1',  // 靛蓝色
+      '#8B5CF6',  // 紫色
+      '#0EA5E9',  // 天蓝色
+      '#22D3EE'   // 浅青色
     ];
     
 
@@ -77,7 +70,7 @@ const MatrixRain = () => {
       }
     };
 
-    const interval = setInterval(draw, 90);
+    const interval = setInterval(draw, 33);
 
     return () => {
       clearInterval(interval);
@@ -90,8 +83,8 @@ const MatrixRain = () => {
       ref={canvasRef}
       className="absolute inset-0 z-0"
       style={{ 
-        // filter: 'blur(0.5px)',
-        opacity: 0.4
+        filter: 'blur(0.5px)',
+        opacity: 0.75
       }}
     />
   );

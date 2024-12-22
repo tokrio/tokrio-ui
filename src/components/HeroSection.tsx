@@ -62,50 +62,49 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      <MatrixRain />
+    <div className="max-w-6xl mx-auto relative overflow-hidden">
+      {/* <MatrixRain /> */}
 
-      <div className="relative z-10 container mx-auto px-4 h-screen">
-        <div className="grid grid-cols-1 md:grid-cols-2 h-full items-center">
+      <div className="relative z-10 container my-44 md:my-52 mx-auto px-4">
+        <div className=" text-center flex flex-col justify-center items-center">
+
+          <h1 className="hero-text">
+            <span className="text-primary uppercase text-4xl font-normal">T o k r i o</span>
+
+          </h1>
+          <div className="hero-text max-w-2xl font-medium uppercase text-3xl md:text-4xl mt-4">Where AI Meets Trading Excellence</div>
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-left pr-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-4 text-black mt-2 text-sm font-semibold main-font uppercase px-3 py-1 bg-white "
           >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-4 text-primary font-mono"
-            >
-              Welcome to the future of trading
-            </motion.div>
-            <h1 className="hero-text">
-              <span className="text-primary">Tokrio</span>
-              <span className="block text-3xl md:text-5xl mt-4">Where AI Meets Trading Excellence</span>
-            </h1>
-            <p className="hero-subtext">
-              Experience the next evolution in cryptocurrency trading with our AI-driven algorithms that analyze trends, predict movements, and execute trades with precision.
-            </p>
-            <div className="flex space-x-4">
-              <motion.button
-                onClick={handleLogin}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="cta-button"
-              >
-                Start Trading
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border border-primary text-primary hover:bg-primary/10 rounded-lg transition-colors duration-300"
-              >
-                Watch Demo
-              </motion.button>
-            </div>
+            <div className='gradient-color1'>Welcome to the future of trading</div>
+            
           </motion.div>
+          <div className="hero-subtext max-w-xl ">
+            Experience the next evolution in cryptocurrency trading with our AI-driven algorithms that analyze trends, predict movements, and execute trades with precision.
+          </div>
+          <div className="flex space-x-4">
+            <motion.button
+              onClick={handleLogin}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="cta-button main-font"
+            >
+              Start Trading
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="common-button main-font transition-colors flex items-center duration-300"
+            >
+
+            
+              <svg xmlns="http://www.w3.org/2000/svg" fill='rgb(255, 255, 255)' className='w-4 h-4 mr-2' focusable="false" viewBox="0 0 24 24" ><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM9.5 16.5v-9l7 4.5-7 4.5z"></path></svg>
+              Watch Demo
+            </motion.button>
+          </div>
 
           <div className="hidden md:block relative h-full">
             {/* Matrix rain will show through this space */}

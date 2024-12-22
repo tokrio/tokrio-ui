@@ -1,5 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { User } from '../img/FileImports';
 
 export const ConnectButtonComponents = () => {
   
@@ -27,7 +28,7 @@ export const ConnectButtonComponents = () => {
                         authenticationStatus === 'authenticated');
                 return (
                     <div
-                        className='md:text-sm text-sm'
+                        className='text-xs main-font text-white font-medium' 
                         {...(!ready && {
                             'aria-hidden': true,
                             'style': {
@@ -40,7 +41,7 @@ export const ConnectButtonComponents = () => {
                         {(() => {
                             if (!connected) {
                                 return (
-                                    <button className='bg-primary px-2 md:px-4 cursor-pointer py-2   rounded-md font-medium text-xs font-semibold md:text-sm' onClick={openConnectModal} type="button">
+                                    <button className='cta-button text-xs  cursor-pointer py-1.5 px-2 rounded-md' onClick={openConnectModal} type="button">
                                         Connect Wallet
                                     </button>
                                 );
@@ -48,7 +49,7 @@ export const ConnectButtonComponents = () => {
                             
                             if (chain.unsupported) {
                                 return (
-                                    <button className=' px-4 truncate cursor-pointer py-2 rounded-lg bg-[#ff494a]' onClick={openChainModal} type="button">
+                                    <button className=' px-4 truncate uppercase cursor-pointer py-1.5 rounded-lg bg-[#ff494a]' onClick={openChainModal} type="button">
                                         Wrong network
                                     </button>
                                 );
@@ -56,7 +57,7 @@ export const ConnectButtonComponents = () => {
                             return (
                                 <div style={{ display: 'flex', gap: 6 }}>
                                     <button
-                                        className='hidden lg:flex text-[#8A8A8A]  px-2 items-center cursor-pointer rounded-lg'
+                                        className='hidden lg:flex text-[#fff] border-2 border-[#4d4d4d] py-1  px-2 items-center cursor-pointer rounded-full'
                                         onClick={openChainModal}
                                         type="button"
                                     >
@@ -72,8 +73,9 @@ export const ConnectButtonComponents = () => {
                                         )}
                                         {chain.name}
                                     </button>
-                                    <button className='hidden md:flex px-2 items-center cursor-pointer rounded-lg ' onClick={openAccountModal} type="button">
-                                        <Jazzicon diameter={20} seed={jsNumberForAddress(account.address)} />
+                                    <button className='hidden md:flex text-[#fff] border-2 border-[#4d4d4d] py-1 px-2 items-center cursor-pointer rounded-full ' onClick={openAccountModal} type="button">
+                                        {/* <Jazzicon diameter={20} seed={jsNumberForAddress(account.address)} /> */}
+                                        <img className='w-5 h-5' src={User} />
                                         <p className=' ml-1'> {account.displayName}</p>
                                         <img className=' w-6' src={process.env.PUBLIC_URL + '/img/' + 'down.png'} alt="" />
                                     </button>

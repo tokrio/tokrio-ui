@@ -76,10 +76,10 @@ const DocumentationSection = () => {
   ];
 
   return (
-    <div className="bg-gray-900 py-24" id="documentation">
+    <div className="py-24  bg-[#111]/40" id="documentation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="hero-text mb-4">
             Technical Documentation
           </h2>
           <p className="text-xl text-gray-400">
@@ -89,7 +89,7 @@ const DocumentationSection = () => {
 
         {/* Algorithms Section */}
         <div className="mb-20">
-          <h3 className="text-2xl font-bold text-white mb-8">Core Algorithms</h3>
+          <h3 className="text-2xl text-center hero-text font-bold text-white mb-16">Core Algorithms</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {algorithms.map((algo, index) => (
               <motion.div
@@ -97,20 +97,22 @@ const DocumentationSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+                className="relative"
               >
-                <h4 className="text-xl font-bold text-primary mb-2">{algo.title}</h4>
-                <p className="text-gray-400 mb-4">{algo.description}</p>
-                <ul className="space-y-2">
-                  {algo.details.map((detail, i) => (
-                    <li key={i} className="flex items-start text-gray-300">
-                      <svg className="w-5 h-5 text-primary mr-2 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {detail}
-                    </li>
-                  ))}
-                </ul>
+                <div className="bg-card-dark rounded-lg p-6">
+                  <h4 className="text-base main-font font-bold text-white mb-2">{algo.title}</h4>
+                  <p className="text-gray-400 mb-6">{algo.description}</p>
+                  <ul className="space-y-2">
+                    {algo.details.map((detail, i) => (
+                      <li key={i} className="flex items-center">
+                        <svg className="w-5 h-5 text-[#FFA41C] mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -118,7 +120,7 @@ const DocumentationSection = () => {
 
         {/* Technical Features */}
         <div>
-          <h3 className="text-2xl font-bold text-white mb-8">Technical Features</h3>
+          <h3 className="text-2xl  text-center hero-text font-bold text-white mb-16">Technical Features</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <motion.div
@@ -126,19 +128,21 @@ const DocumentationSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+                className="relative"
               >
-                <h4 className="text-xl font-bold text-white mb-4">{feature.title}</h4>
-                <ul className="space-y-2">
-                  {feature.points.map((point, i) => (
-                    <li key={i} className="flex items-center text-gray-300">
-                      <svg className="w-4 h-4 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {point}
-                    </li>
-                  ))}
-                </ul>
+                <div className="bg-card-dark rounded-lg p-6">
+                  <h4 className="text-base main-font font-bold text-white mb-6">{feature.title}</h4>
+                  <ul className="space-y-2">
+                    {feature.points.map((point, i) => (
+                      <li key={i} className="flex items-center">
+                        <svg className="w-4 h-4 text-[#FFA41C] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -146,10 +150,10 @@ const DocumentationSection = () => {
 
         {/* Bottom Disclaimer */}
         <div className="mt-16 text-center">
-          <p className="text-gray-400">
+          <p className="text-white font-semibold">
             Our algorithms are rigorously backtested and continuously optimized for market adaptability
           </p>
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4">
             * Past performance does not guarantee future results. Trading involves risks.
           </div>
         </div>

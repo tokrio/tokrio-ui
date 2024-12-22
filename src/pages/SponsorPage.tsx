@@ -166,7 +166,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             <button
               type="submit"
               disabled={loading || (!selectedOption && !customAmount)}
-              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+              className="px-4 py-2 cta-button disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Create'}
             </button>
@@ -377,7 +377,7 @@ const SponsorPage = () => {
             <h3 className="text-2xl font-bold text-white">Created Sponsors</h3>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
+              className="px-4 py-2 cta-button"
             >
               Create Sponsor
             </button>
@@ -486,7 +486,7 @@ const SponsorPage = () => {
                 <button
                   onClick={() => handleBuySponsor(sponsor.id)}
                   disabled={loading}
-                  className="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+                  className="w-full px-4 py-2 cta-button disabled:opacity-50"
                 >
                   {loading ? 'Processing...' : 'Buy Sponsor'}
                 </button>

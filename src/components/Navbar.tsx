@@ -24,7 +24,7 @@ const Navbar = ({ showMenu = true }: Props) => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-sm">
-      <div className="container mx-auto px-4">
+      <div className="mx-auto max-w-7xl px-4 md:px-6 border border-b border-[#222]">
         <div className="flex items-center justify-between h-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -33,7 +33,7 @@ const Navbar = ({ showMenu = true }: Props) => {
             onClick={() => navigate('/')}
           >
             <Logo size={32} />
-            <span className="text-2xl font-bold text-primary">Tokrio</span>
+            <span className="text-xl tracking-widest uppercase main-font  font-medium text-primary">Tokrio</span>
           </motion.div>
 
           <motion.div
@@ -41,7 +41,7 @@ const Navbar = ({ showMenu = true }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center space-x-8"
           >
-            {showMenu && ['Features', 'How it Works', 'Documentation'].map((item) => (
+            {/* {showMenu && ['Features', 'How it Works', 'Documentation'].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
@@ -49,16 +49,16 @@ const Navbar = ({ showMenu = true }: Props) => {
               >
                 {item}
               </a>
-            ))}
+            ))} */}
             <Link
               to="/staking"
-              className="text-gray-300 hidden md:block hover:text-primary transition-colors duration-200"
+              className="text-white text-base  uppercase hidden md:block hover:text-primary transition-colors duration-200"
             >
               Staking
             </Link>
             <Link
               to="/market"
-              className="text-gray-300 hidden md:block hover:text-primary transition-colors duration-200"
+              className="text-gray-300 text-base uppercase hidden md:block hover:text-primary transition-colors duration-200"
             >
               Market
             </Link>

@@ -12,6 +12,7 @@ import StakingPage from './pages/StakingPage';
 import SponsorPage from './pages/SponsorPage';
 import MarketPage from './pages/MarketPage';
 import SponsorSharePage from './pages/SponsorSharePage';
+import MatrixRain from './components/MatrixRain';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -21,10 +22,10 @@ function App() {
     {
       path: "/",
       element: (
-        <div className="App">
+        <div>
           <Navbar />
           <HeroSection />
-          <StatsPanel />
+          {/* <StatsPanel /> */}
           <FeaturesSection />
           <HowItWorks />
           <DocumentationSection />
@@ -63,7 +64,15 @@ function App() {
     }
   ]);
 
-  return <RouterProvider router={router} />;
+  return <div className='relative'>
+    <div className='absolute z-10'>
+      <MatrixRain />
+    </div>
+    <div className='absolute max-h-screen bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
+      <RouterProvider router={router} />
+    </div>
+
+  </div>
 }
 
 export default App; 

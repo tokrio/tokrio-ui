@@ -33,15 +33,15 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <div className="bg-gray-900 py-24" id="features">
+    <div className="py-32 bg-[#111]/40" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className=" hero-text mb-4">
             Key Features
           </h2>
-          <p className="text-xl text-gray-400">
+          <div className="hero-subtext">
             Experience the power of AI-driven trading
-          </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -51,15 +51,17 @@ const FeaturesSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+              style={{borderColor:'rgba(138, 138, 138, 0.23'}}
+              className=" rounded-xl p-6 border"
             >
-              <div className="text-primary mb-4">
+
+              <div className="text-[#FFA41C] mb-4">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">
+              <h3 className="hero-sub-text mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-400">
+              <p className="">
                 {feature.description}
               </p>
             </motion.div>

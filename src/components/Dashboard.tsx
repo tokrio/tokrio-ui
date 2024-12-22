@@ -64,7 +64,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gray-800 rounded-lg p-6 w-full max-w-md"
+        className="bg-card rounded-lg p-6 w-full max-w-md"
       >
         <h3 className="text-xl font-bold text-white mb-6">Create Sponsor</h3>
         <form onSubmit={(e) => {
@@ -134,7 +134,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             <button
               type="submit"
               disabled={!(!loading && amount)}
-              className="px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark disabled:opacity-50"
+              className="px-4 py-2 cta-button disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Create'}
             </button>
@@ -452,7 +452,7 @@ const Dashboard = () => {
   // 修改按钮的点击处��函数
   <button
     onClick={handleOpenTradingPairManager}  // 使用新的处理函数
-    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+    className="px-4 py-2 cta-button"
   >
     Add Trading Pair
   </button>
@@ -464,7 +464,7 @@ const Dashboard = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gray-800 rounded-lg p-6 md:col-span-3"
+        className="bg-card rounded-lg p-6 md:col-span-3"
       >
         {portfolioData?.positions[0] ? (
           <div className="flex justify-between items-center">
@@ -498,7 +498,7 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-gray-800 rounded-lg p-6"
+        className="bg-card rounded-lg p-6"
       >
         <h3 className="text-lg font-medium text-white mb-4">Portfolio Overview</h3>
         <div className="text-3xl font-bold text-primary">
@@ -514,7 +514,7 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-gray-800 rounded-lg p-6"
+        className="bg-card rounded-lg p-6"
       >
         <h3 className="text-lg font-medium text-white mb-4">Active Trades</h3>
         <div className="text-3xl font-bold text-primary">{portfolioData?.activeTrades || 0}</div>
@@ -526,7 +526,7 @@ const Dashboard = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-gray-800 rounded-lg p-6"
+        className="bg-card rounded-lg p-6"
       >
         <h3 className="text-lg font-medium text-white mb-4">Total Profit</h3>
         <div className={`text-3xl font-bold ${(portfolioData?.totalProfit || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -711,8 +711,8 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* <nav className="bg-gray-800 border-b border-gray-700">
+    <div className="min-h-screen">
+      {/* <nav className="bg-card border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
@@ -748,7 +748,7 @@ const Dashboard = () => {
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
                   Trading Pairs
-                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-gray-800">
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card">
                     {portfolioData?.positions?.length || 0}
                   </span>
                 </button>
@@ -769,7 +769,7 @@ const Dashboard = () => {
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
                   API Keys
-                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-gray-800">
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card">
                     {apiKeys?.length || 0}
                   </span>
                 </button>
@@ -794,7 +794,7 @@ const Dashboard = () => {
             transition={{ duration: 0.2 }}
           >
             {activeTab === 'trading' && (
-              <div className="bg-gray-800 rounded-lg p-6">
+              <div className="bg-card  rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-lg font-medium text-white">Trading Pairs</h3>
@@ -804,7 +804,7 @@ const Dashboard = () => {
                   </div>
                   <button
                     onClick={handleOpenTradingPairManager}
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                    className="px-4 py-2 cta-button"
                   >
                     Add Trading Pair
                   </button>
@@ -819,7 +819,7 @@ const Dashboard = () => {
                     {portfolioData.positions.map((position) => (
                       <div
                         key={position.tokenSymbol}
-                        className="bg-gray-800 rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
+                        className="bg-card rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
                       >
                         <div className="flex justify-between items-start mb-6">
                           <div className="flex items-center space-x-4">
@@ -937,7 +937,7 @@ const Dashboard = () => {
             )}
 
             {activeTab === 'sponsor' && (
-              <div className="bg-gray-800 rounded-lg p-6">
+              <div className="bg-card  rounded-lg p-6">
                 {/* 统计卡片 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-gray-700 rounded-lg p-4">
@@ -973,7 +973,7 @@ const Dashboard = () => {
                     </button>
                     <button
                       onClick={() => setIsCreateSponsorModalOpen(true)}
-                      className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                      className="px-4 py-2 cta-button"
                     >
                       Create Sponsor
                     </button>
@@ -1050,7 +1050,7 @@ const Dashboard = () => {
                           <button
                             disabled={!(!wthdrawLoading && offerId == sponsor.id)}
                             onClick={() => handleWithdraw(sponsor.id)}
-                            className="px-3 py-1.5 bg-primary text-white rounded hover:bg-primary-dark"
+                            className="px-3 py-1.5 cta-button"
                           >
                             Withdraw Tokens
                           </button>
@@ -1080,7 +1080,7 @@ const Dashboard = () => {
             )}
 
             {activeTab === 'apikeys' && (
-              <div className="bg-gray-800 rounded-lg p-6">
+              <div className="bg-card  rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-lg font-medium text-white">API Keys</h3>
@@ -1090,7 +1090,7 @@ const Dashboard = () => {
                   </div>
                   <button
                     onClick={() => setIsApiKeyManagerOpen(true)}
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+                    className="px-4 py-2 cta-button"
                   >
                     Add New API Key
                   </button>
@@ -1114,7 +1114,7 @@ const Dashboard = () => {
                         <div>
                           <div className="text-white font-medium flex items-center">
                             {apiKey.apiName}
-                            <span className="ml-2 px-2 py-1 bg-gray-800 rounded text-xs text-primary">
+                            <span className="ml-2 px-2 py-1 bg-card rounded text-xs text-primary">
                               {apiKey.platform}
                             </span>
                           </div>
