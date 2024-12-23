@@ -14,6 +14,15 @@ const StatsPanel = () => {
   return (
     <div className="py-24 bg-[#111]/40">
       <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="hero-text mb-4">
+            Trading Performance
+          </h2>
+          <p className="text-xl text-gray-400">
+            Our AI-powered trading system delivers consistent results
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
