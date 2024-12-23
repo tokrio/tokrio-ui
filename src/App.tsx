@@ -2,12 +2,11 @@ import React, { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
-import StatsPanel from './components/StatsPanel';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import DocumentationSection from './components/DocumentationSection';
 import FeaturesSection from './components/FeaturesSection';
-import HowItWorks from './components/HowItWorks';
+import Guidelines from './components/HowItWorks';
 import StakingPage from './pages/StakingPage';
 import SponsorPage from './pages/SponsorPage';
 import MarketPage from './pages/MarketPage';
@@ -16,6 +15,7 @@ import MatrixRain from './components/MatrixRain';
 import TokenUsageSection from './components/TokenUsageSection';
 import TokenUtilitySection from './components/TokenUtilitySection';
 import Tokenomics from './components/Tokenomics';
+import Footer from './components/Footer';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -28,12 +28,13 @@ function App() {
         <div>
           <Navbar />
           <HeroSection />
+          <Guidelines />
           <TokenUsageSection />
           <TokenUtilitySection />
           <Tokenomics />
           <FeaturesSection />
-          <HowItWorks />
           <DocumentationSection />
+          <Footer />
         </div>
       ),
     },
@@ -76,7 +77,6 @@ function App() {
     <div className='absolute max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
       <RouterProvider router={router} />
     </div>
-
   </div>
 }
 
