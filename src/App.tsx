@@ -13,6 +13,9 @@ import SponsorPage from './pages/SponsorPage';
 import MarketPage from './pages/MarketPage';
 import SponsorSharePage from './pages/SponsorSharePage';
 import MatrixRain from './components/MatrixRain';
+import TokenUsageSection from './components/TokenUsageSection';
+import TokenUtilitySection from './components/TokenUtilitySection';
+import Tokenomics from './components/Tokenomics';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -25,7 +28,9 @@ function App() {
         <div>
           <Navbar />
           <HeroSection />
-          {/* <StatsPanel /> */}
+          <TokenUsageSection />
+          <TokenUtilitySection />
+          <Tokenomics />
           <FeaturesSection />
           <HowItWorks />
           <DocumentationSection />
