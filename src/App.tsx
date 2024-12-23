@@ -16,6 +16,7 @@ import TokenUsageSection from './components/TokenUsageSection';
 import TokenUtilitySection from './components/TokenUtilitySection';
 import Tokenomics from './components/Tokenomics';
 import Footer from './components/Footer';
+import StatsPanel from './components/StatsPanel';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -28,6 +29,7 @@ function App() {
         <div>
           <Navbar />
           <HeroSection />
+          <StatsPanel />
           <Guidelines />
           <TokenUsageSection />
           <TokenUtilitySection />

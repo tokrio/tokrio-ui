@@ -1,9 +1,10 @@
 import React from 'react';
 import CountUp from 'react-countup';
+import { motion } from 'framer-motion';
 
-const CountUpAnimation = ({ end, prefix, suffix = '' }: { end: number; prefix: string; suffix?: string }) => {
+const CountUpAnimation = ({ end, prefix = '', suffix = '' }: { end: number; prefix?: string; suffix?: string }) => {
   return (
-    <div className="text-4xl md:text-5xl font-bold text-primary">
+    <div className="text-4xl md:text-5xl font-bold text-[#FFA41C]">
       <CountUp end={end} prefix={prefix} suffix={suffix} duration={2.5} />
     </div>
   );
@@ -11,32 +12,53 @@ const CountUpAnimation = ({ end, prefix, suffix = '' }: { end: number; prefix: s
 
 const StatsPanel = () => {
   return (
-    <div className="bg-white py-16 md:py-24">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="text-center p-6 rounded-xl bg-gray-50 hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
-              Trading Volume
+    <div className="py-24 bg-[#111]/40">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-center p-6 bg-card-dark rounded-xl"
+          >
+            <h3 className="text-xl font-semibold text-white mb-4 uppercase main-font">
+              Win Rate
             </h3>
-            <CountUpAnimation end={1000000} prefix="$" />
-            <p className="text-gray-500 mt-2">24h Volume</p>
-          </div>
+            <CountUpAnimation end={65} suffix="%" />
+            <p className="text-gray-400 mt-2">
+              Above 65% Trading Success Rate
+            </p>
+          </motion.div>
           
-          <div className="text-center p-6 rounded-xl bg-gray-50 hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
-              Active Users
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-center p-6 bg-card-dark rounded-xl"
+          >
+            <h3 className="text-xl font-semibold text-white mb-4 uppercase main-font">
+              Annual ROI
             </h3>
-            <CountUpAnimation end={5000} prefix="" suffix="+" />
-            <p className="text-gray-500 mt-2">Worldwide</p>
-          </div>
+            <CountUpAnimation end={2000} suffix="%" />
+            <p className="text-gray-400 mt-2">
+              Maximum Annual Return
+            </p>
+          </motion.div>
           
-          <div className="text-center p-6 rounded-xl bg-gray-50 hover:shadow-lg transition-shadow duration-300">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
-              Success Rate
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-center p-6 bg-card-dark rounded-xl"
+          >
+            <h3 className="text-xl font-semibold text-white mb-4 uppercase main-font">
+              AI Simulations
             </h3>
-            <CountUpAnimation end={98} prefix="" suffix="%" />
-            <p className="text-gray-500 mt-2">Trading Accuracy</p>
-          </div>
+            <CountUpAnimation end={20} suffix="B+" />
+            <p className="text-gray-400 mt-2">
+              AI Algorithm Iterations
+            </p>
+          </motion.div>
         </div>
       </div>
     </div>
