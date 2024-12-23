@@ -11,23 +11,27 @@ const Tokenomics = () => {
     { category: "Project Reserve", percentage: 5, color: "#9C27B0" }
   ];
 
-  // 计算饼图的SVG路径
+  // 计算饼图的SVG路径和标签位置
   const generatePieChart = () => {
     const total = distribution.reduce((sum, item) => sum + item.percentage, 0);
     let currentAngle = 0;
     const paths = [];
-    const radius = 120;
-    const centerX = 150;
-    const centerY = 150;
+    const labels = [];
+    const radius = 180; // 增大半径
+    const centerX = 250; // 增大中心点坐标
+    const centerY = 250;
+    const labelRadius = radius * 0.7; // 标签距离中心点的距离
 
     for (const item of distribution) {
       const angle = (item.percentage / total) * 360;
       const startAngle = currentAngle;
       const endAngle = currentAngle + angle;
+      const midAngle = (startAngle + endAngle) / 2;
       
       // 转换角度为弧度
       const startRad = (startAngle - 90) * Math.PI / 180;
       const endRad = (endAngle - 90) * Math.PI / 180;
+      const midRad = (midAngle - 90) * Math.PI / 180;
       
       // 计算路径点
       const x1 = centerX + radius * Math.cos(startRad);
@@ -35,18 +39,29 @@ const Tokenomics = () => {
       const x2 = centerX + radius * Math.cos(endRad);
       const y2 = centerY + radius * Math.sin(endRad);
       
+      // 计算标签位置
+      const labelX = centerX + labelRadius * Math.cos(midRad);
+      const labelY = centerY + labelRadius * Math.sin(midRad);
+      
       // 生成SVG路径
       const largeArcFlag = angle > 180 ? 1 : 0;
       const path = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
       
       paths.push({ path, color: item.color });
+      labels.push({
+        x: labelX,
+        y: labelY,
+        percentage: item.percentage,
+        color: item.color
+      });
+      
       currentAngle += angle;
     }
 
-    return paths;
+    return { paths, labels };
   };
 
-  const pieChartPaths = generatePieChart();
+  const { paths, labels } = generatePieChart();
 
   return (
     <div className="py-24 bg-[#111]/40">
@@ -65,17 +80,37 @@ const Tokenomics = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="relative"
           >
-            <svg width="300" height="300" viewBox="0 0 300 300" className="mx-auto">
-              {pieChartPaths.map((item, index) => (
+            <svg width="500" height="500" viewBox="0 0 500 500" className="mx-auto">
+              {/* 绘制饼图扇形 */}
+              {paths.map((item, index) => (
                 <path
                   key={index}
                   d={item.path}
                   fill={item.color}
                   stroke="#111"
-                  strokeWidth="1"
+                  strokeWidth="2"
+                  className="transition-all duration-300 hover:opacity-80"
                 >
                   <title>{distribution[index].category}: {distribution[index].percentage}%</title>
                 </path>
+              ))}
+              
+              {/* 绘制百分比标签 */}
+              {labels.map((label, index) => (
+                <g key={`label-${index}`}>
+                  <text
+                    x={label.x}
+                    y={label.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="#fff"
+                    fontSize="20"
+                    fontWeight="bold"
+                    className="select-none"
+                  >
+                    {label.percentage}%
+                  </text>
+                </g>
               ))}
             </svg>
           </motion.div>
@@ -87,15 +122,15 @@ const Tokenomics = () => {
             className="space-y-4"
           >
             {distribution.map((item) => (
-              <div key={item.category} className="flex items-center space-x-4">
+              <div key={item.category} className="flex items-center space-x-4 p-2 rounded-lg hover:bg-white/5 transition-colors">
                 <div 
-                  className="w-4 h-4 rounded-full" 
+                  className="w-6 h-6 rounded-full" 
                   style={{ backgroundColor: item.color }}
                 />
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-white font-medium">{item.category}</span>
-                    <span className="text-primary">{item.percentage}%</span>
+                    <span className="text-white font-medium text-lg">{item.category}</span>
+                    <span className="text-primary text-lg font-bold">{item.percentage}%</span>
                   </div>
                 </div>
               </div>
