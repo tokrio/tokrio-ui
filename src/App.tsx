@@ -68,7 +68,7 @@ function App() {
     <div className='absolute z-10'>
       <MatrixRain />
     </div>
-    <div className='absolute max-h-screen bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
+    <div className='absolute max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
       <RouterProvider router={router} />
     </div>
 

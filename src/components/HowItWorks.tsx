@@ -63,7 +63,7 @@ const HowItWorks = () => {
                 </p>
               </div>
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-7 transform -translate-y-1/2">
+                <div className="hidden lg:block absolute top-1/2 -right-2 transform -translate-y-1/2">
                   <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

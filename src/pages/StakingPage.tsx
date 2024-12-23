@@ -34,6 +34,7 @@ const StakingPage = () => {
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
   const [allowance, setAllowance] = useState<bigint>(BigInt(0));
+  const [clickType, setClickType] = useState<number>(-1);
 
 
   // 获取质押信息
@@ -46,7 +47,7 @@ const StakingPage = () => {
         functionName: 'pendingRewards',
         args: [address]
       });
-      console.log("info1:",info1)
+      console.log("info1:", info1)
       const info: any = await readContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
         abi: TokrioStaking,
@@ -67,7 +68,7 @@ const StakingPage = () => {
         functionName: 'getStakingLevel',
         args: [address]
       });
-      console.log("level=",level)
+      console.log("level=", level)
       let levelInfo = {
         level: info[0],
         currentAmount: info[1],
@@ -102,6 +103,7 @@ const StakingPage = () => {
   };
 
   useEffect(() => {
+    setClickType(-1)
     fetchStakingInfo();
     const interval = setInterval(fetchStakingInfo, 15000);
     return () => clearInterval(interval);
@@ -117,6 +119,7 @@ const StakingPage = () => {
   // 授权
   const handleApprove = async () => {
     if (!address) return;
+    setClickType(1)
     setLoading(true);
     try {
       const maxUint256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
@@ -140,6 +143,7 @@ const StakingPage = () => {
   // 质押
   const handleStake = async () => {
     if (!address || !stakeAmount) return;
+    setClickType(2)
     setLoading(true);
     try {
       const amount = BigInt(new BigNumber(stakeAmount).multipliedBy(1e18).toString());
@@ -164,10 +168,11 @@ const StakingPage = () => {
   // 解除质押
   const handleUnstake = async () => {
     if (!address || !unstakeAmount) return;
+    setClickType(3)
     setLoading(true);
     try {
       const amount = BigInt(new BigNumber(unstakeAmount).multipliedBy(1e18).toString());
-      console.log("amount",amount)
+      console.log("amount", amount)
       const hash = await writeContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
         abi: TokrioStaking,
@@ -189,6 +194,7 @@ const StakingPage = () => {
   // 领取奖励
   const handleClaim = async () => {
     if (!address) return;
+    setClickType(4)
     setLoading(true);
     try {
       const hash = await writeContract(chainConfig, {
@@ -286,7 +292,7 @@ const StakingPage = () => {
                       disabled={loading}
                       className="px-4 py-2 cta-button disabled:opacity-50"
                     >
-                      {loading ? 'Approving...' : 'Approve'}
+                      {loading && clickType == 1 ? 'Approving...' : 'Approve'}
                     </button>
                   ) : (
                     <button
@@ -294,7 +300,7 @@ const StakingPage = () => {
                       disabled={loading || !stakeAmount}
                       className="px-4 py-2 cta-button disabled:opacity-50"
                     >
-                      {loading ? 'Staking...' : 'Stake'}
+                      {loading && clickType == 2 ? 'Staking...' : 'Stake'}
                     </button>
                   )}
                 </div>
@@ -318,7 +324,7 @@ const StakingPage = () => {
                     disabled={loading || !unstakeAmount}
                     className="px-4 py-2 cta-button disabled:opacity-50"
                   >
-                    {loading ? 'Unstaking...' : 'Unstake'}
+                    {loading && clickType == 3 ? 'Unstaking...' : 'Unstake'}
                   </button>
                 </div>
               </div>
@@ -329,7 +335,7 @@ const StakingPage = () => {
                 // disabled={loading || !stakingInfo?.pendingReward || stakingInfo.pendingReward === BigInt(0)}
                 className="w-full px-4 py-2 cta-button disabled:opacity-50"
               >
-                {loading ? 'Claiming...' : 'Claim Rewards'}
+                {loading && clickType == 4 ? 'Claiming...' : 'Claim Rewards'}
               </button>
             </div>
           </motion.div>

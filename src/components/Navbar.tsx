@@ -24,7 +24,7 @@ const Navbar = ({ showMenu = true }: Props) => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-sm">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 border border-b border-[#222]">
+      <div className="mx-auto px-4 md:px-6 border border-b border-[#222]">
         <div className="flex items-center justify-between h-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -33,7 +33,7 @@ const Navbar = ({ showMenu = true }: Props) => {
             onClick={() => navigate('/')}
           >
             <Logo size={32} />
-            <span className="text-xl tracking-widest uppercase main-font  font-medium text-primary">Tokrio</span>
+            <span className="text-xl tracking-widest hidden md:block uppercase main-font  font-medium text-primary">Tokrio</span>
           </motion.div>
 
           <motion.div
@@ -52,13 +52,13 @@ const Navbar = ({ showMenu = true }: Props) => {
             ))} */}
             <Link
               to="/staking"
-              className="text-white text-base  uppercase hidden md:block hover:text-primary transition-colors duration-200"
+              className="text-white text-base  uppercase hover:text-primary transition-colors duration-200"
             >
               Staking
             </Link>
             <Link
               to="/market"
-              className="text-gray-300 text-base uppercase hidden md:block hover:text-primary transition-colors duration-200"
+              className="text-gray-300 text-base uppercase hover:text-primary transition-colors duration-200"
             >
               Market
             </Link>
