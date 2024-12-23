@@ -61,6 +61,11 @@ const HeroSection = () => {
     }
   };
 
+  const handleBuyToken = () => {
+    // 跳转到指定的 DEX 链接
+    window.open('https://pancakeswap.finance/swap?outputCurrency=0x3380eb9fE9242b4955ACFa019D495cDD64DfA764', '_blank');
+  };
+
   return (
     <div className="max-w-6xl mx-auto relative overflow-hidden">
       {/* <MatrixRain /> */}
@@ -85,6 +90,22 @@ const HeroSection = () => {
           <div className="hero-subtext max-w-xl ">
             Experience the next evolution in cryptocurrency trading with our AI-driven algorithms that analyze trends, predict movements, and execute trades with precision.
           </div>
+
+          {/* 添加价格显示 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-8 mt-4"
+          >
+            <div className="text-2xl font-bold text-primary">
+              TOKR Price: $0.5 USDT
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              Market Cap: $500,000 USDT
+            </div>
+          </motion.div>
+
           <div className="flex space-x-4">
             <motion.button
               onClick={handleLogin}
@@ -95,14 +116,12 @@ const HeroSection = () => {
               Start Trading
             </motion.button>
             <motion.button
+              onClick={handleBuyToken}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="common-button main-font transition-colors flex items-center duration-300"
             >
-
-            
-              <svg xmlns="http://www.w3.org/2000/svg" fill='rgb(255, 255, 255)' className='w-4 h-4 mr-2' focusable="false" viewBox="0 0 24 24" ><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM9.5 16.5v-9l7 4.5-7 4.5z"></path></svg>
-              Watch Demo
+              Buy TOKR
             </motion.button>
           </div>
 
