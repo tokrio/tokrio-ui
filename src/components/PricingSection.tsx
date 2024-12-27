@@ -9,7 +9,6 @@ import BigNumber from 'bignumber.js';
 import { EMPTY_ADDRESS, NATIVE_ADDRESS } from '../config/constant';
 import { fetchBalanceObj, getReadData } from '../contract/api';
 import { config } from '../config/env';
-import { TokrioEconomy } from '../abi/Abi';
 
 interface PricingTier {
   name: string;
@@ -165,7 +164,7 @@ const PricingSection = () => {
 
       const hash = await writeContract(chainConfig, {
         address: config.ECONOMY as `0x${string}`,
-        abi: TokrioEconomy,
+        abi: "" as any,
         functionName: 'subscribe',
         args: args
       })
@@ -218,7 +217,7 @@ const PricingSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className="text-gray-400">
             Choose the plan that best fits your trading needs
           </p>
         </div>

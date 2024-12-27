@@ -1,61 +1,108 @@
+@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* :root{
+  --color1: #FFA41C;
+  --color2: #0d6770;
+  --color3: #f5d94a;
+  --color4: #e9608e;
+  --color5: #f33629;
+} */
+
+:root {
+  --color1: #fff;
+  --color2: #FFA41C;
+  --color3: #f5f5f5;
+  --color4: #FFA41C;
+  --color5: #999;
+}
+
 @layer utilities {
+
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    display: none;
   }
- /* Hide scrollbar for IE, Edge and Firefox */
+
+  /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
-}
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .main-font {
+    font-family: 'Tomorrow', 'Darker Grotesque', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    @apply uppercase;
+  }
+
+  .main-font-none {
+    font-family: 'Tomorrow', 'Darker Grotesque', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
+
+  .inter-font {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }
 }
 
 @layer components {
   .hero-text {
-    font-family: 'Tomorrow', 'Darker Grotesque','Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    @apply text-3xl md:text-4xl uppercase  font-semibold text-white mb-2 leading-tight;
+    font-family: 'Tomorrow', 'Darker Grotesque', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    @apply text-3xl md:text-4xl uppercase font-semibold text-white mb-2 leading-tight;
   }
 
   .hero-sub-text {
-    font-family: 'Tomorrow', 'Darker Grotesque','Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    @apply text-xl md:text-2xl uppercase  font-semibold text-white mb-2 leading-tight;
+    font-family: 'Tomorrow', 'Darker Grotesque', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    @apply text-base md:text-lg uppercase font-semibold text-white mb-2 leading-tight;
   }
-  
+
   .hero-subtext {
-    @apply text-lg md:text-2xl font-medium text-center mb-8 text-[#ffffff99];
+    @apply text-base md:text-lg font-medium text-center mb-8 text-[#ffffff99];
   }
-  
+
   .cta-button {
-    font-family: 'Tomorrow', 'Darker Grotesque','Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    @apply px-6 uppercase text-center py-2 bg-[#412700] border-2 border-[#FFA41C] hover:bg-[#000]  text-sm text-white font-medium rounded-lg 
-    transform transition-all duration-300 hover:scale-105 hover:shadow-lg;
+    @apply inter-font md:main-font px-4 md:px-6 uppercase text-center py-2 bg-[#412700] border border-[#FFA41C] hover:bg-[#000] text-xs md:text-sm text-white font-medium rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg;
   }
 
   .common-button {
-    font-family: 'Tomorrow', 'Darker Grotesque','Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    @apply px-6 uppercase text-center py-2 bg-[#1D1D1D] border-2 border-[#1D1D1D] hover:bg-[#000] text-sm text-white font-medium rounded-lg 
-    transform transition-all duration-300 hover:scale-105 hover:shadow-lg;
+    @apply inter-font md:main-font px-4 md:px-6 uppercase text-center py-2 bg-[#1D1D1D] border border-[#1D1D1D] hover:bg-[#000] text-xs md:text-sm text-white font-medium rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg;
   }
 }
 
 /* 添加一些全局样式 */
 body {
-  font-family:'Darker Grotesque','Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  @apply bg-[#020202] text-[#999] text-lg font-bold;
+  font-family: 'Inter', 'Darker Grotesque', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  @apply bg-[#020202] text-[#999] text-sm font-medium;
 }
 
-.main-font {
-  font-family: 'Tomorrow', 'Darker Grotesque','Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  @apply uppercase;
+.custom-progress {
+  background-color:#FFA41C;
+}
+/* styles.css */
+.custom-progress::-webkit-progress-value { /* WebKit, Blink, Edge */
+  background-color: #FFA41C;
+}
+ 
+.custom-progress::-moz-progress-bar { /* Mozilla Firefox */
+  background-color: #FFA41C;
+}
+ 
+.custom-progress::-ms-fill { /* Internet Explorer */
+  background-color: #FFA41C;
+}
+
+
+.luck-font {
+  font-family: 'Luckiest Guy', 'Tomorrow', 'Darker Grotesque', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* 滚动条样式 */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 2px;
+  height: 2px;
 }
 
 ::-webkit-scrollbar-track {
@@ -63,20 +110,71 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary/50 rounded-full;
-} 
+  @apply bg-black/50 rounded-full;
+}
 
 .gradient-color {
-  @apply bg-gradient-to-r font-bold from-[#1D1D1D]  to-[#FFA41C]  bg-clip-text tracking-tight text-transparent
+  @apply bg-gradient-to-r font-bold from-[#1D1D1D] to-[#FFA41C] bg-clip-text tracking-tight text-transparent
 }
 
 .bg-card-dark {
-  @apply bg-[#121212] border border-[#333] hover:border-[#FFA41C]
+  @apply bg-[#121212] p-6 border border-[#222]
 }
 
 .bg-card {
-  @apply bg-[#121212] border border-[#333] 
+  @apply bg-[#121212] border border-[#333]
 }
+
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0turn;
+  inherits: false;
+}
+
+.bg-card-dark:hover {
+  animation: 2s gradient-angle infinite linear;
+  border: 2px solid transparent;
+  background-image: linear-gradient(#000, #000),
+    conic-gradient(
+      from var(--gradient-angle),
+      #fff 0%,
+      #c7a03c 37%,
+      #f9de90 30%,
+      #c7a03c 33%,
+      #fff 40%,
+      #584827 50%,
+      #c7a03c 77%,
+      #fff 80%,
+      #c7a03c 83%,
+      #584827 90%
+    );
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+}
+
+@keyframes gradient-angle {
+  to {
+    --gradient-angle: 1turn;
+  }
+}
+
+/* .bg-card-dark::before {
+  margin-left: auto;
+}
+
+.bg-card-dark::after, .bg-card-dark::before {
+  content: '';
+  width: 0%;
+  padding:2px;
+  height: 0.5px;
+  background: #fff;
+  display: block;
+  transition: 0.5s;
+}
+
+.bg-card-dark:hover::after, .bg-card-dark:hover::before {
+  width: 100%;
+} */
 
 /* .bg-card-dark:before {
   content: "";
@@ -88,3 +186,49 @@ body {
   bottom: 0;
   opacity: .2
 } */
+
+
+.move-text {
+  color: #fff;
+  text-transform: uppercase;
+  text-align: center;
+  font-family: "Luckiest Guy", cursive;
+  line-height: 100%;
+  word-spacing: 10px;
+  background: linear-gradient(225deg,
+      var(--color1) 0%, var(--color1) 9%,
+      transparent 9%, transparent 10%,
+      var(--color2) 10%, var(--color2) 19%,
+      transparent 19%, transparent 20%,
+      var(--color3) 20%, var(--color3) 29%,
+      transparent 29%, transparent 30%,
+      var(--color4) 30%, var(--color4) 39%,
+      transparent 39%, transparent 40%,
+      var(--color5) 40%, var(--color5) 49%,
+      transparent 49%, transparent 50%,
+      var(--color1) 50%, var(--color1) 59%,
+      transparent 59%, transparent 60%,
+      var(--color2) 60%, var(--color2) 69%,
+      transparent 69%, transparent 70%,
+      var(--color3) 70%, var(--color3) 79%,
+      transparent 79%, transparent 80%,
+      var(--color4) 80%, var(--color4) 89%,
+      transparent 89%, transparent 90%,
+      var(--color5) 90%, var(--color5) 99%,
+      transparent 99%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-size: 200% 200%;
+  color: transparent;
+  animation: move 4s linear infinite;
+}
+
+@keyframes move {
+  0% {
+    background-position: 0px 100%;
+  }
+
+  100% {
+    background-position: 100% 0px;
+  }
+}

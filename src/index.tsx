@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/main.css';
+import './styles/button.css';
 import App from './App';
 import WalletConfig from './WalletConfig';
 

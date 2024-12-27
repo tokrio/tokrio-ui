@@ -30,7 +30,7 @@ const TokenUtilitySection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="hero-text mb-4">TOKR Utility</h2>
-          <p className="text-xl text-gray-400">
+          <p className=" text-gray-400">
             Multiple ways to benefit from holding TOKR tokens
           </p>
         </div>
@@ -42,7 +42,7 @@ const TokenUtilitySection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card-dark rounded-lg p-6 text-center"
+              className="bg-card-dark"
             >
               <div className="text-4xl mb-4">{utility.icon}</div>
               <h3 className="text-xl font-bold text-white mb-2">{utility.title}</h3>

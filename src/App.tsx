@@ -17,11 +17,15 @@ import TokenUtilitySection from './components/TokenUtilitySection';
 import Tokenomics from './components/Tokenomics';
 import Footer from './components/Footer';
 import StatsPanel from './components/StatsPanel';
+import IncreaseEquity from './components/IncreaseEquity';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 
 function App() {
+
+  const [isOpen, setIsOpen] = React.useState(true);
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -59,7 +63,7 @@ function App() {
     {
       path: "/dashboard",
       element: (
-        <Suspense fallback={<div className='red text-8xl'>Loading</div>}>
+        <Suspense fallback={<div className='red text-8xl'></div>}>
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
@@ -78,6 +82,7 @@ function App() {
     </div>
     <div className='absolute max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
       <RouterProvider router={router} />
+      
     </div>
   </div>
 }

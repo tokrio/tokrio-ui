@@ -30,7 +30,7 @@ function uint8ToHex(uint8arr: Uint8Array) {
 
 
 
-export default function formatStringNumber(value: string, left?: number, right?: number) {
+export default function formatStringNumber(value: any, left = 6, right = -4) {
   if (!value) {
     return "";
   }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import AnimationButton from './AnimationButton';
 
 const Guidelines = () => {
   const steps = [
@@ -41,7 +42,7 @@ const Guidelines = () => {
           <h2 className="hero-text mb-4">
             Guidelines
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className=" text-gray-400">
             Follow these steps to start your AI trading journey
           </p>
         </div>
@@ -55,36 +56,36 @@ const Guidelines = () => {
               transition={{ delay: index * 0.1 }}
               className="relative"
             >
-              <div className="bg-card-dark rounded-lg p-6 h-full flex flex-col">
+              <div className="bg-card-dark h-full flex flex-col">
                 <div className="text-2xl w-6 h-6 bg-[#FFA41C] main-font font-extrabold text-[#fff] mb-4">
                   {step.number}
                 </div>
-                <h3 className="text-lg uppercase main-font font-bold text-white mb-2">
+                <h3 className="text-base uppercase main-font font-bold text-white mb-2">
                   {step.title}
                 </h3>
                 <p className="text-gray-400 mb-4 flex-grow">
                   {step.description}
                 </p>
-                {step.link.startsWith('http') ? (
-                  <a
-                    href={step.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm cta-button text-center"
-                  >
-                    {step.buttonText}
-                  </a>
-                ) : (
-                  <Link
-                    to={step.link}
-                    className="text-sm cta-button text-center"
-                  >
-                    {step.buttonText}
-                  </Link>
-                )}
+                <div className='flex justify-center'>
+                  {step.link.startsWith('http') ? (
+                    <a
+                      href={step.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <AnimationButton>{step.buttonText}</AnimationButton>
+                    </a>
+                  ) : (
+                    <Link
+                      to={step.link}
+                    >
+                      <AnimationButton>{step.buttonText}</AnimationButton>
+                    </Link>
+                  )}
+                </div>
               </div>
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-1/2 -right-2 transform -translate-y-1/2">
+                <div className="hidden lg:block absolute top-1/2 -right-7 transform -translate-y-1/2">
                   <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

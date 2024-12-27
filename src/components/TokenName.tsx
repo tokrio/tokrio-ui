@@ -27,6 +27,7 @@ export default function TokenName({ address }: Props) {
 
         if (localStorage.getItem(address)) {
             setName(localStorage.getItem(address) || "")
+            return
         }
 
         let { data, code }: IResponse = await getReadData("symbol", erc20Abi, address, [])

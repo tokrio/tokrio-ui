@@ -6,9 +6,12 @@ import { useAccount } from 'wagmi';
 import { readContract, writeContract, waitForTransactionReceipt } from "@wagmi/core";
 import { chainConfig } from '../WalletConfig';
 import { config } from '../config/env';
-import { TokrioSponsor } from '../abi/Abi';
+import { TokrioLevelAbi } from '../abi/Abi';
 import TokenDecimals from '../components/TokenDecimals';
 import toast from 'react-hot-toast';
+import { erc20Abi } from 'viem';
+import { fetchBalanceObj } from '../contract/api';
+import TokenName from '../components/TokenName';
 
 interface Sponsor {
   creator: string;
@@ -17,13 +20,13 @@ interface Sponsor {
   duration: bigint;
   tokenAmount: bigint;
   usdtAmount: bigint;
-  active: boolean;
+  status: bigint;
   sponsor: string;
   user: string;
   startTime: string;
   endTime: bigint;
   earnings: bigint;
-  id: string
+  offerId: string
 }
 
 interface FilterOptions {
@@ -35,6 +38,8 @@ interface FilterOptions {
 }
 
 const MarketPage = () => {
+
+  const { address } = useAccount();
   const [loading, setLoading] = useState(false);
   const [buyOfferLoading, setBuyOfferLoading] = useState(false);
   const [offerId, setOfferId] = useState("");
@@ -57,58 +62,67 @@ const MarketPage = () => {
 
     const sponsorList: any = await readContract(chainConfig, {
       address: config.SPONSOR as `0x${string}`,
-      abi: TokrioSponsor,
-      functionName: 'getActiveOffers',
-      args: [0, 100000]
+      abi: TokrioLevelAbi,
+      functionName: 'getOffers', // 调用的函数名称
+      args: [0, 100000, 0]
     });
 
     let list = sponsorList[0]
-    let sponsorDetailList = []
-    let item: Sponsor
 
-    for (let index = 0; index < list.length; index++) {
-      const offerId = list[index];
-      const sponsorDetail: any = await readContract(chainConfig, {
-        address: config.SPONSOR as `0x${string}`,
-        abi: TokrioSponsor,
-        functionName: 'getOffer',
-        args: [offerId]
-      });
-      console.log("sponsorDetail=", sponsorDetail)
-      item = {
-        creator: sponsorDetail.creator,
-        offerType: sponsorDetail.offerType,
-        targetLevel: sponsorDetail.targetLevel,
-        duration: sponsorDetail.duration,
-        tokenAmount: sponsorDetail.tokenAmount,
-        usdtAmount: sponsorDetail.usdtAmount,
-        active: sponsorDetail.active,
-        sponsor: sponsorDetail.sponsor,
-        user: sponsorDetail.user,
-        startTime: sponsorDetail.startTime,
-        endTime: sponsorDetail.startTime ? BigInt(new BigNumber(sponsorDetail.startTime).plus(sponsorDetail.duration).toFixed()) : 0n,
-        earnings: 0n,
-        id: offerId + "",
-      }
-      sponsorDetailList.push(item)
-
-    }
-
-    setSponsors([...sponsorDetailList])
-
-
-    console.log("sponsorList=", sponsorDetailList)
+    console.log("list=",list)
+    
+    
+    setSponsors([...list])
 
 
   }
 
-  const buySponsor = async (offerId: string) => {
+  const buySponsor = async (offerId: string,usdtAmount: string) => {
     setBuyOfferLoading(true)
     try {
+
+      const balanceObj = await fetchBalanceObj(address, config.USDT_TOKEN)
+      if (new BigNumber(balanceObj.value).isLessThan(usdtAmount)) {
+        toast.error('Insufficient token balance!');
+        setBuyOfferLoading(false);
+        return
+      }
+      const allowance: any = await readContract(chainConfig, {
+        address: config.USDT_TOKEN as '0x',
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [address as `0x${string}`, config.SPONSOR as `0x${string}`],
+      })
+      console.log("allowance=",allowance)
+
+      if (new BigNumber(allowance.toString()).isLessThan(usdtAmount)) {
+
+        const hash = await writeContract(chainConfig, {
+          address: config.USDT_TOKEN as '0x',
+          abi: erc20Abi,
+          functionName: 'approve',
+          args: [config.SPONSOR as `0x${string}`, BigInt(usdtAmount)],
+          account: address
+        })
+        const approveData: any = await waitForTransactionReceipt(chainConfig, {
+          hash: hash
+        })
+
+        if (approveData.status && approveData.status.toString() == "success") {
+
+        } else {
+          toast.error('Your wallet failed allowed assets deduction!');
+          setBuyOfferLoading(false);
+          return
+
+        }
+
+      }
+
       const hash = await writeContract(chainConfig, {
         address: config.SPONSOR as `0x${string}`,
-        abi: TokrioSponsor,
-        functionName: 'cancelOffer',
+        abi: TokrioLevelAbi,
+        functionName: 'acceptSponsorOffer',
         args: [offerId]
       });
       const approveData: any = await waitForTransactionReceipt(chainConfig, {
@@ -124,7 +138,8 @@ const MarketPage = () => {
       }
 
     } catch (error) {
-      toast.error('Failed to create sponsor');
+      console.error('Error creating sponsor:', error);
+      toast.error('Failed to buy sponsor');
     } finally {
       setBuyOfferLoading(false);
     }
@@ -191,7 +206,7 @@ const MarketPage = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-2">
-                Amount Range (TOKR)
+                Amount Range (<TokenName address={config.LEVEL_TOKEN} />)
               </label>
               <div className="flex space-x-2">
                 <input
@@ -239,7 +254,7 @@ const MarketPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredSponsors.map((sponsor: Sponsor, index: number) => (
             <motion.div
-              key={sponsor.id}
+              key={sponsor.offerId.toString()}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -250,23 +265,21 @@ const MarketPage = () => {
                   <div className="text-xl font-bold text-white mb-1">
                     Level {sponsor.targetLevel.toString()}
                   </div>
-                  <div className="text-sm text-gray-400">
-                    {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} TOKR
+                  <div className="text-sm text-[#FFA41C]">
+                    {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} <TokenName address={config.LEVEL_TOKEN} />
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm text-gray-400">
                     {new BigNumber(sponsor.duration.toString()).dividedBy(24 * 3600).toFixed()} Days
                   </div>
-                  <div className="text-xs text-green-400 mt-1">
-                    Est. ROI: 15-40%
-                  </div>
+                 
                 </div>
               </div>
 
               <div className="mb-4">
                 <div className="text-sm text-gray-400">Price</div>
-                <div className="text-white truncate">
+                <div className=" text-green-400 truncate">
 
                   {/* <CountUpAnimation end={1000000} prefix="$" /> */}
                   <TokenDecimals token={config.USDT_TOKEN} amount={sponsor.usdtAmount.toString()} /> USDT
@@ -283,13 +296,13 @@ const MarketPage = () => {
 
               <button
                 onClick={() => {
-                  setOfferId(sponsor.id)
-                  buySponsor(sponsor.id)
+                  setOfferId(sponsor.offerId.toString())
+                  buySponsor(sponsor.offerId.toString(),sponsor.usdtAmount.toString())
                 }}
                 disabled={buyOfferLoading}
                 className="w-full px-4 py-2 cta-button disabled:opacity-50"
               >
-                {buyOfferLoading && offerId == sponsor.id ? 'Processing...' : 'Buy Sponsor'}
+                {buyOfferLoading && offerId == sponsor.offerId.toString() ? 'Processing...' : 'Buy Sponsor'}
               </button>
             </motion.div>
           ))}

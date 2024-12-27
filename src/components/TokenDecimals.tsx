@@ -14,11 +14,11 @@ interface ITokenDecimals {
     fixed?: number,
 }
 
-export default function TokenDecimals({ token, tokenType, setDecimals, amount, fixed = 2 }: ITokenDecimals) {
+export default function TokenDecimals({ token, tokenType = 20, setDecimals, amount, fixed = 2 }: ITokenDecimals) {
 
     const [decimal, setDecimal] = useState<number>(18);
 
-    useCallback(() => {
+    useEffect(() => {
         getDecimal(token)
     }, [token, amount]);
 

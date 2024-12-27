@@ -7,6 +7,7 @@ import { useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { signMessage } from "@wagmi/core";
 import { chainConfig } from '../WalletConfig';
+import AnimationButton from './AnimationButton';
 
 const HeroSection = () => {
 
@@ -16,49 +17,7 @@ const HeroSection = () => {
 
   const handleLogin = async () => {
 
-    if (!address) {
-      if (openConnectModal) {
-        openConnectModal()
-      }
-      return
-    }
-
-    if (tokenStorage.getToken()) {
-      navigate('/dashboard');
-      return
-
-    }
-
-    let now = new Date().getTime()
-
-    let message = `Welcome to Tokrio!\n\nClick to sign in and experience the AI-powered crypto trading ecosystem based on TAST (Trend Analysis & SuperTrend Technology).\n\nThis action will not initiate a blockchain transaction or incur any gas fees.\n\nWallet address:\n${(address as `0x${string}`).toLowerCase()}\n\nNonce:\n${now}`
-
-
-    const sign = await signMessage(chainConfig, {
-      message: message
-    })
-
-
-
-    try {
-      // 使用指定的参数值登录
-      const response = await api.login({
-        walletAddress: address,
-        timestamp: now,
-        signature: sign
-      });
-
-      if (response.code === 200) {
-        // 保存 token
-        tokenStorage.setToken(response.body);
-        // 跳转到 dashboard
-        navigate('/dashboard');
-      } else {
-        console.error('Login failed:', response.message);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-    }
+    navigate('/dashboard');
   };
 
   const handleBuyToken = () => {
@@ -70,23 +29,23 @@ const HeroSection = () => {
     <div className="max-w-6xl mx-auto relative overflow-hidden">
       {/* <MatrixRain /> */}
 
-      <div className="relative z-10 container my-44 md:my-52 mx-auto px-4">
+      <div className="relative z-10 container my-36 md:my-40 mx-auto px-4">
         <div className=" text-center flex flex-col justify-center items-center">
 
           <h1 className="hero-text">
-            <span className="text-primary uppercase text-4xl font-normal">T o k r i o</span>
+            <span className="text-primary uppercase text-4xl btn-shine">T o k r i o</span>
 
           </h1>
-          <div className="hero-text max-w-2xl font-medium uppercase text-3xl md:text-4xl mt-4">Where AI Meets Trading Excellence</div>
-          <motion.div
+          <div className="hero-text max-w-2xl font-medium uppercase text-3xl md:text-4xl mt-4 move-text">Where AI Meets<br /> Trading Excellence<br />Welcome to the future of trading</div>
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="mb-4 text-black mt-2 text-sm font-semibold main-font uppercase px-3 py-1 bg-white "
           >
             <div className='gradient-color1'>Welcome to the future of trading</div>
-            
-          </motion.div>
+
+          </motion.div> */}
           <div className="hero-subtext max-w-xl ">
             Experience the next evolution in cryptocurrency trading with our AI-driven algorithms that analyze trends, predict movements, and execute trades with precision.
           </div>
@@ -98,7 +57,7 @@ const HeroSection = () => {
             transition={{ delay: 0.4 }}
             className="mb-8 mt-4"
           >
-            <div className="text-2xl font-bold text-primary">
+            <div className="text-2xl font-bold text-primary main-font">
               TOKR Price: $0.5 USDT
             </div>
             <div className="text-sm text-gray-400 mt-1">
@@ -106,24 +65,19 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          <div className="flex space-x-4">
-            <motion.button
-              onClick={handleLogin}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="cta-button main-font"
-            >
-              Start Trading
-            </motion.button>
-            <motion.button
-              onClick={handleBuyToken}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="common-button main-font transition-colors flex items-center duration-300"
-            >
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+            <AnimationButton onClick={() => { 
+              handleLogin() }}>
+              Trading NOW
+            </AnimationButton>
+            <AnimationButton onClick={handleBuyToken}>
               Buy TOKR
-            </motion.button>
+            </AnimationButton>
           </div>
+
 
           <div className="hidden md:block relative h-full">
             {/* Matrix rain will show through this space */}

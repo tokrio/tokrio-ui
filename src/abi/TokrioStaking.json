@@ -7,6 +7,27 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "oldAccReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStaked",
+        "type": "uint256"
+      }
+    ],
+    "name": "AccRewardUpdateError",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "target",
         "type": "address"
@@ -37,8 +58,77 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "requested",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "available",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "required",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "current",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientRewardPool",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "required",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "available",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientRewardTokenBalance",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastUpdateTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "InvalidTimestamp",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoStakedTokens",
     "type": "error"
   },
   {
@@ -69,8 +159,82 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalPeriods",
+        "type": "uint256"
+      }
+    ],
+    "name": "PeriodInitializationError",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "timePassed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "releaseRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStaked",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardCalculationError",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastUpdate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "releaseRate",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardCalculationFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "StakingDisabled",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "TransferFailed",
     "type": "error"
   },
   {
@@ -112,6 +276,37 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newRewardDebt",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClaimSuccess",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "bool",
         "name": "enabled",
@@ -119,6 +314,31 @@
       }
     ],
     "name": "ClaimingStatusChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "accRewardPerShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lastUpdateTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "currentPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "GlobalRewardsUpdated",
     "type": "event"
   },
   {
@@ -176,6 +396,86 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldAccRewardPerShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAccRewardPerShare",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timePassed",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalStaked",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardCalculation",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "currentTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lastUpdateTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timePassed",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "releaseRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "calculatedReward",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAccRewardPerShare",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardCalculationDetails",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "user",
@@ -202,6 +502,69 @@
       }
     ],
     "name": "RewardDistributionStatusChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalPool",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardPoolFunded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardPoolRequired",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalBalance",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "availableRewards",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "releaseRate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "estimatedDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardPoolUpdated",
     "type": "event"
   },
   {
@@ -289,6 +652,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "StakingStatusChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "user",
@@ -298,6 +674,55 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newTotalStaked",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newUserStaked",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakingSuccess",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "burningAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "feeAmount",
         "type": "uint256"
       }
     ],
@@ -316,19 +741,6 @@
     ],
     "name": "Upgraded",
     "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "BASE_LEVEL_REQUIREMENT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -357,14 +769,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "calculateLevel",
+    "inputs": [],
+    "name": "burningRate",
     "outputs": [
       {
         "internalType": "uint256",
@@ -372,7 +778,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -409,6 +815,114 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "diagnoseStakingState",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isEnabled",
+        "type": "bool"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "contractBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userAllowance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStaked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userStaked",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TokrioStakingV3.StakingBalances",
+        "name": "balances",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "lastUpdateTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "currentTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "releaseRate",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TokrioStakingV3.StakingTiming",
+        "name": "timing",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "pendingReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accRewardPerShare",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TokrioStakingV3.StakingRewards",
+        "name": "rewards",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "fundRewardPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getCurrentAPY",
     "outputs": [
@@ -424,25 +938,6 @@
   {
     "inputs": [],
     "name": "getCurrentReleaseRate",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getEffectiveLevel",
     "outputs": [
       {
         "internalType": "uint256",
@@ -487,34 +982,78 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getStakingInfo",
+    "inputs": [],
+    "name": "getPoolStatus",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "stakedAmount",
+        "name": "requiredPool",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "stakingStartTime",
+        "name": "currentPool",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "pendingReward",
+        "name": "totalStaked",
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
+        "internalType": "bool",
+        "name": "isStakingEnabled",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRewardPoolInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStaked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableRewards",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "requiredAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "releaseRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "estimatedDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isPoolSufficient",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct TokrioStakingV3.RewardPoolInfo",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -528,22 +1067,54 @@
         "type": "address"
       }
     ],
-    "name": "getStakingLevel",
+    "name": "getRewardStatus",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "nextLevelRequirement",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isDistributionPaused",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStaked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userStaked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastUpdateTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accRewardPerShare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "currentReleaseRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "pending",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TokrioStakingV3.RewardStatusInfo",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -616,6 +1187,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_xToken",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_initialReleaseAmount",
         "type": "uint256"
@@ -628,6 +1204,16 @@
       {
         "internalType": "uint256",
         "name": "_totalPeriods",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_burningRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_unstakeFee",
         "type": "uint256"
       }
     ],
@@ -732,6 +1318,19 @@
   },
   {
     "inputs": [],
+    "name": "requiredRewardPool",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "rewardDistributionPaused",
     "outputs": [
       {
@@ -748,7 +1347,7 @@
     "name": "rewardToken",
     "outputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "contract ITokrioToken",
         "name": "",
         "type": "address"
       }
@@ -772,6 +1371,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setRequiredRewardPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bool",
         "name": "_paused",
         "type": "bool"
@@ -785,27 +1397,14 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_sponsorContract",
-        "type": "address"
+        "internalType": "bool",
+        "name": "_enabled",
+        "type": "bool"
       }
     ],
-    "name": "setSponsorContract",
+    "name": "setStakingEnabled",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "sponsorContract",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -819,6 +1418,19 @@
     "name": "stake",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingEnabled",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -865,7 +1477,7 @@
     "name": "stakingToken",
     "outputs": [
       {
-        "internalType": "contract IERC20",
+        "internalType": "contract ITokrioToken",
         "name": "",
         "type": "address"
       }
@@ -914,30 +1526,20 @@
   },
   {
     "inputs": [],
-    "name": "updateGlobalRewards",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
+    "name": "unstakeFee",
+    "outputs": [
       {
         "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "duration",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "updateUserSponsoredLevel",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updateGlobalRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -984,6 +1586,19 @@
         "internalType": "uint256",
         "name": "sponsoredLevel",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "xToken",
+    "outputs": [
+      {
+        "internalType": "contract ITokrioToken",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

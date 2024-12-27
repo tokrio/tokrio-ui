@@ -24,7 +24,7 @@ const TokenUsageSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="hero-text mb-4">Start Trading with TOKR</h2>
-          <p className="text-xl text-gray-400">
+          <p className=" text-gray-400">
             Begin your AI trading journey with just {minTokens} TOKR (${(currentPrice * minTokens).toFixed(2)} USDT)
           </p>
         </div>
@@ -33,21 +33,21 @@ const TokenUsageSection = () => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-card-dark rounded-lg p-6"
+            className="bg-card-dark"
           >
             <h3 className="text-xl font-bold text-white mb-4">Level Up Your Trading</h3>
             <p className="text-gray-400 mb-4">
               Double your TOKR holdings to unlock higher levels. Each level brings enhanced trading capabilities and privileges.
             </p>
-            <Link to="/levels" className="text-primary hover:text-primary-dark">
-              View detailed level benefits →
-            </Link>
+            <div className="text-primary flex items-center">
+               View detailed level benefits
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-card-dark rounded-lg p-6"
+            className="bg-card-dark"
           >
             <h3 className="text-xl font-bold text-white mb-4">Trading Benefits</h3>
             <ul className="space-y-2 text-gray-400">

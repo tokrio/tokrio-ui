@@ -82,7 +82,7 @@ const DocumentationSection = () => {
           <h2 className="hero-text mb-4">
             Technical Documentation
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className=" text-gray-400">
             Deep dive into our core technologies and strategy implementation
           </p>
         </div>
@@ -99,7 +99,7 @@ const DocumentationSection = () => {
                 transition={{ delay: index * 0.1 }}
                 className="relative"
               >
-                <div className="bg-card-dark rounded-lg p-6">
+                <div className="bg-card-dark">
                   <h4 className="text-base main-font font-bold text-white mb-2">{algo.title}</h4>
                   <p className="text-gray-400 mb-6">{algo.description}</p>
                   <ul className="space-y-2">
@@ -130,7 +130,7 @@ const DocumentationSection = () => {
                 transition={{ delay: index * 0.1 }}
                 className="relative"
               >
-                <div className="bg-card-dark rounded-lg p-6">
+                <div className="bg-card-dark">
                   <h4 className="text-base main-font font-bold text-white mb-6">{feature.title}</h4>
                   <ul className="space-y-2">
                     {feature.points.map((point, i) => (

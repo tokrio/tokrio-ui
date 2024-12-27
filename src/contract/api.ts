@@ -52,7 +52,7 @@ export const fetchBalanceObj = async (account: any, token: any) => {
             address: account,
             token: token
         })
-        console.log(balanceObj)
+        console.log("balanceObj" ,balanceObj)
         return balanceObj
     }
 

@@ -14,26 +14,29 @@ import { useAccount } from 'wagmi';
 import { readContract, writeContract, waitForTransactionReceipt } from "@wagmi/core";
 import { chainConfig } from '../WalletConfig';
 import { config } from '../config/env';
-import { TokrioSponsor } from '../abi/Abi';
+import { TokrioLevelAbi } from '../abi/Abi';
 import { erc20Abi } from 'viem';
-import { getReadData, IResponse } from '../contract/api';
+import { fetchBalanceObj, getReadData, IResponse } from '../contract/api';
+import TokenName from './TokenName';
+import TokenDecimals from './TokenDecimals';
+import TokenBalance from './TokenBalance';
+import formatStringNumber from '../util/utils';
 
 type TabType = 'trading' | 'apikeys' | 'simulate' | 'sponsor';
 
 interface Sponsor {
   creator: string;
   offerType: number;
-  targetLevel: bigint;
   duration: bigint;
   tokenAmount: bigint;
   usdtAmount: bigint;
-  active: boolean;
+  targetLevel: bigint;
+  status: boolean;
   sponsor: string;
   user: string;
   startTime: string;
   endTime: bigint;
-  earnings: bigint;
-  id: string
+  offerId: bigint
 }
 
 
@@ -74,7 +77,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
           {/* 等级选择 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Sponsor Level
+              Sponsor Level (Balance: <TokenBalance token={config.LEVEL_TOKEN} decimalPlaces={0} /> <TokenName address={config.LEVEL_TOKEN} />)
             </label>
             <select
               value={level}
@@ -83,7 +86,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             >
               {Object.entries(levelTokens).map(([lvl, tokens]) => (
                 <option key={lvl} value={lvl}>
-                  Level {lvl} ({tokens} TOKR)
+                  Level {lvl} ({tokens} <TokenName address={config.LEVEL_TOKEN} />)
                 </option>
               ))}
             </select>
@@ -266,64 +269,56 @@ const Dashboard = () => {
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [createdSponsors, setCreatedSponsors] = useState<any>([]);
+  const [buySponsors, setBuySponsors] = useState<any>([]);
   const [isCreateSponsorModalOpen, setIsCreateSponsorModalOpen] = useState(false);
   const [createSponsorLoading, setCreateSponsorLoading] = useState(false);
   const [cancelOfferLoading, setCancelOfferLoading] = useState(false);
   const [wthdrawLoading, setWithdrawLoading] = useState(false);
   const [offerId, setOfferId] = useState<string>("");
+  const [sponsorTab, setSponsorTab] = React.useState('my-sponsors');
 
   useEffect(() => {
     getSponsors()
-  }, [])
+  }, [sponsorTab])
+
+
+
+  const handleTabChange = (tab: string) => {
+    setSponsorTab(tab);
+  };
 
   const getSponsors = async () => {
 
-    const sponsorList: any = await readContract(chainConfig, {
-      address: config.SPONSOR as `0x${string}`,
-      abi: TokrioSponsor,
-      functionName: 'getActiveOffers',
-      args: [0, 100000]
-    });
-
-    let list = sponsorList[0]
-    let sponsorDetailList = []
-    let item: Sponsor
-
-    for (let index = 0; index < list.length; index++) {
-      const offerId = list[index];
-      const sponsorDetail: any = await readContract(chainConfig, {
+    let sponsorList: any
+    if (sponsorTab === 'my-sponsors') {
+      sponsorList = await readContract(chainConfig, {
         address: config.SPONSOR as `0x${string}`,
-        abi: TokrioSponsor,
-        functionName: 'getOffer',
-        args: [offerId]
+        abi: TokrioLevelAbi,
+        functionName: 'getUserSponsoredOffers',
+        args: [address, 0, 100]
       });
-      console.log("sponsorDetail=", sponsorDetail)
-      item = {
-        creator: sponsorDetail.creator,
-        offerType: sponsorDetail.offerType,
-        targetLevel: sponsorDetail.targetLevel,
-        duration: sponsorDetail.duration,
-        tokenAmount: sponsorDetail.tokenAmount,
-        usdtAmount: sponsorDetail.usdtAmount,
-        active: sponsorDetail.active,
-        sponsor: sponsorDetail.sponsor,
-        user: sponsorDetail.user,
-        startTime: sponsorDetail.startTime,
-        endTime: sponsorDetail.startTime ? BigInt(new BigNumber(sponsorDetail.startTime).plus(sponsorDetail.duration).toFixed()) : 0n,
-        earnings: 0n,
-        id: offerId + "",
-      }
-      sponsorDetailList.push(item)
-
+    } else {
+      sponsorList = await readContract(chainConfig, {
+        address: config.SPONSOR as `0x${string}`,
+        abi: TokrioLevelAbi,
+        functionName: 'getUserPurchasedOffers',
+        args: [address, 0, 100]
+      });
     }
 
-    setCreatedSponsors([...sponsorDetailList])
+    console.log("sponsorList=", sponsorList)
 
+    if (sponsorTab === 'my-sponsors') {
+      setCreatedSponsors([...sponsorList[0]])
+    } else {
+      setBuySponsors([...sponsorList[0]])
+    }
 
-    console.log("sponsorList=", sponsorDetailList)
 
 
   }
+
+
 
 
   // 获取 Portfolio Overview 数据
@@ -559,19 +554,27 @@ const Dashboard = () => {
     setCreateSponsorLoading(true);
     try {
       // 这里添加创建赞助的逻辑
+
+      const balanceObj = await fetchBalanceObj(address, config.LEVEL_TOKEN)
+      if (new BigNumber(balanceObj.formatted).isLessThan(tokenAmount)) {
+        toast.error('Insufficient token balance!');
+        setCreateSponsorLoading(false);
+        return
+      }
+
       const tokenA = BigInt(new BigNumber(tokenAmount).multipliedBy(1e18).toString());
       const allowance: any = await readContract(chainConfig, {
-        address: config.TOKEN as '0x',
+        address: config.LEVEL_TOKEN as '0x',
         abi: erc20Abi,
         functionName: 'allowance',
         args: [address as `0x${string}`, config.SPONSOR as `0x${string}`],
       })
-
+      console.log("allowance=", allowance)
 
       if (new BigNumber(allowance.toString()).isLessThan(tokenA + "")) {
 
         const hash = await writeContract(chainConfig, {
-          address: config.TOKEN as '0x',
+          address: config.LEVEL_TOKEN as '0x',
           abi: erc20Abi,
           functionName: 'approve',
           args: [config.SPONSOR as `0x${string}`, tokenA],
@@ -608,7 +611,7 @@ const Dashboard = () => {
       console.log(args)
       const hash = await writeContract(chainConfig, {
         address: config.SPONSOR as `0x${string}`,
-        abi: TokrioSponsor,
+        abi: TokrioLevelAbi,
         functionName: 'createSponsorOffer',
         args: args
       });
@@ -629,6 +632,7 @@ const Dashboard = () => {
       }
 
     } catch (error) {
+      console.log(JSON.stringify(error))
       toast.error('Failed to create sponsor');
     } finally {
       setCreateSponsorLoading(false);
@@ -642,7 +646,7 @@ const Dashboard = () => {
     try {
       const hash = await writeContract(chainConfig, {
         address: config.SPONSOR as `0x${string}`,
-        abi: TokrioSponsor,
+        abi: TokrioLevelAbi,
         functionName: 'cancelOffer',
         args: [sponsorId]
       });
@@ -698,16 +702,33 @@ const Dashboard = () => {
 
   // 添加提取处理函数
   const handleWithdraw = async (sponsorId: string) => {
-    setLoading(true);
+    setWithdrawLoading(true)
     try {
-      // 这里添加提取代币的逻辑
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 模拟API调用
-      toast.success('Tokens withdrawn successfully');
+      const hash = await writeContract(chainConfig, {
+        address: config.SPONSOR as `0x${string}`,
+        abi: TokrioLevelAbi,
+        functionName: 'withdrawExpiredTokens',
+        args: [sponsorId]
+      });
+      const approveData: any = await waitForTransactionReceipt(chainConfig, {
+        hash: hash
+      })
+
+      if (approveData.status && approveData.status.toString() == "success") {
+        toast.success('Tokens withdrawn successfully');
+        getSponsors()
+        setIsCreateSponsorModalOpen(false);
+      } else {
+        toast.error('Failed to withdraw tokens');
+
+      }
+
     } catch (error) {
       toast.error('Failed to withdraw tokens');
     } finally {
-      setLoading(false);
+      setWithdrawLoading(false);
     }
+
   };
 
   return (
@@ -739,7 +760,7 @@ const Dashboard = () => {
           {/* Tabs */}
           <div className="mb-6">
             <div className="border-b border-gray-700">
-              <nav className="-mb-px flex space-x-8">
+              <nav className="-mb-px flex space-x-8 overflow-x-scroll scrollbar-hide">
                 <button
                   onClick={() => setActiveTab('trading')}
                   className={`${activeTab === 'trading'
@@ -940,34 +961,53 @@ const Dashboard = () => {
               <div className="bg-card  rounded-lg p-6">
                 {/* 统计卡片 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-gray-700 rounded-lg p-4">
+                  <div className="bg-card rounded-lg p-4">
                     <div className="text-sm text-gray-400">Total Sponsors Created</div>
                     <div className="text-2xl font-bold text-white">{createdSponsors.length}</div>
                   </div>
-                  <div className="bg-gray-700 rounded-lg p-4">
+                  <div className="bg-card rounded-lg p-4">
                     <div className="text-sm text-gray-400">Active Sponsors</div>
                     <div className="text-2xl font-bold text-green-400">
                       {createdSponsors.filter((s: { active: any; }) => s.active).length}
                     </div>
                   </div>
-                  <div className="bg-gray-700 rounded-lg p-4">
+                  <div className="bg-card rounded-lg p-4">
                     <div className="text-sm text-gray-400">Total Earnings</div>
                     <div className="text-2xl font-bold text-primary">$1,234.56</div>
                   </div>
                 </div>
 
                 {/* 创建按钮和列表 */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="grid gird-cols-1 md:flex md:justify-between items-center mb-6">
                   <div>
-                    <h3 className="text-lg font-medium text-white">My Sponsors</h3>
+                    <div className="flex space-x-4">
+                      <button
+                        onClick={() => handleTabChange('my-sponsors')}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium ${sponsorTab === 'my-sponsors'
+                          ? 'bg-gray-500 text-white font-bold text-base'
+                          : 'bg-gray-700 text-gray-400'
+                          }`}
+                      >
+                        My Sponsors
+                      </button>
+                      <button
+                        onClick={() => handleTabChange('my-orders')}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium ${sponsorTab === 'my-orders'
+                          ? 'bg-gray-500 text-white font-bold  text-base'
+                          : 'bg-gray-700 text-gray-400'
+                          }`}
+                      >
+                        My Orders
+                      </button>
+                    </div>
                     <p className="text-sm text-gray-400 mt-1">
-                      Manage your created sponsorships
+                      {sponsorTab === 'my-sponsors' ? 'Manage your created sponsorships' : 'View your purchased sponsors'}
                     </p>
                   </div>
-                  <div className="flex space-x-3">
+                  <div className="grid grid-cols-1 gap-3  md:flex md:space-x-3">
                     <button
                       onClick={() => navigate(`/sponsor/share/${address}`)}
-                      className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                      className="common-button mt-4 md:mt-0"
                     >
                       Share All
                     </button>
@@ -981,9 +1021,109 @@ const Dashboard = () => {
                 </div>
 
                 {/* Sponsor 列表 */}
-                <div className="space-y-4">
-                  {createdSponsors && createdSponsors.map((sponsor: any) => (
-                    <div key={sponsor.id} className="bg-gray-700 rounded-lg p-4">
+                {sponsorTab === 'my-sponsors' ? <div className="space-y-4">
+                  {createdSponsors && createdSponsors.map((sponsor: Sponsor) => (
+                    <div key={sponsor.offerId} className="bg-card p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="text-lg main-font text-white">
+                            OfferId {sponsor.offerId.toString()}
+                          </div>
+                          <div className=" text-gray-400">
+
+                            Amount: {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} TOKR
+                            <span className='ml-2'>Duration: {new BigNumber(sponsor.duration.toString()).dividedBy(60 * 60 * 24).toFixed(0)} Days</span>
+                          </div>
+                          <div className="flex justify-between mt-1">
+
+
+                            <span>Creator: {formatStringNumber(sponsor.creator, 8, -8)}</span>
+                          </div>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full main-font  text-sm ${Number(sponsor.status) === 0
+                          ? 'bg-green-500/20 text-green-400':
+                           Number(sponsor.status) == 2 ? 'bg-gray-500/20 text-gray-400'
+                          : Number(sponsor.endTime) > Math.floor(Date.now() / 1000)
+                            ? 'bg-yellow-500/20 text-yellow-400'
+                            : 'bg-gray-500/20 text-gray-400'
+                          }`}>
+                          {Number(sponsor.status) == 0 ? 'Active' :
+                            Number(sponsor.status) == 2 ? 'Canceled'
+                              : Number(sponsor.endTime) < Math.floor(Date.now() / 1000)
+                                ? 'Ended'
+                                : 'Available'}
+                        </div>
+                      </div>
+
+                      {/* 添加收益显示 */}
+                      <div className="mt-4 pt-4 border-t border-gray-600">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <div className="text-sm text-gray-400">Sponsor Amount</div>
+                            <div className="text-lg font-medium text-primary">
+                              <TokenDecimals token={config.USDT_TOKEN} amount={sponsor.usdtAmount.toString()} />
+                              <span className='ml-2'>USDT</span>
+                            </div>
+                          </div>
+                          {Number(sponsor.endTime) !== 0 && <div>
+                            <div className="text-sm text-gray-400">End Time</div>
+                            <div className="text-sm text-gray-300">
+                              {new Date(Number(sponsor.endTime) * 1000).toLocaleDateString()}
+                            </div>
+                          </div>}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex justify-end space-x-3">
+
+                        {/* <button
+                          onClick={() => handleShare(sponsor.id)}
+                          className="common-button"
+                        >
+                          Share
+                        </button> */}
+                        {sponsor && Number(sponsor.status) == 0 && <button
+                          disabled={cancelOfferLoading}
+                          onClick={() => {
+                            setOfferId(sponsor.offerId.toString())
+                            cancelOffer(sponsor.offerId.toString())
+                          }}
+                          className="common-button"
+                        >
+                          {cancelOfferLoading && offerId == sponsor.offerId.toString() ? 'Loading' : 'Cancel'}
+                        </button>}
+                        {Number(sponsor.status) == 1 && Number(sponsor.endTime) < Math.floor(Date.now() / 1000) && (
+                          <button
+                            disabled={!(!wthdrawLoading && offerId == sponsor.offerId.toString())}
+                            onClick={() => handleWithdraw(sponsor.offerId.toString())}
+                            className="px-3 py-1.5 cta-button"
+                          >
+                            Withdraw Tokens
+                          </button>
+                        )}
+                        {/* {!sponsor.status ==  && Number(sponsor.endTime) > Math.floor(Date.now() / 1000) && (
+                          <button
+                            onClick={() => {
+                              setOfferId(sponsor.offerId.toString())
+                              handleDelete(sponsor.offerId.toString())
+                            }}
+                            className="px-3 py-1.5 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
+                          >
+                            Delete
+                          </button>
+                        )} */}
+                      </div>
+                    </div>
+                  ))}
+
+                  {createdSponsors.length === 0 && (
+                    <div className="text-center py-8 text-gray-400">
+                      No sponsors created yet. Click "Create Sponsor" to get started.
+                    </div>
+                  )}
+                </div> : <div className="space-y-4">
+                  {buySponsors && buySponsors.map((sponsor: any) => (
+                    <div key={sponsor.id} className="bg-card p-4">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="text-lg font-medium text-white">
@@ -996,17 +1136,18 @@ const Dashboard = () => {
                             Duration: {new BigNumber(sponsor.duration.toString()).dividedBy(60 * 60 * 24).toFixed(0)} Days
                           </div>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-sm ${sponsor.active
-                          ? 'bg-green-500/20 text-green-400'
-                          : Number(sponsor.endTime) < Math.floor(Date.now() / 1000)
+                        <div className={`px-3 py-1 rounded-full main-font  text-sm ${Number(sponsor.status) === 0
+                          ? 'bg-green-500/20 text-green-400':
+                           Number(sponsor.status) == 2 ? 'bg-gray-500/20 text-gray-400'
+                          : Number(sponsor.endTime) > Math.floor(Date.now() / 1000)
                             ? 'bg-yellow-500/20 text-yellow-400'
                             : 'bg-gray-500/20 text-gray-400'
                           }`}>
-                          {sponsor.active
-                            ? 'Active'
-                            : Number(sponsor.endTime) < Math.floor(Date.now() / 1000)
-                              ? 'Ended'
-                              : 'Available'}
+                          {Number(sponsor.status) == 0 ? 'Active' :
+                            Number(sponsor.status) == 2 ? 'Canceled'
+                              : Number(sponsor.endTime) < Math.floor(Date.now() / 1000)
+                                ? 'Ended'
+                                : 'Available'}
                         </div>
                       </div>
 
@@ -1014,9 +1155,9 @@ const Dashboard = () => {
                       <div className="mt-4 pt-4 border-t border-gray-600">
                         <div className="flex justify-between items-center">
                           <div>
-                            <div className="text-sm text-gray-400">Total Earnings</div>
+                            <div className="text-sm text-gray-400">Sponsor Price (USDT)</div>
                             <div className="text-lg font-medium text-primary">
-                              {new BigNumber(sponsor.earnings.toString()).div(1e18).toFixed(2)} TOKR
+                              <TokenDecimals token={config.USDT_TOKEN} amount={sponsor.usdtAmount.toString()} /> USDT
                             </div>
                           </div>
                           {sponsor.endTime && <div>
@@ -1030,22 +1171,7 @@ const Dashboard = () => {
 
                       <div className="mt-4 flex justify-end space-x-3">
 
-                        <button
-                          onClick={() => handleShare(sponsor.id)}
-                          className="px-3 py-1.5 bg-gray-600 text-gray-300 rounded hover:bg-gray-500"
-                        >
-                          Share
-                        </button>
-                        {sponsor && <button
-                          disabled={cancelOfferLoading}
-                          onClick={() => {
-                            setOfferId(sponsor.id)
-                            cancelOffer(sponsor.id)
-                          }}
-                          className="px-3 py-1.5 bg-gray-600 text-gray-300 rounded hover:bg-gray-500"
-                        >
-                          {cancelOfferLoading && offerId == sponsor.id ? 'Loading' : 'Cancel'}
-                        </button>}
+
                         {!sponsor.active && Number(sponsor.endTime) < Math.floor(Date.now() / 1000) && (
                           <button
                             disabled={!(!wthdrawLoading && offerId == sponsor.id)}
@@ -1055,27 +1181,31 @@ const Dashboard = () => {
                             Withdraw Tokens
                           </button>
                         )}
-                        {!sponsor.active && Number(sponsor.endTime) > Math.floor(Date.now() / 1000) && (
-                          <button
-                            onClick={() => {
-                              setOfferId(sponsor.id)
-                              handleDelete(sponsor.id)
-                            }}
-                            className="px-3 py-1.5 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
-                          >
-                            Delete
-                          </button>
-                        )}
+
                       </div>
                     </div>
                   ))}
 
-                  {createdSponsors.length === 0 && (
-                    <div className="text-center py-8 text-gray-400">
-                      No sponsors created yet. Click "Create Sponsor" to get started.
-                    </div>
-                  )}
-                </div>
+                  {
+                    buySponsors && buySponsors.length === 0 && sponsorTab === 'my-orders' && (
+                      <div className="text-center py-8 text-gray-400">
+                        No sponsors purchased yet.
+                      </div>
+                    )
+                  }
+
+                  {
+                    createdSponsors && createdSponsors.length === 0 && sponsorTab === 'my-sponsors' && (
+                      <div className="text-center py-8 text-gray-400">
+                        No sponsors purchased yet.
+                      </div>
+                    )
+                  }
+
+
+
+
+                </div>}
               </div>
             )}
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAccount } from 'wagmi';
 import { readContract, writeContract, waitForTransactionReceipt } from "@wagmi/core";
@@ -10,12 +10,16 @@ import toast from 'react-hot-toast';
 import BigNumber from 'bignumber.js';
 import Navbar from '../components/Navbar';
 import { type ReadContractReturnType } from '@wagmi/core'
+import TokenBalance from '../components/TokenBalance';
+import { fetchBalanceObj, getReadData } from '../contract/api';
+import TokenName from '../components/TokenName';
+import { PoolData } from '../components/PoolData';
+import { maxUint256 } from '../config/constant';
 
 interface StakingInfo {
   stakedAmount: bigint;
-  stakingStartTime: bigint;
-  pendingReward: bigint;
-  level: bigint;
+  userStaked: bigint;
+  pendingReward: bigint
 }
 
 interface LevelInfo {
@@ -28,67 +32,41 @@ const StakingPage = () => {
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
   const [stakingInfo, setStakingInfo] = useState<StakingInfo | null>(null);
-  const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
-  const [releaseRate, setReleaseRate] = useState<bigint>(BigInt(0));
-  const [totalStaked, setTotalStaked] = useState<bigint>(BigInt(0));
+  const [currentAPY, setCurrentAPY] = useState<string>("0");
   const [stakeAmount, setStakeAmount] = useState('');
   const [unstakeAmount, setUnstakeAmount] = useState('');
   const [allowance, setAllowance] = useState<bigint>(BigInt(0));
+  const [unstakeFee, setUnstakeFee] = useState<string>("1");
   const [clickType, setClickType] = useState<number>(-1);
+
+  const getUnstakeFee = async () => {
+    try {
+      const fee: any = await readContract(chainConfig, {
+        address: config.STAKING as `0x${string}`,
+        abi: TokrioStaking,
+        functionName: 'unstakeFee',
+        args: []
+      });
+      setUnstakeFee(new BigNumber(fee.toString()).dividedBy(100).toString())
+      console.log("fee=", fee)
+    } catch (error) {
+    }
+  };
+
+  useMemo(() => {
+    getUnstakeFee()
+  }, [])
+
+
+
+
+
 
 
   // 获取质押信息
   const fetchStakingInfo = async () => {
     if (!address) return;
     try {
-      const info1: any = await readContract(chainConfig, {
-        address: config.STAKING as `0x${string}`,
-        abi: TokrioStaking,
-        functionName: 'pendingRewards',
-        args: [address]
-      });
-      console.log("info1:", info1)
-      const info: any = await readContract(chainConfig, {
-        address: config.STAKING as `0x${string}`,
-        abi: TokrioStaking,
-        functionName: 'getStakingInfo',
-        args: [address]
-      });
-      let stakeInfo = {
-        stakedAmount: info[0],
-        stakingStartTime: info[1],
-        pendingReward: info[2],
-        level: info[3]
-      }
-      setStakingInfo(stakeInfo as StakingInfo);
-
-      const level = await readContract(chainConfig, {
-        address: config.STAKING as `0x${string}`,
-        abi: TokrioStaking,
-        functionName: 'getStakingLevel',
-        args: [address]
-      });
-      console.log("level=", level)
-      let levelInfo = {
-        level: info[0],
-        currentAmount: info[1],
-        nextLevelRequirement: info[2]
-      }
-      setLevelInfo(levelInfo as LevelInfo);
-
-      const rate = await readContract(chainConfig, {
-        address: config.STAKING as `0x${string}`,
-        abi: TokrioStaking,
-        functionName: 'getCurrentReleaseRate'
-      });
-      setReleaseRate(rate as bigint);
-
-      const total = await readContract(chainConfig, {
-        address: config.STAKING as `0x${string}`,
-        abi: TokrioStaking,
-        functionName: 'getTotalStaked'
-      });
-      setTotalStaked(total as bigint);
 
       const tokenAllowance = await readContract(chainConfig, {
         address: config.TOKEN as `0x${string}`,
@@ -96,7 +74,30 @@ const StakingPage = () => {
         functionName: 'allowance',
         args: [address, config.STAKING as `0x${string}`]
       });
+      console.log("tokenAllowance=", tokenAllowance)
       setAllowance(tokenAllowance as bigint);
+
+      const currentAPY: any = await getReadData('getCurrentAPY',TokrioStaking,config.STAKING,[])
+      if(currentAPY.code == 200){
+        setCurrentAPY(new BigNumber(currentAPY.data).dividedBy(100).toFixed(0).toString())
+      }
+     
+
+      const info: any = await readContract(chainConfig, {
+        address: config.STAKING as `0x${string}`,
+        abi: TokrioStaking,
+        functionName: 'diagnoseStakingState',
+        args: [address]
+      });
+      console.log("getStakingInfo:", info)
+      let stakeInfo = {
+        stakedAmount: info[1].totalStaked,
+        pendingReward: info[3].pendingReward,
+        userStaked: info[1].userStaked,
+      }
+      setStakingInfo(stakeInfo as StakingInfo);
+
+
     } catch (error) {
       console.error('Error fetching staking info:', error);
     }
@@ -109,20 +110,13 @@ const StakingPage = () => {
     return () => clearInterval(interval);
   }, [address]);
 
-  // 计算年化收益率
-  const calculateAPR = () => {
-    if (!totalStaked || totalStaked === BigInt(0)) return 0;
-    const yearlyRewards = releaseRate * BigInt(365 * 24 * 60 * 60);
-    return Number(yearlyRewards * BigInt(100) / totalStaked);
-  };
-
   // 授权
   const handleApprove = async () => {
     if (!address) return;
     setClickType(1)
     setLoading(true);
     try {
-      const maxUint256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+      const amount = BigInt(new BigNumber(stakeAmount).multipliedBy(10 ** 18).toFixed(0).toString());
       const hash = await writeContract(chainConfig, {
         address: config.TOKEN as `0x${string}`,
         abi: erc20Abi,
@@ -146,7 +140,48 @@ const StakingPage = () => {
     setClickType(2)
     setLoading(true);
     try {
-      const amount = BigInt(new BigNumber(stakeAmount).multipliedBy(1e18).toString());
+      const balanceObj = await fetchBalanceObj(address, config.TOKEN)
+      if (new BigNumber(balanceObj.formatted).isLessThan(stakeAmount)) {
+        toast.error('Insufficient token balance!');
+        setLoading(false);
+        return
+      }
+      const amount = BigInt(new BigNumber(stakeAmount).multipliedBy(10 ** balanceObj.decimals).toFixed(0).toString());
+
+      const allowance: any = await readContract(chainConfig, {
+        address: config.TOKEN as '0x',
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [address as `0x${string}`, config.STAKING as `0x${string}`],
+      })
+
+
+      if (new BigNumber(allowance.toString()).isLessThan(amount + "")) {
+
+        const hash = await writeContract(chainConfig, {
+          address: config.TOKEN as '0x',
+          abi: erc20Abi,
+          functionName: 'approve',
+          // args: [config.STAKING as `0x${string}`, amount],
+          args: [config.STAKING as `0x${string}`, maxUint256],
+          account: address
+        })
+        const approveData: any = await waitForTransactionReceipt(chainConfig, {
+          hash: hash
+        })
+
+        if (approveData.status && approveData.status.toString() == "success") {
+
+        } else {
+          toast.error('Your wallet failed approved.');
+          setLoading(false);
+          return
+
+        }
+
+      }
+
+
       const hash = await writeContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
         abi: TokrioStaking,
@@ -217,16 +252,18 @@ const StakingPage = () => {
     <div className="min-h-screen">
       <Navbar showMenu={false} />
       <div className="pt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-center mb-6">
           <h2 className="text-3xl md:text-4xl font-bold text-white main-font mb-4">
             Staking & Rewards
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className="text-lg text-gray-400">
             Stake TOKR tokens to earn rewards and increase your level
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <PoolData />
+
+        <div className="grid grid-cols-1 mt-5 md:grid-cols-2 gap-8">
           {/* Staking Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -235,12 +272,19 @@ const StakingPage = () => {
           >
             <h3 className="text-xl font-bold text-white mb-6">Your Staking Stats</h3>
             <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Staked Amount:</span>
+            <div className="flex justify-between">
+                <span className="text-gray-400">Staked Total:</span>
                 <span className="text-white font-medium">
                   {stakingInfo && stakingInfo.stakedAmount ? new BigNumber(stakingInfo.stakedAmount.toString()).div(1e18).toFixed(2) : '0'} TOKR
                 </span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Your Staked:</span>
+                <span className="text-white font-medium">
+                  {stakingInfo && stakingInfo.userStaked ? new BigNumber(stakingInfo.userStaked.toString()).div(1e18).toFixed(2) : '0'} TOKR
+                </span>
+              </div>
+
               <div className="flex justify-between">
                 <span className="text-gray-400">Pending Rewards:</span>
                 <span className="text-primary font-medium">
@@ -248,18 +292,24 @@ const StakingPage = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Current Level:</span>
-                <span className="text-white font-medium">Level {stakingInfo?.level?.toString() || '0'}</span>
+                <span className="text-gray-400"><TokenName address={config.TOKEN} /> Balance:</span>
+                <span className="text-white font-medium">
+                  <TokenBalance token={config.TOKEN} decimalPlaces={0} />
+                  <span>  </span>
+                  <TokenName address={config.TOKEN} />
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Next Level At:</span>
+                <span className="text-gray-400">Certificate Balance:</span>
                 <span className="text-white font-medium">
-                  {levelInfo && levelInfo.nextLevelRequirement ? new BigNumber(levelInfo.nextLevelRequirement.toString()).div(1e18).toFixed(0) : '0'} TOKR
+                  <TokenBalance token={config.LEVEL_TOKEN} decimalPlaces={0} />
+                  <span>  </span>
+                  <TokenName address={config.LEVEL_TOKEN} />
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Current APR:</span>
-                <span className="text-green-400 font-bolder">{calculateAPR()}%</span>
+                <span className="text-green-400 font-bolder">{currentAPY}%</span>
               </div>
             </div>
           </motion.div>
@@ -275,7 +325,7 @@ const StakingPage = () => {
             <div className="space-y-6">
               {/* Stake Form */}
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label className="block font-medium text-gray-400 mb-2">
                   Stake Amount
                 </label>
                 <div className="flex space-x-2">
@@ -305,10 +355,12 @@ const StakingPage = () => {
                   )}
                 </div>
               </div>
+              <span className='font-normal text-gray-500 text-xs'>*After staking, you can obtain the same number of vouchers
+                (<TokenName address={config.TOKRIO_LEVEL} />) for upgrades or sponsors.</span>
 
               {/* Unstake Form */}
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label className="block font-medium text-gray-400 mb-2">
                   Unstake Amount
                 </label>
                 <div className="flex space-x-2">
@@ -319,6 +371,7 @@ const StakingPage = () => {
                     className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
                     placeholder="Enter amount to unstake"
                   />
+
                   <button
                     onClick={handleUnstake}
                     disabled={loading || !unstakeAmount}
@@ -330,6 +383,7 @@ const StakingPage = () => {
               </div>
 
               {/* Claim Rewards */}
+              <span className=' font-normal text-gray-500 text-xs'>* {unstakeFee.toString()} % of ustake amount will be destroyed.</span>
               <button
                 onClick={handleClaim}
                 // disabled={loading || !stakingInfo?.pendingReward || stakingInfo.pendingReward === BigInt(0)}
@@ -381,4 +435,7 @@ const StakingPage = () => {
   );
 };
 
-export default StakingPage; 
+export default StakingPage;
+
+
+

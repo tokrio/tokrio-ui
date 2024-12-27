@@ -16,6 +16,15 @@ const Navbar = ({ showMenu = true }: Props) => {
   const location = useLocation();
 
   useEffect(() => {
+    const lastAddress =  localStorage.getItem("lastAddress")
+    if (address && lastAddress && address != lastAddress) {
+      localStorage.setItem("lastAddress", address || "");
+      tokenStorage.removeToken();
+      navigate("/")
+    }
+  }, [address])
+
+  useEffect(() => {
     if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor' && location.pathname !== '/market') {
       tokenStorage.removeToken();
       navigate("/")
@@ -23,8 +32,8 @@ const Navbar = ({ showMenu = true }: Props) => {
   }, [address, location.pathname])
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-sm">
-      <div className="mx-auto px-4 md:px-6 border border-b border-[#222]">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-sm">
+      <div className="mx-auto px-4 md:px-6 border-none border-b border-[#222]">
         <div className="flex items-center justify-between h-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -52,13 +61,13 @@ const Navbar = ({ showMenu = true }: Props) => {
             ))} */}
             <Link
               to="/staking"
-              className="text-white text-base  uppercase hover:text-primary transition-colors duration-200"
+              className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
             >
               Staking
             </Link>
             <Link
               to="/market"
-              className="text-gray-300 text-base uppercase hover:text-primary transition-colors duration-200"
+              className="text-gray-300 text-sm main-font uppercase hover:text-primary transition-colors duration-200"
             >
               Market
             </Link>

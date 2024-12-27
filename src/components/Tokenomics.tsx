@@ -68,7 +68,7 @@ const Tokenomics = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="hero-text mb-4">Tokenomics</h2>
-          <p className="text-xl text-gray-400">
+          <p className=" text-gray-400">
             TOKR token distribution and allocation
           </p>
         </div>
@@ -80,7 +80,7 @@ const Tokenomics = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="relative"
           >
-            <svg width="500" height="500" viewBox="0 0 500 500" className="mx-auto">
+            <svg viewBox="0 0 500 500" className="mx-auto md:w-[500px] md:h-[500px] w-[100%] h-[100%]">
               {/* 绘制饼图扇形 */}
               {paths.map((item, index) => (
                 <path

@@ -268,7 +268,6 @@ const SponsorPage = () => {
   const handleCreateSponsor = async (tokenAmount: string, duration: string) => {
     setLoading(true);
     try {
-      // 模拟延迟
     
       const hash = await writeContract(chainConfig, {
         address: config.SPONSOR as `0x${string}`,

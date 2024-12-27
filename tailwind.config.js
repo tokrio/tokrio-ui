@@ -17,6 +17,7 @@ module.exports = {
         },
         bgmain: '#020202',
         sub: '#9997a4',
+        bgbutton: '#FFA41C',
 
       },
       animation: {

@@ -52,7 +52,7 @@ const FeaturesSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               style={{borderColor:'rgba(138, 138, 138, 0.23'}}
-              className=" rounded-xl p-6 border"
+              className="bg-card-dark "
             >
 
               <div className="text-[#FFA41C] mb-4">
