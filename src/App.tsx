@@ -18,6 +18,7 @@ import Tokenomics from './components/Tokenomics';
 import Footer from './components/Footer';
 import StatsPanel from './components/StatsPanel';
 import IncreaseEquity from './components/IncreaseEquity';
+import AdvantagesSection from './components/AdvantagesSection';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -34,6 +35,7 @@ function App() {
           <Navbar />
           <HeroSection />
           <StatsPanel />
+          <AdvantagesSection />
           <Guidelines />
           <TokenUsageSection />
           <TokenUtilitySection />
@@ -82,7 +84,6 @@ function App() {
     </div>
     <div className='absolute max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
       <RouterProvider router={router} />
-      
     </div>
   </div>
 }
