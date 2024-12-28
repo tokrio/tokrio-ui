@@ -19,6 +19,7 @@ import Footer from './components/Footer';
 import StatsPanel from './components/StatsPanel';
 import IncreaseEquity from './components/IncreaseEquity';
 import AdvantagesSection from './components/AdvantagesSection';
+import LevelBenefitsPage from './pages/LevelBenefitsPage';
 
 // 正确的懒加载方式
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -75,6 +76,10 @@ function App() {
     {
       path: "/sponsor/share/:address",
       element: <SponsorSharePage />
+    },
+    {
+      path: "/levels",
+      element: <LevelBenefitsPage />
     }
   ]);
 
