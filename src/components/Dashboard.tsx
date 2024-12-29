@@ -22,7 +22,7 @@ import TokenDecimals from './TokenDecimals';
 import TokenBalance from './TokenBalance';
 import formatStringNumber from '../util/utils';
 
-type TabType = 'trading' | 'apikeys' | 'simulate' | 'sponsor';
+type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate' | 'sponsor';
 
 interface Sponsor {
   creator: string;
@@ -38,8 +38,6 @@ interface Sponsor {
   endTime: bigint;
   offerId: bigint
 }
-
-
 
 interface CreateSponsorModalProps {
   isOpen: boolean;
@@ -148,10 +146,20 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
   );
 };
 
+interface Token {
+  id: number;
+  tokenSymbol: string;
+  trending: number;
+  trendingStrength: number;
+  trendingUpdateTime: string;
+  description: string;
+  currentPrice: number;
+}
+
 const Dashboard = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('trading');
+  const [activeTab, setActiveTab] = useState<TabType>('tokens');
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
   const [isTradingPairManagerOpen, setIsTradingPairManagerOpen] = useState(false);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
@@ -276,19 +284,20 @@ const Dashboard = () => {
   const [wthdrawLoading, setWithdrawLoading] = useState(false);
   const [offerId, setOfferId] = useState<string>("");
   const [sponsorTab, setSponsorTab] = React.useState('my-sponsors');
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [tokenLoading, setTokenLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalTokens, setTotalTokens] = useState(0);
 
   useEffect(() => {
     getSponsors()
   }, [sponsorTab])
-
-
 
   const handleTabChange = (tab: string) => {
     setSponsorTab(tab);
   };
 
   const getSponsors = async () => {
-
     let sponsorList: any
     if (sponsorTab === 'my-sponsors') {
       sponsorList = await readContract(chainConfig, {
@@ -313,15 +322,8 @@ const Dashboard = () => {
     } else {
       setBuySponsors([...sponsorList[0]])
     }
-
-
-
   }
 
-
-
-
-  // 获取 Portfolio Overview 数据
   const fetchPortfolioData = async () => {
     try {
       const response = await api.getPortfolioOverview();
@@ -333,42 +335,38 @@ const Dashboard = () => {
     }
   };
 
-  // 获取 API Keys 列表
   const fetchApiKeys = async () => {
     try {
       setLoading(true);
       const response = await api.listApiKeys();
       if (response.code === 200) {
-        setApiKeys(response.body.items || []);  // 确保始终有一个数组
+        setApiKeys(response.body.items || []);
       }
     } catch (error) {
       console.error('Failed to fetch API keys:', error);
-      setApiKeys([]); // 错误时设置为空数组
+      setApiKeys([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // 当切换到 API Keys tab 时加载数据
   useEffect(() => {
     if (activeTab === 'apikeys') {
       fetchApiKeys();
     }
   }, [activeTab]);
 
-  // 组件加载时获取 Portfolio 数据
   useEffect(() => {
     fetchPortfolioData();
     const intervalId = setInterval(fetchPortfolioData, 30000);
     return () => clearInterval(intervalId);
   }, []);
 
-  // 处理添加 API Key
   const handleApiKeySave = async (data: CreateApiKeyRequest) => {
     try {
       const response = await api.createApiKey(data);
       if (response.code === 200) {
-        fetchApiKeys(); // 重新获取列表
+        fetchApiKeys();
         setIsApiKeyManagerOpen(false);
       }
     } catch (error) {
@@ -376,14 +374,11 @@ const Dashboard = () => {
     }
   };
 
-  // 处理删除 API Key
   const handleDeleteApiKey = async (id: number) => {
     try {
       const response = await api.deleteApiKey(id);
       if (response.code === 200) {
-        // 重新获取 API Keys 列表
         await fetchApiKeys();
-        // 重新获取 Portfolio 数据
         await fetchPortfolioData();
       }
     } catch (error) {
@@ -429,66 +424,20 @@ const Dashboard = () => {
     setIsHistoryOpen(true);
   };
 
-  // 修改打开 TradingPairManager 的处理函数
   const handleOpenTradingPairManager = async () => {
     try {
-      // 先获取 API Keys 列表
       const response = await api.listApiKeys();
       if (response.code === 200) {
         setApiKeys(response.body.items || []);
       }
-      // 然后打开对话框
       setIsTradingPairManagerOpen(true);
     } catch (error) {
       console.error('Failed to fetch API keys:', error);
     }
   };
 
-  // 修改按钮的点击处��函数
-  <button
-    onClick={handleOpenTradingPairManager}  // 使用新的处理函数
-    className="px-4 py-2 cta-button"
-  >
-    Add Trading Pair
-  </button>
-
-  // 修改 Overview Cards 部分，使用接口数据
   const renderOverviewCards = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      {/* Market Trend Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-card rounded-lg p-6 md:col-span-3"
-      >
-        {portfolioData?.positions[0] ? (
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-medium text-white">Market Trend</h3>
-              <p className="text-sm text-gray-400 mt-1">
-                Last updated: {portfolioData.positions[0].trendingUpdateTime}
-              </p>
-            </div>
-            <div className="flex items-center space-x-6">
-              <div>
-                <div className="text-sm text-gray-400 mb-1">Current Trend</div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold text-green-400">
-                    {portfolioData.positions[0].trendingStrength > 0 ? '↗' : '↘'}
-                  </span>
-                  <span className="text-white font-medium">
-                    {portfolioData.positions[0].trending}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-4 text-gray-400">No trend data available</div>
-        )}
-      </motion.div>
-
-      {/* Portfolio Overview */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -504,7 +453,6 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      {/* Active Trades */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -516,7 +464,6 @@ const Dashboard = () => {
         <div className="text-gray-400 text-sm">Running strategies</div>
       </motion.div>
 
-      {/* Total Profit */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -532,7 +479,6 @@ const Dashboard = () => {
     </div>
   );
 
-  // 获取交易对列表
   useEffect(() => {
     const fetchTokenPairs = async () => {
       try {
@@ -553,8 +499,6 @@ const Dashboard = () => {
   const handleCreateSponsor = async (level: number, usdtAmount: string, duration: number, tokenAmount: number) => {
     setCreateSponsorLoading(true);
     try {
-      // 这里添加创建赞助的逻辑
-
       const balanceObj = await fetchBalanceObj(address, config.LEVEL_TOKEN)
       if (new BigNumber(balanceObj.formatted).isLessThan(tokenAmount)) {
         toast.error('Insufficient token balance!');
@@ -572,7 +516,6 @@ const Dashboard = () => {
       console.log("allowance=", allowance)
 
       if (new BigNumber(allowance.toString()).isLessThan(tokenA + "")) {
-
         const hash = await writeContract(chainConfig, {
           address: config.LEVEL_TOKEN as '0x',
           abi: erc20Abi,
@@ -585,14 +528,11 @@ const Dashboard = () => {
         })
 
         if (approveData.status && approveData.status.toString() == "success") {
-
         } else {
           toast.error('Your wallet failed allowed assets deduction!');
           setCreateSponsorLoading(false);
           return
-
         }
-
       }
 
       let decimal = 18
@@ -626,11 +566,8 @@ const Dashboard = () => {
         setIsCreateSponsorModalOpen(false);
       } else {
         toast.error('Your wallet failed allowed assets deduction!');
-        //setLoading(0)
         return
-
       }
-
     } catch (error) {
       console.log(JSON.stringify(error))
       toast.error('Failed to create sponsor');
@@ -639,9 +576,7 @@ const Dashboard = () => {
     }
   };
 
-  //取消
   const cancelOffer = async (sponsorId: string) => {
-
     setCancelOfferLoading(true)
     try {
       const hash = await writeContract(chainConfig, {
@@ -660,25 +595,20 @@ const Dashboard = () => {
         setIsCreateSponsorModalOpen(false);
       } else {
         toast.success('Sponsor cancel failed');
-
       }
-
     } catch (error) {
       toast.error('Failed to create sponsor');
     } finally {
       setCancelOfferLoading(false);
     }
-
   };
 
-  // 添加分享处理函数
   const handleShare = (sponsorId: string) => {
     const url = `${window.location.origin}/sponsor/${sponsorId}`;
     navigator.clipboard.writeText(url);
     toast.success('Sponsor link copied to clipboard');
   };
 
-  // 添加删除处理函数
   const handleDelete = async (sponsorId: string) => {
     if (!window.confirm('Are you sure you want to delete this sponsor?')) {
       return;
@@ -686,13 +616,8 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      // 这里添加删除赞助的逻辑
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 模拟API调用
+      await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success('Sponsor deleted successfully');
-
-
-      // 更新列表
-      //setCreatedSponsors(prev => prev.filter(s => s.id !== sponsorId));
     } catch (error) {
       toast.error('Failed to delete sponsor');
     } finally {
@@ -700,7 +625,6 @@ const Dashboard = () => {
     }
   };
 
-  // 添加提取处理函数
   const handleWithdraw = async (sponsorId: string) => {
     setWithdrawLoading(true)
     try {
@@ -720,47 +644,57 @@ const Dashboard = () => {
         setIsCreateSponsorModalOpen(false);
       } else {
         toast.error('Failed to withdraw tokens');
-
       }
-
     } catch (error) {
       toast.error('Failed to withdraw tokens');
     } finally {
       setWithdrawLoading(false);
     }
-
   };
+
+  const fetchTokens = async (page: number = 1) => {
+    setTokenLoading(true);
+    try {
+      const response = await api.listTokens(page, 10);
+      if (response.code === 200) {
+        setTokens(response.body.data);
+        setTotalTokens(response.body.total);
+      }
+    } catch (error) {
+      console.error('Failed to fetch tokens:', error);
+    } finally {
+      setTokenLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'tokens') {
+      fetchTokens(currentPage);
+    }
+  }, [activeTab, currentPage]);
 
   return (
     <div className="min-h-screen">
-      {/* <nav className="bg-card border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <div onClick={()=>{
-                navigate("/")
-              }} className="text-xl font-bold text-primary">Tokrio</div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="text-gray-300 hover:text-white px-3 py-2">
-                Account
-              </button>
-              <button className="text-gray-300 hover:text-white px-3 py-2">
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav> */}
       <Navbar showMenu={false} />
 
       <main className="max-w-6xl mt-16 mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           {renderOverviewCards()}
-          {/* Tabs */}
           <div className="mb-6">
             <div className="border-b border-gray-700">
               <nav className="-mb-px flex space-x-8 overflow-x-scroll scrollbar-hide">
+                <button
+                  onClick={() => setActiveTab('tokens')}
+                  className={`${activeTab === 'tokens'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
+                >
+                  Supported Tokens
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card">
+                    {totalTokens}
+                  </span>
+                </button>
                 <button
                   onClick={() => setActiveTab('trading')}
                   className={`${activeTab === 'trading'
@@ -807,7 +741,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Content based on active tab */}
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 20 }}
@@ -861,10 +794,10 @@ const Dashboard = () => {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => handleViewHistory({
-                                id: position.id || position.tokenSymbol, // 使用 tokenSymbol 作为备用 ID
+                                id: position.id || position.tokenSymbol,
                                 symbol: position.tokenSymbol,
                                 initialUSDT: position.initialUSDT,
-                                apiKeyId: '1', // 默认值
+                                apiKeyId: '1',
                                 enabled: position.enabled,
                                 trend: position.trending,
                                 createdAt: new Date(position.trendingUpdateTime),
@@ -899,7 +832,6 @@ const Dashboard = () => {
                         </div>
 
                         <div className="grid grid-cols-2 gap-6">
-                          {/* Balance Info */}
                           <div className="space-y-2">
                             <div className="text-sm text-gray-400">Current Balance</div>
                             <div className="grid grid-cols-2 gap-4">
@@ -921,7 +853,6 @@ const Dashboard = () => {
                             </div>
                           </div>
 
-                          {/* Performance Info */}
                           <div className="space-y-2">
                             <div className="text-sm text-gray-400">Performance</div>
                             <div className="grid grid-cols-2 gap-4">
@@ -959,7 +890,6 @@ const Dashboard = () => {
 
             {activeTab === 'sponsor' && (
               <div className="bg-card  rounded-lg p-6">
-                {/* 统计卡片 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-card rounded-lg p-4">
                     <div className="text-sm text-gray-400">Total Sponsors Created</div>
@@ -977,7 +907,6 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* 创建按钮和列表 */}
                 <div className="grid gird-cols-1 md:flex md:justify-between items-center mb-6">
                   <div>
                     <div className="flex space-x-4">
@@ -1020,7 +949,6 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Sponsor 列表 */}
                 {sponsorTab === 'my-sponsors' ? <div className="space-y-4">
                   {createdSponsors && createdSponsors.map((sponsor: Sponsor) => (
                     <div key={sponsor.offerId} className="bg-card p-4">
@@ -1030,13 +958,10 @@ const Dashboard = () => {
                             OfferId {sponsor.offerId.toString()}
                           </div>
                           <div className=" text-gray-400">
-
                             Amount: {new BigNumber(sponsor.tokenAmount.toString()).div(1e18).toFixed(2)} TOKR
                             <span className='ml-2'>Duration: {new BigNumber(sponsor.duration.toString()).dividedBy(60 * 60 * 24).toFixed(0)} Days</span>
                           </div>
                           <div className="flex justify-between mt-1">
-
-
                             <span>Creator: {formatStringNumber(sponsor.creator, 8, -8)}</span>
                           </div>
                         </div>
@@ -1055,7 +980,6 @@ const Dashboard = () => {
                         </div>
                       </div>
 
-                      {/* 添加收益显示 */}
                       <div className="mt-4 pt-4 border-t border-gray-600">
                         <div className="flex justify-between items-center">
                           <div>
@@ -1075,13 +999,6 @@ const Dashboard = () => {
                       </div>
 
                       <div className="mt-4 flex justify-end space-x-3">
-
-                        {/* <button
-                          onClick={() => handleShare(sponsor.id)}
-                          className="common-button"
-                        >
-                          Share
-                        </button> */}
                         {sponsor && Number(sponsor.status) == 0 && <button
                           disabled={cancelOfferLoading}
                           onClick={() => {
@@ -1101,17 +1018,6 @@ const Dashboard = () => {
                             Withdraw Tokens
                           </button>
                         )}
-                        {/* {!sponsor.status ==  && Number(sponsor.endTime) > Math.floor(Date.now() / 1000) && (
-                          <button
-                            onClick={() => {
-                              setOfferId(sponsor.offerId.toString())
-                              handleDelete(sponsor.offerId.toString())
-                            }}
-                            className="px-3 py-1.5 bg-red-900/30 text-red-400 rounded hover:bg-red-900/50"
-                          >
-                            Delete
-                          </button>
-                        )} */}
                       </div>
                     </div>
                   ))}
@@ -1151,7 +1057,6 @@ const Dashboard = () => {
                         </div>
                       </div>
 
-                      {/* 添加收益显示 */}
                       <div className="mt-4 pt-4 border-t border-gray-600">
                         <div className="flex justify-between items-center">
                           <div>
@@ -1170,8 +1075,6 @@ const Dashboard = () => {
                       </div>
 
                       <div className="mt-4 flex justify-end space-x-3">
-
-
                         {!sponsor.active && Number(sponsor.endTime) < Math.floor(Date.now() / 1000) && (
                           <button
                             disabled={!(!wthdrawLoading && offerId == sponsor.id)}
@@ -1181,7 +1084,6 @@ const Dashboard = () => {
                             Withdraw Tokens
                           </button>
                         )}
-
                       </div>
                     </div>
                   ))}
@@ -1201,10 +1103,6 @@ const Dashboard = () => {
                       </div>
                     )
                   }
-
-
-
-
                 </div>}
               </div>
             )}
@@ -1274,6 +1172,74 @@ const Dashboard = () => {
 
             {activeTab === 'simulate' && (
               <SimulateTrading tokenPairs={tokenPairs} />
+            )}
+
+            {activeTab === 'tokens' && (
+              <div className="bg-card rounded-lg p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-lg font-medium text-white">Supported Tokens</h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      All available trading pairs
+                    </p>
+                  </div>
+                </div>
+
+                {tokenLoading ? (
+                  <div className="text-center py-8 text-gray-400">
+                    Loading tokens...
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {tokens.map((token) => (
+                      <div
+                        key={token.id}
+                        className="bg-[#1a1a1a]/40 rounded-lg p-6 hover:bg-[#1a1a1a]/60 transition-colors duration-200"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="text-xl font-medium text-white">{token.tokenSymbol}</div>
+                            <div className="text-sm text-gray-400 mt-1">
+                              {token.description}
+                            </div>
+                          </div>
+                          <div className={`px-3 py-1 rounded-full text-sm ${
+                            token.trending > 0 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-red-500/20 text-red-400'
+                          }`}>
+                            {token.trending > 0 ? '↗' : '↘'} Strength: {token.trendingStrength}
+                          </div>
+                        </div>
+                        <div className="mt-4 text-sm text-gray-400">
+                          Last Update: {new Date(token.trendingUpdateTime).toLocaleString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 分页控制 */}
+                <div className="mt-6 flex justify-center space-x-4">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-card-dark text-gray-400 rounded disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-4 py-2 text-white">
+                    Page {currentPage} of {Math.ceil(totalTokens / 10)}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => p + 1)}
+                    disabled={currentPage >= Math.ceil(totalTokens / 10)}
+                    className="px-4 py-2 bg-card-dark text-gray-400 rounded disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             )}
           </motion.div>
         </div>

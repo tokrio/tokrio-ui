@@ -90,6 +90,23 @@ export interface SimulateResult {
   trades: SimulateTrade[];
 }
 
+export interface Token {
+  id: number;
+  tokenSymbol: string;
+  trending: number;
+  trendingStrength: number;
+  trendingUpdateTime: string;
+  description: string;
+  currentPrice: number;
+}
+
+export interface TokenListResponse {
+  data: Token[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
+
 export const api = {
   // 登录接口
   login: async (data: { walletAddress: string; signature: string, timestamp?: number }): Promise<ApiResponse<string>> => {
@@ -136,6 +153,19 @@ export const api = {
   // 添加模拟交易接口
   simulate: async (data: SimulateRequest): Promise<ApiResponse<SimulateResult>> => {
     const response = await axios.post(`${API_BASE_URL}/token/simulate`, data);
+    return response.data;
+  },
+
+  listTokens: async (page: number = 1, pageSize: number = 10): Promise<ApiResponse<TokenListResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/list`, {
+      params: {
+        page,
+        pageSize
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     return response.data;
   }
 };
