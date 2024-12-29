@@ -150,7 +150,7 @@ const Tokenomics = () => {
                 </div>
                 <div className="pt-4">
                   <h4 className="text-white font-bold mb-2">Vesting Schedule</h4>
-                  <ul className="list-disc pl-5 space-y-2">
+                  <ul className="list-disc pl-3 space-y-2">
                     <li>Private Sale: 10% at TGE, 6 months linear vesting</li>
                     <li>Team: 12 months cliff, 24 months linear vesting</li>
                     <li>Advisors: 6 months cliff, 18 months linear vesting</li>

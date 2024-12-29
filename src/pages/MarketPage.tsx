@@ -194,7 +194,7 @@ const MarketPage = () => {
               <select
                 value={filters.level}
                 onChange={(e) => setFilters({ ...filters, level: e.target.value === 'all' ? 'all' : Number(e.target.value) })}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                className="w-full bg-black border border-gray-600 rounded px-3 py-2 text-white"
               >
                 <option value="all">All Levels</option>
                 <option value="1">Level 1</option>
@@ -214,14 +214,14 @@ const MarketPage = () => {
                   placeholder="Min"
                   value={filters.minAmount}
                   onChange={(e) => setFilters({ ...filters, minAmount: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                  className="w-full bg-black/20 border border-gray-600 rounded px-3 py-2 text-white"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={filters.maxAmount}
                   onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                  className="w-full bg-black/20 border border-gray-600 rounded px-3 py-2 text-white"
                 />
               </div>
             </div>
@@ -236,14 +236,14 @@ const MarketPage = () => {
                   placeholder="Min"
                   value={filters.minDuration}
                   onChange={(e) => setFilters({ ...filters, minDuration: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                  className="w-full bg-black/20 border border-gray-600 rounded px-3 py-2 text-white"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={filters.maxDuration}
                   onChange={(e) => setFilters({ ...filters, maxDuration: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                  className="w-full bg-black/20 border border-gray-600 rounded px-3 py-2 text-white"
                 />
               </div>
             </div>

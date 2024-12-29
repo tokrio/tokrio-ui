@@ -365,7 +365,7 @@ const Dashboard = () => {
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
                   Supported Tokens
-                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card">
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
                     {totalTokens}
                   </span>
                 </button>
@@ -377,7 +377,7 @@ const Dashboard = () => {
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
                   Trading Pairs
-                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card">
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
                     {portfolioData?.positions?.length || 0}
                   </span>
                 </button>
@@ -390,7 +390,7 @@ const Dashboard = () => {
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
                   API Keys
-                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card">
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
                     {apiKeys?.length || 0}
                   </span>
                 </button>
@@ -642,7 +642,7 @@ const Dashboard = () => {
                     {tokens.map((token) => (
                       <div
                         key={token.id}
-                        className="bg-[#1a1a1a]/40 rounded-lg p-6 hover:bg-[#1a1a1a]/60 transition-colors duration-200"
+                        className="bg-[#1a1a1a]/40 rounded-lg p-6 hover:bg-[#1a1a1a]/60 border border-[#333] hover:border-[#444] transition-colors duration-200"
                       >
 
                         <div className='flex w-full  justify-between items-center'>

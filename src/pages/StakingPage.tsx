@@ -395,7 +395,7 @@ const StakingPage = () => {
                     type="number"
                     value={stakeAmount}
                     onChange={(e) => setStakeAmount(e.target.value)}
-                    className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                    className="flex-1 bg-black/20 border border-gray-600 rounded px-3 py-2 text-white"
                     placeholder="Enter amount to stake"
                   />
                   {allowance === BigInt(0) ? (
@@ -430,7 +430,7 @@ const StakingPage = () => {
                     type="number"
                     value={unstakeAmount}
                     onChange={(e) => setUnstakeAmount(e.target.value)}
-                    className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+                    className="flex-1 bg-black/20 border border-gray-600 rounded px-3 py-2 text-white"
                     placeholder="Enter amount to unstake"
                   />
 
