@@ -31,6 +31,7 @@ interface LevelInfo {
 const StakingPage = () => {
   const { address } = useAccount();
   const [loading, setLoading] = useState(false);
+  const [isRefresh, setIsRefresh] = useState(false);
   const [stakingInfo, setStakingInfo] = useState<StakingInfo | null>(null);
   const [currentAPY, setCurrentAPY] = useState<string>("0");
   const [stakeAmount, setStakeAmount] = useState('');
@@ -67,7 +68,7 @@ const StakingPage = () => {
   const fetchStakingInfo = async () => {
     if (!address) return;
     try {
-
+      setIsRefresh(!isRefresh)
       const tokenAllowance = await readContract(chainConfig, {
         address: config.TOKEN as `0x${string}`,
         abi: erc20Abi,
@@ -188,10 +189,18 @@ const StakingPage = () => {
         functionName: 'stake',
         args: [amount]
       });
-      await waitForTransactionReceipt(chainConfig, { hash });
-      await fetchStakingInfo();
-      setStakeAmount('');
-      toast.success('Staking successful');
+      const response = await waitForTransactionReceipt(chainConfig, { hash });
+      if (response.status && response.status.toString() == "success") {
+        fetchStakingInfo();
+        setStakeAmount('');
+        toast.success('Staking successful');
+      } else {
+        toast.error('Staking failed.');
+        setLoading(false);
+        return
+
+      }
+     
     } catch (error) {
       console.error('Error staking:', error);
       toast.error('Staking failed');
@@ -203,6 +212,48 @@ const StakingPage = () => {
   // 解除质押
   const handleUnstake = async () => {
     if (!address || !unstakeAmount) return;
+
+    const balanceObj = await fetchBalanceObj(address, config.LEVEL_TOKEN)
+    if (new BigNumber(balanceObj.formatted).isLessThan(unstakeAmount)) {
+      toast.error(`Insufficient ${balanceObj.symbol} balance!`);
+      setLoading(false);
+      return
+    }
+    const amount = BigInt(new BigNumber(unstakeAmount).multipliedBy(10 ** balanceObj.decimals).toFixed(0).toString());
+
+    const allowance: any = await readContract(chainConfig, {
+      address: config.LEVEL_TOKEN as '0x',
+      abi: erc20Abi,
+      functionName: 'allowance',
+      args: [address as `0x${string}`, config.STAKING as `0x${string}`],
+    })
+
+
+    if (new BigNumber(allowance.toString()).isLessThan(amount + "")) {
+
+      const hash = await writeContract(chainConfig, {
+        address: config.LEVEL_TOKEN as '0x',
+        abi: erc20Abi,
+        functionName: 'approve',
+        // args: [config.STAKING as `0x${string}`, amount],
+        args: [config.STAKING as `0x${string}`, maxUint256],
+        account: address
+      })
+      const approveData: any = await waitForTransactionReceipt(chainConfig, {
+        hash: hash
+      })
+
+      if (approveData.status && approveData.status.toString() == "success") {
+
+      } else {
+        toast.error('Your wallet failed approved.');
+        setLoading(false);
+        return
+
+      }
+
+    }
+
     setClickType(3)
     setLoading(true);
     try {
@@ -214,7 +265,18 @@ const StakingPage = () => {
         functionName: 'unstake',
         args: [amount]
       });
-      await waitForTransactionReceipt(chainConfig, { hash });
+      let response =  await waitForTransactionReceipt(chainConfig, { hash });
+      if (response.status && response.status.toString() == "success") {
+        fetchStakingInfo();
+        setStakeAmount('');
+        toast.success('Unstaking successful');
+      } else {
+        toast.error('Unstaking failed.');
+        setLoading(false);
+        return
+
+      }
+     
       await fetchStakingInfo();
       setUnstakeAmount('');
       toast.success('Unstaking successful');
@@ -294,7 +356,7 @@ const StakingPage = () => {
               <div className="flex justify-between">
                 <span className="text-gray-400"><TokenName address={config.TOKEN} /> Balance:</span>
                 <span className="text-white font-medium">
-                  <TokenBalance token={config.TOKEN} decimalPlaces={0} />
+                  <TokenBalance isLoading={isRefresh} token={config.TOKEN} decimalPlaces={0} />
                   <span>  </span>
                   <TokenName address={config.TOKEN} />
                 </span>
@@ -302,7 +364,7 @@ const StakingPage = () => {
               <div className="flex justify-between">
                 <span className="text-gray-400">Certificate Balance:</span>
                 <span className="text-white font-medium">
-                  <TokenBalance token={config.LEVEL_TOKEN} decimalPlaces={0} />
+                  <TokenBalance isLoading={isRefresh} token={config.LEVEL_TOKEN} decimalPlaces={0} />
                   <span>  </span>
                   <TokenName address={config.LEVEL_TOKEN} />
                 </span>
@@ -356,7 +418,7 @@ const StakingPage = () => {
                 </div>
               </div>
               <span className='font-normal text-gray-500 text-xs'>*After staking, you can obtain the same number of vouchers
-                (<TokenName address={config.TOKRIO_LEVEL} />) for upgrades or sponsors.</span>
+                (<span className=' font-bold'>{stakeAmount} <TokenName address={config.LEVEL_TOKEN} /></span>) for upgrades or sponsors.</span>
 
               {/* Unstake Form */}
               <div>
@@ -383,7 +445,7 @@ const StakingPage = () => {
               </div>
 
               {/* Claim Rewards */}
-              <span className=' font-normal text-gray-500 text-xs'>* {unstakeFee.toString()} % of ustake amount will be destroyed.</span>
+              <span className=' font-normal text-gray-500 text-xs'>* {unstakeFee.toString()} % of unstake amount will be destroyed.</span>
               <button
                 onClick={handleClaim}
                 // disabled={loading || !stakingInfo?.pendingReward || stakingInfo.pendingReward === BigInt(0)}

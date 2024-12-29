@@ -250,6 +250,11 @@ function UserProfile() {
 
             <button onClick={toDashBoard} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>To My Dashboard</button>
 
+            <button onClick={() => {
+                navigate('/sponsor');
+            }} className=' p-3 w-full mt-3  hover:bg-[#FFA41C] bg-[#222] rounded-sm '>
+                To My Sponsors
+            </button>
 
             <button onClick={() => {
                 setIsUp(true)

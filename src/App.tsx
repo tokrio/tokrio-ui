@@ -74,6 +74,10 @@ function App() {
       )
     },
     {
+      path: "/userSponsors",
+      element: <SponsorPage />
+    },
+    {
       path: "/sponsor/share/:address",
       element: <SponsorSharePage />
     },
