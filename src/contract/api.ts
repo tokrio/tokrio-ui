@@ -1,66 +1,100 @@
-import { readContract } from "@wagmi/core";
-import { chainConfig } from "../WalletConfig";
-import { erc20Abi } from "viem";
 
-// Response Interface
-export interface IResponse {
-    code: number;
-    message: string;
-    data: any;
+import { getBalance,readContract } from '@wagmi/core'
+import BigNumber from 'bignumber.js';
+import { chainConfig } from '../WalletConfig';
+import { NATIVE_ADDRESS } from '../config/constant';
+
+
+export interface IBalance {
+    decimals: number,
+    formatted: string,
+    symbol: string,
+    value: any
 }
 
-// Get Token Balance
-export const fetchBalanceObj = async (address: string | undefined, token: string) => {
-    try {
-        const decimals: any = await readContract(chainConfig, {
-            address: token as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'decimals',
-            args: []
-        });
+export interface IResponse {
+    data: any,
+    code: number
+}
 
-        const balance: any = await readContract(chainConfig, {
-            address: token as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'balanceOf',
-            args: [address as `0x${string}`]
-        });
+export const fetchBalanceFormat = async (account: any, token?: any, fix?: number) => {
 
-        return {
-            decimals,
-            value: balance.toString(),
-            formatted: (Number(balance.toString()) / Math.pow(10, decimals)).toString()
-        };
-    } catch (error) {
-        console.error('Error fetching balance:', error);
-        return {
-            decimals: 18,
-            value: '0',
-            formatted: '0'
-        };
+    if (!fix) {
+        fix = 4
     }
-};
+    let balanceFormat: string;
 
-// Read Contract Data
-export const getReadData = async (functionName: string, abi: any, address: string, args: any[]) => {
-    try {
-        const data: any = await readContract(chainConfig, {
-            address: address as `0x${string}`,
-            abi: abi,
-            functionName: functionName,
-            args: args
-        });
-        return {
-            code: 200,
-            message: 'success',
-            data: data
-        };
-    } catch (error) {
-        console.error('Error reading contract data:', error);
-        return {
-            code: 500,
-            message: 'error',
-            data: null
-        };
+    if(!token){
+        token = NATIVE_ADDRESS
     }
-};
+
+    try {
+       let tokenObj = await fetchBalanceObj(account, token)
+       
+        balanceFormat =  new BigNumber(tokenObj.formatted).toFixed(fix).toString();
+    } catch (error) {
+        balanceFormat = "Check address"
+    }
+    return balanceFormat;
+
+}
+
+export const fetchBalanceObj = async (account: any, token: any) => {
+
+    if (token == NATIVE_ADDRESS) {
+        const balanceObj: IBalance = await getBalance(chainConfig,{
+            address: account
+        })
+        console.log(balanceObj)
+        return balanceObj
+    } else {
+        const balanceObj: IBalance = await getBalance(chainConfig,{
+            address: account,
+            token: token
+        })
+        console.log("balanceObj" ,balanceObj)
+        return balanceObj
+    }
+
+}
+
+
+export const getReadData = async (method: any, abi: any, address: any, args: any, account?: any) => {
+    let response: IResponse
+
+    try {
+        if (account) {
+
+            let data: any = await readContract(chainConfig,{
+                address: address,
+                abi: abi,
+                functionName: method,
+                args: args,
+                account
+            })
+            response = {
+                data: data,
+                code: 200
+            }
+        } else {
+            let data: any = await readContract(chainConfig,{
+                address: address,
+                abi: abi,
+                functionName: method,
+                args: args
+            })
+            response = {
+                data: data,
+                code: 200
+            }
+        }
+    } catch (error) {
+        response = {
+            data: error,
+            code: 0
+        }
+    }
+
+    console.log(method, address, args, response.data)
+    return response;
+}
