@@ -21,7 +21,7 @@ import IncreaseEquity from './components/IncreaseEquity';
 import AdvantagesSection from './components/AdvantagesSection';
 import LevelBenefitsPage from './pages/LevelBenefitsPage';
 
-// 正确的懒加载方式
+// Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 
 function App() {

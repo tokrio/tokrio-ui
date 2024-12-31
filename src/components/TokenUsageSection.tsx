@@ -23,9 +23,9 @@ const TokenUsageSection = () => {
     <div className="py-24 bg-[#111]/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="hero-text mb-4">Start Trading with TOKR</h2>
+          <h2 className="hero-text mb-4">Algorithmic Trading Access</h2>
           <p className="text-gray-400">
-            Begin your AI trading journey with just {minTokens} TOKR (${(currentPrice * minTokens).toFixed(2)} USDT)
+            Initialize your algorithmic trading portfolio with {minTokens} TOKR (${(currentPrice * minTokens).toFixed(2)} USDT)
           </p>
         </div>
 
@@ -35,15 +35,15 @@ const TokenUsageSection = () => {
             animate={{ opacity: 1, x: 0 }}
             className="bg-card-dark"
           >
-            <h3 className="text-xl font-bold text-white mb-4">Level Up Your Trading</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Progressive Tier System</h3>
             <p className="text-gray-400 mb-4">
-              Increase your TOKR holdings to unlock higher levels. Each tier provides enhanced trading capabilities and exclusive privileges.
+              Expand your trading capabilities through strategic TOKR accumulation. Each tier unlocks enhanced features and execution privileges.
             </p>
             <Link 
               to="/levels" 
               className="text-primary flex items-center hover:text-primary/80 transition-colors duration-300"
             >
-              View Detailed Level Benefits →
+              Explore Tier Benefits →
             </Link>
           </motion.div>
 
@@ -52,12 +52,12 @@ const TokenUsageSection = () => {
             animate={{ opacity: 1, x: 0 }}
             className="bg-card-dark"
           >
-            <h3 className="text-xl font-bold text-white mb-4">Trading Benefits</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Advanced Trading Features</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>• Access more trading pairs at higher levels</li>
-              <li>• Enhanced execution priority</li>
-              <li>• Faster trading speed</li>
-              <li>• Advanced AI features</li>
+              <li>• Expanded market pair access</li>
+              <li>• Priority order execution</li>
+              <li>• Enhanced algorithmic performance</li>
+              <li>• Advanced AI-driven analytics</li>
             </ul>
           </motion.div>
         </div>

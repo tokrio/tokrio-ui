@@ -3,14 +3,14 @@ import { config } from '../config/env';
 
 const API_BASE_URL = config.API_BASE_URL;
 
-// API 响应接口
+// API Response Interface
 interface ApiResponse<T> {
   code: number;
   message: string;
   body: T;
 }
 
-// Portfolio Overview 接口
+// Portfolio Overview Interface
 export interface Position {
   id: string;
   tokenSymbol: string;
@@ -35,7 +35,7 @@ export interface PortfolioOverview {
   positions: Position[];
 }
 
-// API Key 相关接口
+// API Key Related Interfaces
 export interface ApiKey {
   id: number;
   apiKey: string;
@@ -56,7 +56,7 @@ export interface CreateApiKeyRequest {
   apiName: string;
 }
 
-// Token Pairs 接口
+// Token Pairs Interface
 export interface TokenPair {
   tokenSymbol: string;
   currentPrice: number;
@@ -67,7 +67,7 @@ export interface TokenPairsResponse {
   total: number;
 }
 
-// 模拟交易接口
+// Simulation Trading Interface
 export interface SimulateRequest {
   tokenSymbol: string;
   usdtAmount: string;
@@ -108,7 +108,7 @@ export interface TokenListResponse {
 }
 
 export const api = {
-  // 登录接口
+  // Login API
   login: async (data: { walletAddress: string; signature: string, timestamp?: number }): Promise<ApiResponse<string>> => {
     const response = await axios.post(`${API_BASE_URL}/login`, data, {
       headers: {
@@ -118,7 +118,7 @@ export const api = {
     return response.data;
   },
 
-  // Portfolio Overview 接口
+  // Portfolio Overview API
   getPortfolioOverview: async (): Promise<ApiResponse<PortfolioOverview>> => {
     const response = await axios.get(`${API_BASE_URL}/portfolio/overview`, {
       headers: {
@@ -128,7 +128,7 @@ export const api = {
     return response.data;
   },
 
-  // API Key 相关接口
+  // API Key Management APIs
   createApiKey: async (data: CreateApiKeyRequest): Promise<ApiResponse<ApiKey>> => {
     const response = await axios.post(`${API_BASE_URL}/api-keys`, data);
     return response.data;
@@ -144,13 +144,13 @@ export const api = {
     return response.data;
   },
 
-  // Token Pairs 接口
+  // Token Pairs API
   listTokenPairs: async (): Promise<ApiResponse<TokenPairsResponse>> => {
     const response = await axios.get(`${API_BASE_URL}/token/pairs`);
     return response.data;
   },
 
-  // 添加模拟交易接口
+  // Simulation Trading API
   simulate: async (data: SimulateRequest): Promise<ApiResponse<SimulateResult>> => {
     const response = await axios.post(`${API_BASE_URL}/token/simulate`, data);
     return response.data;
@@ -170,7 +170,7 @@ export const api = {
   }
 };
 
-// Token 管理
+// Token Storage Management
 export const tokenStorage = {
   setToken: (token: string) => {
     localStorage.setItem('token', token);
@@ -183,7 +183,7 @@ export const tokenStorage = {
   }
 };
 
-// Axios 拦截器设置 Bearer token
+// Axios Interceptor for Bearer Token
 axios.interceptors.request.use((config: any) => {
   const token = tokenStorage.getToken();
   if (token) {

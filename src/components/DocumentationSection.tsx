@@ -4,86 +4,86 @@ import { motion } from 'framer-motion';
 const DocumentationSection = () => {
   const algorithms = [
     {
-      title: "Trend Prediction Algorithm",
-      description: "Multi-dimensional trend prediction system based on deep learning",
+      title: "Predictive Analytics Engine",
+      description: "Multi-dimensional market analysis powered by advanced machine learning",
       details: [
-        "LSTM neural networks for historical price pattern analysis",
-        "Transformer architecture for long-term dependency processing",
-        "Attention mechanism for key market turning points",
-        "Multi-source data fusion for improved accuracy"
+        "Neural network architecture for time-series forecasting",
+        "Transformer-based sequence modeling",
+        "Multi-head attention mechanism for market signals",
+        "Cross-market data correlation analysis"
       ]
     },
     {
-      title: "Dynamic Risk Control",
-      description: "Adaptive multi-level risk control mechanism",
+      title: "Adaptive Risk Management",
+      description: "Sophisticated risk mitigation system with real-time adaptation",
       details: [
-        "Volatility-adaptive position management",
-        "Kelly criterion-based capital allocation",
-        "Dynamic stop-loss and take-profit settings",
-        "Cross-market correlation analysis"
+        "Dynamic position sizing optimization",
+        "Kelly criterion portfolio allocation",
+        "Automated risk parameter adjustment",
+        "Cross-market volatility analysis"
       ]
     },
     {
-      title: "Arbitrage Strategy Engine",
-      description: "Efficient cross-market arbitrage mechanism",
+      title: "Statistical Arbitrage System",
+      description: "High-frequency market inefficiency detection",
       details: [
-        "Statistical arbitrage modeling",
-        "High-frequency spread capture",
-        "Liquidity analysis and optimization",
-        "Latency arbitrage risk assessment"
+        "Cointegration-based pair selection",
+        "Low-latency execution framework",
+        "Liquidity-aware order routing",
+        "Market impact analysis"
       ]
     },
     {
-      title: "Sentiment Analysis System",
-      description: "Comprehensive market sentiment capture",
+      title: "Market Intelligence Network",
+      description: "Comprehensive market sentiment aggregation",
       details: [
-        "Social media sentiment analysis",
-        "On-chain data analysis",
-        "Whale behavior tracking",
-        "Global macro event impact assessment"
+        "Natural language processing for market sentiment",
+        "On-chain metrics analysis",
+        "Institutional flow monitoring",
+        "Macro event impact quantification"
       ]
     }
   ];
 
   const features = [
     {
-      title: "High-Frequency Trading Engine",
+      title: "Low-Latency Infrastructure",
       points: [
-        "Millisecond-level response",
-        "Smart order routing",
-        "Liquidity optimization",
-        "Transaction cost control"
+        "Microsecond execution capability",
+        "Intelligent order routing system",
+        "Dynamic liquidity aggregation",
+        "Transaction cost optimization"
       ]
     },
     {
-      title: "Risk Management",
+      title: "Enterprise Risk Framework",
       points: [
-        "Real-time risk monitoring",
-        "Multi-dimensional risk assessment",
-        "Automated stop-loss mechanism",
-        "Capital management optimization"
+        "Real-time exposure monitoring",
+        "Multi-factor risk modeling",
+        "Automated circuit breakers",
+        "Portfolio optimization engine"
       ]
     },
     {
-      title: "Performance Optimization",
+      title: "System Architecture",
       points: [
-        "GPU-accelerated computing",
-        "Distributed processing architecture",
-        "Real-time data processing",
-        "High availability design"
+        "GPU-accelerated computation",
+        "Distributed processing system",
+        "Real-time data streaming",
+        "High-availability infrastructure"
       ]
     }
   ];
 
   return (
-    <div className="py-24  bg-[#111]/40" id="documentation">
+    <div className="py-24 bg-[#111]/40" id="documentation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="hero-text mb-4">
-            Technical Documentation
+            Technical Architecture
           </h2>
-          <p className=" text-gray-400">
-            Deep dive into our core technologies and strategy implementation
+          <p className="text-gray-400">
+            Advanced Trading Infrastructure and Implementation
           </p>
         </div>
 
@@ -151,10 +151,10 @@ const DocumentationSection = () => {
         {/* Bottom Disclaimer */}
         <div className="mt-16 text-center">
           <p className="text-white font-semibold">
-            Our algorithms are rigorously backtested and continuously optimized for market adaptability
+            Continuously optimized algorithms with comprehensive backtesting
           </p>
           <div className="mt-4">
-            * Past performance does not guarantee future results. Trading involves risks.
+            * Historical performance does not guarantee future results. Trading involves substantial risk.
           </div>
         </div>
       </div>

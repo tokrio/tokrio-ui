@@ -10,10 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import { useAccount } from 'wagmi';
 
+// Tab Type Definition
 type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate';
 
-
-
+// Token Interface
 interface Token {
   id: number;
   tokenSymbol: string;
@@ -93,7 +93,7 @@ const Dashboard = () => {
   const [selectedPair, setSelectedPair] = useState<TradingPairConfig | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [tradeHistory, setTradeHistory] = useState<Record<string, TradeHistory[]>>({
-    '1': [  // BTC/USDT 的交易历史
+    '1': [ 
       {
         id: '1',
         orderId: 'ORD123456',
@@ -123,7 +123,7 @@ const Dashboard = () => {
         }
       }
     ],
-    '2': [  // ETH/USDT 的交易历史
+    '2': [
       {
         id: '3',
         orderId: 'ORD123458',
@@ -148,8 +148,7 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTokens, setTotalTokens] = useState(0);
 
-
-
+  // Fetch Portfolio Data
   const fetchPortfolioData = async () => {
     try {
       const response = await api.getPortfolioOverview();
@@ -161,6 +160,7 @@ const Dashboard = () => {
     }
   };
 
+  // Fetch API Keys
   const fetchApiKeys = async () => {
     try {
       setLoading(true);
@@ -322,10 +322,7 @@ const Dashboard = () => {
     }
   }, [activeTab]);
 
-  
-
-  
-
+  // Fetch Token List
   const fetchTokens = async (page: number = 1) => {
     setTokenLoading(true);
     try {
@@ -667,7 +664,7 @@ const Dashboard = () => {
                   </div>
                 )}
 
-                {/* 分页控制 */}
+                {/* Pagination Controls */}
                 <div className="mt-6 flex items-center justify-center space-x-4">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
