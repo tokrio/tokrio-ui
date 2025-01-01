@@ -64,7 +64,7 @@ const StakingPage = () => {
 
 
 
-  // 获取质押信息
+  // stake info
   const fetchStakingInfo = async () => {
     if (!address) return;
     try {
