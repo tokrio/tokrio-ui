@@ -111,7 +111,7 @@ const StakingPage = () => {
     return () => clearInterval(interval);
   }, [address]);
 
-  // 授权
+  // approve
   const handleApprove = async () => {
     if (!address) return;
     setClickType(1)
