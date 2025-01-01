@@ -38,6 +38,7 @@
     "start:beta": "cross-env REACT_APP_ENV=beta craco start",
     "build:dev": "cross-env REACT_APP_ENV=development craco build",
     "build:beta": "cross-env REACT_APP_ENV=beta craco build",
+    "build": "cross-env REACT_APP_ENV=beta craco build",
     "build:prod": "cross-env REACT_APP_ENV=production craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
