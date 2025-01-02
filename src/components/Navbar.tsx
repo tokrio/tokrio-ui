@@ -25,7 +25,7 @@ const Navbar = ({ showMenu = true }: Props) => {
   }, [address])
 
   useEffect(() => {
-    if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor' && location.pathname !== '/market') {
+    if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor' && location.pathname !== '/market' && location.pathname !== '/jarvis') {
       tokenStorage.removeToken();
       navigate("/")
     }
@@ -50,20 +50,17 @@ const Navbar = ({ showMenu = true }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center space-x-8"
           >
-            {/* {showMenu && ['Features', 'How it Works', 'Documentation'].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-gray-300 hidden md:block hover:text-primary transition-colors duration-200"
-              >
-                {item}
-              </a>
-            ))} */}
             <Link
               to="/staking"
               className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
             >
               Staking
+            </Link>
+            <Link
+              to="/jarvis"
+              className="text-gray-300 text-sm main-font uppercase hover:text-primary transition-colors duration-200"
+            >
+              Jarvis
             </Link>
             <Link
               to="/market"

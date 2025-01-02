@@ -20,6 +20,7 @@ import StatsPanel from './components/StatsPanel';
 import IncreaseEquity from './components/IncreaseEquity';
 import AdvantagesSection from './components/AdvantagesSection';
 import LevelBenefitsPage from './pages/LevelBenefitsPage';
+import JarvisPage from './pages/JarvisPage';
 
 // Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -84,6 +85,10 @@ function App() {
     {
       path: "/levels",
       element: <LevelBenefitsPage />
+    },
+    {
+      path: "/jarvis",
+      element: <JarvisPage />
     }
   ]);
 
