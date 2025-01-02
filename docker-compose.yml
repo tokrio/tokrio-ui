@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   tokrio-app:
     build:
@@ -10,3 +9,4 @@ services:
       - NODE_ENV=production
     volumes:
       - .:/app
+      - /www/wwwroot/web:/www/wwwroot/web
