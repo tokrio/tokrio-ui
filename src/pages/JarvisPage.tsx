@@ -1,15 +1,102 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
+import { getReadData, IResponse } from '../contract/api';
+import { TokrioLevelAbi } from '../abi/Abi';
+import { config } from '../config/env';
+import { useAccount } from 'wagmi';
+import toast from 'react-hot-toast';
+import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { chainConfig } from '../WalletConfig';
 
 const JarvisPage = () => {
-  // 使用静态数据
-  const jarvisInfo = {
-    currentLevel: 3,
+
+  const { address } = useAccount();
+
+  const [loading, setLoading] = React.useState(0);
+
+  const defaultInfo = {
+    currentLevel: 0,
     maxRobots: 1000,
-    remainingRobots: 850,
-    canClaim: false
+    remainingRobots: 0,
+    canClaim: false,
+    claimStr: 'Unavailable'
   };
+
+  const [jarvisInfo, setJarvisInfo] = React.useState(defaultInfo);
+
+
+  useEffect(() => {
+    getLevel();
+  }, [address])
+
+  const getLevel = async () => {
+    let { data, code }: IResponse = await getReadData("getUserEquity", TokrioLevelAbi, config.SPONSOR, [address])
+    if (code != 200) {
+      toast.error("Please check your RPC.")
+      return
+    }
+
+    let claimStatusRes: IResponse = await getReadData("checkRobotOwnership", TokrioLevelAbi, config.SPONSOR, [address])
+    if (claimStatusRes.code != 200) {
+      toast.error("Please check your RPC.")
+      return
+    }
+
+
+    let robotRes: IResponse = await getReadData("getRobotStatus", TokrioLevelAbi, config.SPONSOR, [])
+    if (robotRes.code != 200) {
+      toast.error("Please check your RPC.")
+      return
+    }
+
+
+    setJarvisInfo({
+      currentLevel: Number(data[2].toString()),
+      maxRobots: robotRes.data[0].toString(),
+      remainingRobots: robotRes.data[2].toString(),
+      canClaim: robotRes.data[3] && !claimStatusRes.data,
+      claimStr: claimStatusRes.data ? 'Claimed' : (robotRes.data[3] ? 'Available' : 'Unavailable')
+
+    })
+
+  }
+
+  const claimRobot = async () => {
+
+    if (loading == 2) {
+      return
+    }
+
+    setLoading(2);
+
+    try {
+      const hash = await writeContract(chainConfig, {
+        address: config.SPONSOR as `0x${string}`,
+        abi: TokrioLevelAbi,
+        functionName: 'claimRobot',
+        args: []
+      });
+
+      const approveData: any = await waitForTransactionReceipt(chainConfig, {
+        hash: hash
+      })
+
+      if (approveData.status && approveData.status.toString() == "success") {
+        toast.success('Claim Robot successfully');
+        getLevel();
+        setLoading(1);
+      } else {
+        toast.error('Claim Robot Failed!');
+        setLoading(0);
+        return
+
+      }
+    } catch (error) {
+      setLoading(0);
+    }
+
+  }
 
   return (
     <div className="min-h-screen">
@@ -21,36 +108,37 @@ const JarvisPage = () => {
           className="bg-card rounded-lg p-8"
         >
           <h2 className="text-3xl font-bold text-white mb-8">Jarvis AI Trading Robot</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-card-dark p-6 rounded-lg">
               <div className="text-gray-400">Current Level</div>
               <div className="text-2xl font-bold text-white">{jarvisInfo.currentLevel}</div>
             </div>
-            
+
             <div className="bg-card-dark p-6 rounded-lg">
               <div className="text-gray-400">Maximum Robots</div>
               <div className="text-2xl font-bold text-white">{jarvisInfo.maxRobots}</div>
             </div>
-            
+
             <div className="bg-card-dark p-6 rounded-lg">
               <div className="text-gray-400">Remaining Slots</div>
               <div className="text-2xl font-bold text-white">{jarvisInfo.remainingRobots}</div>
             </div>
-            
+
             <div className="bg-card-dark p-6 rounded-lg">
               <div className="text-gray-400">Claim Status</div>
               <div className={`text-2xl font-bold ${jarvisInfo.canClaim ? 'text-green-400' : 'text-red-400'}`}>
-                {jarvisInfo.canClaim ? 'Available' : 'Unavailable'}
+                {jarvisInfo.claimStr}
               </div>
             </div>
           </div>
 
           <button
-            disabled={true}
-            className="w-full px-6 py-3 rounded-lg font-medium bg-gray-600 text-gray-400 cursor-not-allowed"
+            onClick={claimRobot}
+            disabled={!jarvisInfo.canClaim || loading === 2}
+            className="w-full px-6 py-3 rounded-lg font-medium cta-button disabled:bg-gray-600 text-gray-400 data-[jarvisInfo.canClaim]:cursor-not-allowed"
           >
-            Claim Jarvis Robot
+            {loading === 2 ? 'Loading...' : 'Claim Jarvis Robot'}
           </button>
 
           <div className="mt-8 p-6 bg-card-dark rounded-lg">
@@ -65,7 +153,7 @@ const JarvisPage = () => {
                 <li>- Trade execution optimization</li>
               </ul>
               <li className="mt-4 text-yellow-400">
-                Note: Access to Jarvis will be revoked if your level drops below 5 or if all robot slots are claimed, 
+                Note: Access to Jarvis will be revoked if your level drops below 5 or if all robot slots are claimed,
                 even if you meet the level requirement.
               </li>
             </ul>

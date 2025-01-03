@@ -64,7 +64,7 @@
   }
 
   .cta-button {
-    @apply inter-font md:main-font px-4 md:px-6 uppercase text-center py-2 bg-[#412700] border border-[#FFA41C] hover:bg-[#000] text-xs md:text-sm text-white font-medium rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg;
+    @apply inter-font md:main-font px-4 md:px-6 uppercase text-center py-2 bg-[#412700] border border-[#FFA41C] hover:bg-[#000] text-xs md:text-sm text-white font-medium rounded-lg transform transition-all duration-300 hover:shadow-lg;
   }
 
   .common-button {

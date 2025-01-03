@@ -82,22 +82,6 @@
       },
       {
         "internalType": "uint256",
-        "name": "current",
-        "type": "uint256"
-      }
-    ],
-    "name": "InsufficientRewardPool",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "required",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "available",
         "type": "uint256"
       }
@@ -433,49 +417,6 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "currentTime",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "lastUpdateTime",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timePassed",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "releaseRate",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "calculatedReward",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "newAccRewardPerShare",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardCalculationDetails",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "user",
@@ -521,50 +462,6 @@
       }
     ],
     "name": "RewardPoolFunded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardPoolRequired",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "totalBalance",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "availableRewards",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "releaseRate",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "estimatedDuration",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardPoolUpdated",
     "type": "event"
   },
   {
@@ -817,101 +714,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "diagnoseStakingState",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "isEnabled",
-        "type": "bool"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "contractBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "userBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "userAllowance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalStaked",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "userStaked",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokrioStakingV3.StakingBalances",
-        "name": "balances",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "lastUpdateTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "currentTime",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "releaseRate",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokrioStakingV3.StakingTiming",
-        "name": "timing",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "pendingReward",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "rewardDebt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "accRewardPerShare",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct TokrioStakingV3.StakingRewards",
-        "name": "rewards",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -983,91 +785,7 @@
   },
   {
     "inputs": [],
-    "name": "getPoolStatus",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "requiredPool",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentPool",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "totalStaked",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "isStakingEnabled",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getRewardPoolInfo",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "totalBalance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalStaked",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "availableRewards",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "requiredAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "releaseRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "estimatedDuration",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "isPoolSufficient",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct TokrioStakingV3.RewardPoolInfo",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getRewardStatus",
+    "name": "getTokrioStakingInfo",
     "outputs": [
       {
         "components": [
@@ -1083,36 +801,26 @@
           },
           {
             "internalType": "uint256",
-            "name": "userStaked",
+            "name": "availableRewards",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "lastUpdateTime",
+            "name": "releaseRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "estimatedDuration",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
             "name": "accRewardPerShare",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "rewardDebt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "currentReleaseRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "pending",
-            "type": "uint256"
           }
         ],
-        "internalType": "struct TokrioStakingV3.RewardStatusInfo",
+        "internalType": "struct TokrioStakingV3.TokrioStakingInfo",
         "name": "",
         "type": "tuple"
       }
@@ -1128,6 +836,40 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserStakingInfo",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "stakedAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pendingReward",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rewardDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isStaking",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1318,19 +1060,6 @@
   },
   {
     "inputs": [],
-    "name": "requiredRewardPool",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "rewardDistributionPaused",
     "outputs": [
       {
@@ -1364,19 +1093,6 @@
       }
     ],
     "name": "setClaimingEnabled",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "setRequiredRewardPool",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1461,11 +1177,6 @@
       {
         "internalType": "uint256",
         "name": "lastRewardPeriod",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "level",
         "type": "uint256"
       }
     ],

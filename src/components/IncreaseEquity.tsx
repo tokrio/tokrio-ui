@@ -94,7 +94,7 @@ export default function IncreaseEquity({ isOpen, setIsOpen, finish, isUp = true 
                 setLoading(1);
                 return
             }
-            const tAmount = BigInt(new BigNumber(amount).multipliedBy(10 ** balanceObj.decimals).toString());
+            const tAmount = new BigNumber(amount).multipliedBy(10 ** balanceObj.decimals).toFixed(0).toString();
 
             if (isUp) {
                 const allowance: any = await readContract(chainConfig, {
@@ -133,7 +133,7 @@ export default function IncreaseEquity({ isOpen, setIsOpen, finish, isUp = true 
 
 
             let args = [tAmount]
-            console.log(args)
+            console.log("args==",args)
             const hash = await writeContract(chainConfig, {
                 address: config.SPONSOR as `0x${string}`,
                 abi: TokrioLevelAbi,

@@ -78,23 +78,22 @@ const StakingPage = () => {
       console.log("tokenAllowance=", tokenAllowance)
       setAllowance(tokenAllowance as bigint);
 
-      const currentAPY: any = await getReadData('getCurrentAPY',TokrioStaking,config.STAKING,[])
-      if(currentAPY.code == 200){
+      const currentAPY: any = await getReadData('getCurrentAPY', TokrioStaking, config.STAKING, [])
+      if (currentAPY.code == 200) {
         setCurrentAPY(new BigNumber(currentAPY.data).dividedBy(100).toFixed(0).toString())
       }
-     
+
 
       const info: any = await readContract(chainConfig, {
         address: config.STAKING as `0x${string}`,
         abi: TokrioStaking,
-        functionName: 'diagnoseStakingState',
+        functionName: 'getUserStakingInfo',
         args: [address]
       });
       console.log("getStakingInfo:", info)
       let stakeInfo = {
-        stakedAmount: info[1].totalStaked,
-        pendingReward: info[3].pendingReward,
-        userStaked: info[1].userStaked,
+        pendingReward: info[1],
+        userStaked: info[0],
       }
       setStakingInfo(stakeInfo as StakingInfo);
 
@@ -135,7 +134,7 @@ const StakingPage = () => {
     }
   };
 
-  // 质押
+ 
   const handleStake = async () => {
     if (!address || !stakeAmount) return;
     setClickType(2)
@@ -200,7 +199,7 @@ const StakingPage = () => {
         return
 
       }
-     
+
     } catch (error) {
       console.error('Error staking:', error);
       toast.error('Staking failed');
@@ -209,7 +208,7 @@ const StakingPage = () => {
     }
   };
 
-  // 解除质押
+  
   const handleUnstake = async () => {
     if (!address || !unstakeAmount) return;
 
@@ -265,7 +264,7 @@ const StakingPage = () => {
         functionName: 'unstake',
         args: [amount]
       });
-      let response =  await waitForTransactionReceipt(chainConfig, { hash });
+      let response = await waitForTransactionReceipt(chainConfig, { hash });
       if (response.status && response.status.toString() == "success") {
         fetchStakingInfo();
         setStakeAmount('');
@@ -276,7 +275,7 @@ const StakingPage = () => {
         return
 
       }
-     
+
       await fetchStakingInfo();
       setUnstakeAmount('');
       toast.success('Unstaking successful');
@@ -288,7 +287,7 @@ const StakingPage = () => {
     }
   };
 
-  // 领取奖励
+ 
   const handleClaim = async () => {
     if (!address) return;
     setClickType(4)
@@ -323,9 +322,9 @@ const StakingPage = () => {
           </p>
         </div>
 
-        <PoolData />
+        <PoolData currentAPY={currentAPY} />
 
-        <div className="grid grid-cols-1 mt-5 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 mb-20 mt-5 md:grid-cols-2 gap-8">
           {/* Staking Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -334,12 +333,6 @@ const StakingPage = () => {
           >
             <h3 className="text-xl font-bold text-white mb-6">Your Staking Stats</h3>
             <div className="space-y-4">
-            <div className="flex justify-between">
-                <span className="text-gray-400">Staked Total:</span>
-                <span className="text-white font-medium">
-                  {stakingInfo && stakingInfo.stakedAmount ? new BigNumber(stakingInfo.stakedAmount.toString()).div(1e18).toFixed(2) : '0'} TOKR
-                </span>
-              </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Your Staked:</span>
                 <span className="text-white font-medium">
@@ -370,7 +363,7 @@ const StakingPage = () => {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Current APR:</span>
+                <span className="text-gray-400">Current APY:</span>
                 <span className="text-green-400 font-bolder">{currentAPY}%</span>
               </div>
             </div>
@@ -458,7 +451,7 @@ const StakingPage = () => {
         </div>
 
         {/* Level Benefits */}
-        <div className="py-16">
+        {/* <div className="py-16">
           <h3 className="text-2xl font-bold text-white mb-8 text-center">Level Benefits</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((level) => (
@@ -491,7 +484,7 @@ const StakingPage = () => {
               </motion.div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
