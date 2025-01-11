@@ -38,7 +38,7 @@ const Dashboard = () => {
       initialUSDT: 1000,
       apiKeyId: '1',
       enabled: true,
-      trend: 'Bullish',
+      trending: -1,
       createdAt: new Date('2024-03-15'),
       balance: {
         usdt: 500,
@@ -57,7 +57,7 @@ const Dashboard = () => {
       initialUSDT: 500,
       apiKeyId: '1',
       enabled: false,
-      trend: 'Bearish',
+      trending: 1,
       createdAt: new Date('2024-03-15'),
       balance: {
         usdt: 300,
@@ -76,7 +76,7 @@ const Dashboard = () => {
       initialUSDT: 300,
       apiKeyId: '2',
       enabled: true,
-      trend: 'Neutral',
+      trending: -1,
       createdAt: new Date('2024-03-16'),
       balance: {
         usdt: 200,
@@ -446,12 +446,12 @@ const Dashboard = () => {
                                 Initial: {position.initialUSDT} USDT
                               </div>
                             </div>
-                            <div className={`px-3 py-1 rounded-full text-sm ${position.trendingStrength > 0 ? 'bg-green-500/20 text-green-400' :
-                              position.trendingStrength < 0 ? 'bg-red-500/20 text-red-400' :
-                                'bg-yellow-500/20 text-yellow-400'
-                              }`}>
-                              {position.trending}
-                            </div>
+                            <div className={`px-3 py-1 rounded-full text-sm ${position.trending > 0
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-red-500/20 text-red-400'
+                            }`}>
+                            {position.trending > 0 ? '↗' : '↘'} 
+                          </div>
                           </div>
 
                           <div className="flex items-center space-x-3">
@@ -462,7 +462,7 @@ const Dashboard = () => {
                                 initialUSDT: position.initialUSDT,
                                 apiKeyId: '1',
                                 enabled: position.enabled,
-                                trend: position.trending,
+                                trending: position.trending,
                                 createdAt: new Date(position.trendingUpdateTime),
                                 balance: {
                                   usdt: position.value,
@@ -587,7 +587,7 @@ const Dashboard = () => {
                         <div>
                           <div className="text-white font-medium flex items-center">
                             {apiKey.apiName}
-                            <span className="ml-2 px-2 py-1 bg-card rounded text-xs text-primary">
+                            <span className="ml-2 px-2 py-1 bg-amber-400 rounded text-xs text-primary">
                               {apiKey.platform}
                             </span>
                           </div>
@@ -596,9 +596,9 @@ const Dashboard = () => {
                           </div>
                         </div>
                         <div className="flex flex-col items-end">
-                          <div className="text-gray-400 text-sm">
+                          {/* <div className="text-gray-400 text-sm">
                             Secret: {apiKey.maskedSecret}
-                          </div>
+                          </div> */}
                           <div className="flex space-x-2 mt-2">
                             <button
                               onClick={() => handleDeleteApiKey(apiKey.id)}
@@ -635,7 +635,7 @@ const Dashboard = () => {
                     Loading tokens...
                   </div>
                 ) : (
-                  <div className="gap-4 grid grid-cols-2">
+                  <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
                     {tokens.map((token) => (
                       <div
                         key={token.id}
@@ -648,7 +648,7 @@ const Dashboard = () => {
                             ? 'bg-green-500/20 text-green-400'
                             : 'bg-red-500/20 text-red-400'
                             }`}>
-                            {token.trending > 0 ? '↗' : '↘'} Strength: {token.trendingStrength}
+                            {token.trending > 0 ? '↗' : '↘'} 
                           </div>
                         </div>
 

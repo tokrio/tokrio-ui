@@ -244,6 +244,55 @@ export const formatDateLocal = (millionSeconds: number) => {
   );
 };
 
+export const formatDateUTC = (millionSeconds: number) => {
+  let date = new Date(millionSeconds);
+  let monthArr = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  let year = date.getUTCFullYear();
+  let month = monthArr[date.getUTCMonth()];
+  let dDate = date.getUTCDate();
+  let hours: any = date.getUTCHours();
+  let minute: any = date.getUTCMinutes();
+  let second: any = date.getUTCSeconds();
+
+  if (hours < 10) {
+    hours = "0" + hours;
+  }
+
+  if (minute < 10) {
+    minute = "0" + minute;
+  }
+
+  if (second < 10) {
+    second = "0" + second;
+  }
+
+  return (
+    month +
+    " " +
+    dDate +
+    ", " +
+    year +
+    " " +
+    hours +
+    ":" +
+    minute +
+    " UTC"
+  );
+};
+
 
 export const commonFormatDateLocal = (millionSeconds: number) => {
   let date = new Date(millionSeconds);

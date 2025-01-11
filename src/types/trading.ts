@@ -4,7 +4,7 @@ export interface TradingPairConfig {
   initialUSDT: number;
   apiKeyId: string;
   enabled: boolean;
-  trend: string;
+  trending: number;
   createdAt: Date;
   balance: {
     usdt: number;
@@ -24,7 +24,7 @@ export interface NewTradingPairConfig {
   initialUSDT: number;
   apiKeyId: string;
   enabled: boolean;
-  trend: string;
+  trending: number;
   createdAt: Date;
 }
 

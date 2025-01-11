@@ -23,7 +23,8 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
   const getSimulate = async() => {
     setLoading(true);
     try {
-      const response = await api.simulate(formData);
+      let data = {...formData, usdtAmount: Number(formData.usdtAmount)}
+      const response = await api.simulate(data);
       if (response.code === 200) {
         setResult(response.body);
       }

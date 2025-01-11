@@ -16,7 +16,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
   onSave,
   apiKeys
 }) => {
-  const [formData, setFormData] = useState<Omit<NewTradingPairConfig, 'id' | 'createdAt' | 'trend' | 'enabled'>>({
+  const [formData, setFormData] = useState<Omit<NewTradingPairConfig, 'id' | 'createdAt' | 'trending' | 'enabled'>>({
     symbol: '',
     initialUSDT: 100,
     apiKeyId: ''
@@ -25,7 +25,6 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 获取可用的交易对列表
   useEffect(() => {
     const fetchTokenPairs = async () => {
       try {
@@ -33,7 +32,6 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
         const response = await api.listTokenPairs();
         if (response.code === 200) {
           setTokenPairs(response.body.pairs);
-          // 如果有交易对，设置第一个为默认选择
           if (response.body.pairs.length > 0) {
             setFormData(prev => ({
               ...prev,
@@ -53,16 +51,29 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
     }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      trend: 'Neutral',
-      enabled: false
-    });
-    onClose();
+    try {
+      const response = await api.addTokenPairs({
+        tokenSymbol: formData.symbol,
+        apiKeyId: Number(formData.apiKeyId),
+        usdtAmount: formData.initialUSDT
+      });
+      if (response.code === 200) {
+        onSave({
+          ...formData,
+          id: Date.now().toString(),
+          createdAt: new Date(),
+          trending: -1,
+          enabled: false
+        });
+        onClose();
+      }
+    } catch (error) {
+      console.error('Failed to create API key:', error);
+    }
+
+    
   };
 
   if (!isOpen) return null;

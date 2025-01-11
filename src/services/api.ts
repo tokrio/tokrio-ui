@@ -20,7 +20,7 @@ export interface Position {
   initialUSDT: number;
   profit: number;
   profitRate: number;
-  trending: string;
+  trending: number;
   trendingStrength: number;
   trendingUpdateTime: string;
   enabled: boolean;
@@ -62,6 +62,12 @@ export interface TokenPair {
   currentPrice: number;
 }
 
+export interface TokenPairParam {
+  tokenSymbol: string;
+  usdtAmount: number;
+  apiKeyId: number;
+}
+
 export interface TokenPairsResponse {
   pairs: TokenPair[];
   total: number;
@@ -70,7 +76,7 @@ export interface TokenPairsResponse {
 // Simulation Trading Interface
 export interface SimulateRequest {
   tokenSymbol: string;
-  usdtAmount: string;
+  usdtAmount: number;
   startDate: string;
   endDate: string;
 }
@@ -147,6 +153,12 @@ export const api = {
   // Token Pairs API
   listTokenPairs: async (): Promise<ApiResponse<TokenPairsResponse>> => {
     const response = await axios.get(`${API_BASE_URL}/token/pairs`);
+    return response.data;
+  },
+
+  // Add Token Pairs API
+  addTokenPairs: async (data: TokenPairParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/account`, data);
     return response.data;
   },
 
