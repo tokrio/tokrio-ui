@@ -9,6 +9,7 @@ import SimulateTrading from './SimulateTrading';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import { useAccount } from 'wagmi';
+import { Link } from 'react-router-dom';
 
 // Tab Type Definition
 type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate';
@@ -554,13 +555,18 @@ const Dashboard = () => {
            
             {activeTab === 'apikeys' && (
               <div className="bg-card  rounded-lg p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
+                <div className="flex  items-center mb-6">
+                  <div className='flex-1'>
                     <h3 className="text-lg font-medium text-white">API Keys</h3>
                     <p className="text-sm text-gray-400 mt-1">
                       Total: {apiKeys.length} keys
                     </p>
                   </div>
+                  <Link to={'/intro'}><button
+                    className="px-4 py-2 mr-2 common-button"
+                  >
+                    Get API Key?
+                  </button></Link>
                   <button
                     onClick={() => setIsApiKeyManagerOpen(true)}
                     className="px-4 py-2 cta-button"

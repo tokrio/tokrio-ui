@@ -22,6 +22,7 @@ import AdvantagesSection from './components/AdvantagesSection';
 import LevelBenefitsPage from './pages/LevelBenefitsPage';
 import JarvisPage from './pages/JarvisPage';
 import ClaimPage from './pages/ClaimPage';
+import IntroPage from './pages/IntroPage';
 
 // Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -68,6 +69,10 @@ function App() {
     {
       path: "/claim",
       element: <ClaimPage />
+    },
+    {
+      path: "/intro",
+      element: <IntroPage />
     },
     {
       path: "/dashboard",

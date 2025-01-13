@@ -344,3 +344,33 @@ export const commonFormatDateLocal = (millionSeconds: number) => {
     ""
   );
 };
+
+
+export const commonLocal = (millionSeconds: number) => {
+  let date = new Date(millionSeconds);
+  let monthArr = [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+  ];
+  let year = date.getFullYear();
+  let month = monthArr[date.getMonth()];
+  let dDate = date.getDate();
+
+  return (
+    year +
+    "-" +
+    month +
+    "-" +
+    dDate
+  );
+};

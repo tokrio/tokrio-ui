@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { api, SimulateResult, TokenPair } from '../services/api';
+import { commonLocal } from '../util/utils';
 
 interface SimulateTradingProps {
   tokenPairs: TokenPair[];
@@ -13,7 +14,7 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
     tokenSymbol: '',
     usdtAmount: '',
     startDate: '2022-11-01',
-    endDate: '2026-11-01'
+    endDate: commonLocal(new Date().getTime()),
   });
 
   useEffect(()=>{
