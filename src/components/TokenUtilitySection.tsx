@@ -6,22 +6,22 @@ const TokenUtilitySection = () => {
     {
       title: "Tier Progression System",
       description: "Enhance trading capabilities through strategic TOKR accumulation and tier advancement",
-      icon: "🔝"
+      icon: "📈"
     },
     {
       title: "Yield Generation",
       description: "Generate passive income through participation in the protocol's reward distribution mechanism",
-      icon: "💰"
+      icon: "💸"
     },
     {
       title: "Revenue Sharing",
       description: "Participate in the protocol's revenue stream by sponsoring qualified traders",
-      icon: "🤝"
+      icon: "💼"
     },
     {
       title: "Market Intelligence",
       description: "Access premium market insights and emerging trading opportunities through TOKR staking",
-      icon: "🔍"
+      icon: "📊"
     }
   ];
 

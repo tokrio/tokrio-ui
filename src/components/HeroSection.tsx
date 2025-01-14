@@ -27,7 +27,8 @@ const HeroSection = () => {
 
   const handleBuyToken = () => {
     // 跳转到指定的 DEX 链接
-    window.open('https://pancakeswap.finance/swap?outputCurrency=0x3380eb9fE9242b4955ACFa019D495cDD64DfA764', '_blank');
+    // window.open('https://pancakeswap.finance/swap?outputCurrency=0x3380eb9fE9242b4955ACFa019D495cDD64DfA764', '_blank');
+    window.open('https://lfj.gg/avalanche/trade', '_blank');
   };
 
 
@@ -95,7 +96,7 @@ const HeroSection = () => {
               TOKR Price: ${unitPrice} USDT
             </div>
             <div className="text-sm text-gray-400 mt-1">
-              Market Cap: ${unitPrice === "???"?"???": new BigNumber(unitPrice).multipliedBy(1000000000).toFixed(0)} USDT
+              Market Cap: ${unitPrice === "???"?"???": new BigNumber(unitPrice).multipliedBy(1000000000).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} USDT
             </div>
           </motion.div>
 
