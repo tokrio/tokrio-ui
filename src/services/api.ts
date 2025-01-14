@@ -134,6 +134,21 @@ export const api = {
     return response.data;
   },
 
+  // Price API
+  getTokenPrice: async (body: any): Promise<any> => {
+    // const response = await axios.get(`https://router.lfj.gg/v2/aggregator/routes/avalanche?amountIn=1000000000000000000&tokenIn=${config.TOKEN}&tokenOut=${config.USDT_TOKEN}`, {
+    const response = await axios.post(`${API_BASE_URL}/helper/proxy`, body);
+    // const response = await axios.get(`${API_BASE_URL}/helper/proxy`, {
+    //   params: {
+    //     url
+    //   },
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   }
+    // });
+    return response.data.body.responseBody;
+  },
+
   // API Key Management APIs
   createApiKey: async (data: CreateApiKeyRequest): Promise<ApiResponse<ApiKey>> => {
     const response = await axios.post(`${API_BASE_URL}/api-keys`, data);
@@ -197,9 +212,9 @@ export const tokenStorage = {
 
 // Axios Interceptor for Bearer Token
 axios.interceptors.request.use((config: any) => {
-  const token = tokenStorage.getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  // const token = tokenStorage.getToken();
+  // if (token) {
+  //   config.headers.Authorization = `Bearer ${token}`;
+  // }
   return config;
 }); 
