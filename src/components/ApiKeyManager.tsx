@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CreateApiKeyRequest } from '../services/api';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 
 interface ApiKeyManagerProps {
   isOpen: boolean;
@@ -56,14 +58,22 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({ isOpen, onClose, onSave }
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Platform
             </label>
-            <select
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-              value={formData.platform}
-              onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-              required
-            >
-              <option value="binance">Binance</option>
-            </select>
+            <Listbox value={formData.platform} onChange={(value) => setFormData({ ...formData, platform: value })}>
+              <div className="relative">
+                <ListboxButton className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-left">
+                  {formData.platform}
+                  <ChevronDownIcon
+                    className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-white/60"
+                    aria-hidden="true"
+                  />
+                </ListboxButton>
+                <ListboxOptions className="absolute  h-40 w-full overflow-auto mt-1 bg-gray-700 border border-gray-600 rounded shadow-lg z-10">
+                  <ListboxOption value="binance" className="cursor-pointer  select-none relative py-2 px-3 text-white hover:bg-gray-600">
+                    binance
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
           </div>
 
           <div>

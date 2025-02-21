@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ApiKey, api, TokenPair } from '../services/api';
 import { NewTradingPairConfig } from '../types/trading';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 
 interface TradingPairManagerProps {
   isOpen: boolean;
@@ -73,7 +75,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
       console.error('Failed to create API key:', error);
     }
 
-    
+
   };
 
   if (!isOpen) return null;
@@ -95,38 +97,70 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
               <label className="block text-sm font-medium text-gray-300 mb-1">
                 Select API Key
               </label>
-              <select
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-                value={formData.apiKeyId}
-                onChange={(e) => setFormData({ ...formData, apiKeyId: e.target.value })}
-                required
-              >
-                <option value="">Select an API Key</option>
-                {apiKeys.map((key) => (
-                  <option key={key.id} value={key.id}>
-                    {key.apiName} ({key.platform})
-                  </option>
-                ))}
-              </select>
+              <Listbox value={formData.apiKeyId} onChange={(value) => setFormData({ ...formData, apiKeyId: value })}>
+                <div className="relative">
+                  <ListboxButton className="w-full text-left bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white">
+                    {formData.apiKeyId ? apiKeys.find(key => key.id + "" === formData.apiKeyId + "")?.apiName : 'Select an API Key'}
+                    <ChevronDownIcon
+                      className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-white/60"
+                      aria-hidden="true"
+                    />
+                  </ListboxButton>
+                  <ListboxOptions className="mt-1 z-50 absolute h-40 w-full overflow-auto bg-gray-700 border border-gray-600 rounded-md py-1 text-base shadow-lg ring-1 ring-black focus:outline-none sm:text-sm">
+                    <ListboxOption value="">
+                      {({ selected }) => (
+                        <div className={`cursor-default select-none relative py-2  px-4 ${selected ? 'text-white' : 'text-gray-300'}`}>
+                          Select an API Key
+                        </div>
+                      )}
+                    </ListboxOption>
+                    {apiKeys.map((key) => (
+                      <ListboxOption key={key.id} value={key.id}>
+                        {({ selected }) => (
+                          <div className={`cursor-pointer select-none relative py-2 px-4 ${selected ? 'text-white' : 'text-gray-300'}`}>
+                            {key.apiName} ({key.platform})
+                          </div>
+                        )}
+                      </ListboxOption>
+                    ))}
+                  </ListboxOptions>
+                </div>
+              </Listbox>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
                 Trading Pair
               </label>
-              <select
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-                value={formData.symbol}
-                onChange={(e) => setFormData({ ...formData, symbol: e.target.value })}
-                required
-              >
-                <option value="">Select a trading pair</option>
-                {tokenPairs.map((pair) => (
-                  <option key={pair.tokenSymbol} value={pair.tokenSymbol}>
-                    {pair.tokenSymbol} (${pair.currentPrice})
-                  </option>
-                ))}
-              </select>
+              <Listbox value={formData.symbol} onChange={(value) => setFormData({ ...formData, symbol: value })}>
+                <div className="relative">
+                  <ListboxButton className="w-full text-left bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white">
+                    {formData.symbol || 'Select a trading pair'}
+                    <ChevronDownIcon
+                      className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-white/60"
+                      aria-hidden="true"
+                    />
+                  </ListboxButton>
+                  <ListboxOptions className="mt-1 absolute max-h-60 w-full overflow-auto bg-gray-700 border border-gray-600 rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    <ListboxOption value="">
+                      {({ selected }) => (
+                        <div className={`cursor-default select-none relative py-2 px-4 ${selected ? 'text-white' : 'text-gray-300'}`}>
+                          Select a trading pair
+                        </div>
+                      )}
+                    </ListboxOption>
+                    {tokenPairs.map((pair) => (
+                      <ListboxOption key={pair.tokenSymbol} value={pair.tokenSymbol}>
+                        {({ selected }) => (
+                          <div className={` cursor-pointer select-none relative py-2 px-4 ${selected ? 'text-white' : 'text-gray-300'}`}>
+                            {pair.tokenSymbol} (${pair.currentPrice})
+                          </div>
+                        )}
+                      </ListboxOption>
+                    ))}
+                  </ListboxOptions>
+                </div>
+              </Listbox>
             </div>
 
             <div>
@@ -155,7 +189,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 cta-button"
+                className="px-4 py-2 bg-[#412700] border text-white rounded-lg border-[#FFA41C] hover:bg-[#000]"
               >
                 Add Trading Pair
               </button>

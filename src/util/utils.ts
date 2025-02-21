@@ -365,12 +365,16 @@ export const commonLocal = (millionSeconds: number) => {
   let year = date.getFullYear();
   let month = monthArr[date.getMonth()];
   let dDate = date.getDate();
+  let sDate = "";
+  if (dDate < 10) {
+    sDate = "0" + dDate;
+  }
 
   return (
     year +
     "-" +
     month +
     "-" +
-    dDate
+    sDate
   );
 };

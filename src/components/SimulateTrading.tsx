@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { api, SimulateResult, TokenPair } from '../services/api';
 import { commonLocal } from '../util/utils';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 
 interface SimulateTradingProps {
   tokenPairs: TokenPair[];
@@ -13,18 +17,18 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
   const [formData, setFormData] = useState({
     tokenSymbol: '',
     usdtAmount: '',
-    startDate: '2022-11-01',
+    startDate: '2024-11-01',
     endDate: commonLocal(new Date().getTime()),
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     getSimulate()
-  },[])
+  }, [])
 
-  const getSimulate = async() => {
+  const getSimulate = async () => {
     setLoading(true);
     try {
-      let data = {...formData, usdtAmount: Number(formData.usdtAmount)}
+      let data = { ...formData, usdtAmount: Number(formData.usdtAmount) }
       const response = await api.simulate(data);
       if (response.code === 200) {
         setResult(response.body);
@@ -55,19 +59,42 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Trading Pair
           </label>
-          <select
-            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
-            value={formData.tokenSymbol}
-            onChange={(e) => setFormData({ ...formData, tokenSymbol: e.target.value })}
-            required
-          >
-            <option value="">Select a trading pair</option>
-            {tokenPairs.map((pair) => (
-              <option key={pair.tokenSymbol} value={pair.tokenSymbol}>
-                {pair.tokenSymbol} (${pair.currentPrice})
-              </option>
-            ))}
-          </select>
+          <Listbox value={formData.tokenSymbol} onChange={(value) => setFormData({ ...formData, tokenSymbol: value })}>
+            <div className="relative">
+              <ListboxButton className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-left">
+                {formData.tokenSymbol ? formData.tokenSymbol : 'Select a trading pair'}
+                <ChevronDownIcon
+                  className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-white/60"
+                  aria-hidden="true"
+                />
+              </ListboxButton>
+              <ListboxOptions className="absolute mt-1 w-full bg-gray-700 border border-gray-600 rounded shadow-lg z-10 max-h-44 overflow-auto">
+                {tokenPairs.map((pair) => (
+                  <ListboxOption
+                    key={pair.tokenSymbol}
+                    value={pair.tokenSymbol}
+                    className={({ active }) =>
+                      `cursor-pointer select-none relative py-2 px-4 ${active ? 'bg-gray-600 text-white' : 'text-gray-300'
+                      }`
+                    }
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                          {pair.tokenSymbol} (${pair.currentPrice})
+                        </span>
+                        {/* {selected ? (
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-white">
+                      ✓
+                      </span>
+                    ) : null} */}
+                      </>
+                    )}
+                  </ListboxOption>
+                ))}
+              </ListboxOptions>
+            </div>
+          </Listbox>
         </div>
 
         <div>
@@ -87,26 +114,52 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
           <label className="block text-sm font-medium text-gray-300 mb-1">
             Start Date
           </label>
-          <input
+          <DatePicker
+            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            selected={formData.startDate}
+            onChange={(date: any) => {
+              console.log(date)
+              //console.log(getTime(date))
+              setFormData({ ...formData, startDate: date })
+            }}
+            // customInput={<CustomInput />}
+            // timeFormat="HH:mm"
+            style={{ width: '100%' }}
+            // timeIntervals={10}
+            timeCaption="time"
+            dateFormat="yyyy-MM-dd"
+          />
+          {/* <input
             type="date"
             className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
             value={formData.startDate}
             onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
             required
-          />
+          /> */}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-1">
             End Date
           </label>
-          <input
+          <DatePicker
+            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
+            selected={formData.endDate}
+            onChange={(date: any) => {
+              console.log(date)
+              setFormData({ ...formData, endDate: date })
+            }}
+            style={{ width: '100%' }}
+            timeCaption="time"
+            dateFormat="yyyy-MM-dd"
+          />
+          {/* <input
             type="date"
             className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white"
             value={formData.endDate}
             onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
             required
-          />
+          /> */}
         </div>
 
         <div className="md:col-span-2">
@@ -171,9 +224,8 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
                       {trade.date}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        trade.type === 'buy' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs ${trade.type === 'buy' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                        }`}>
                         {trade.type.toUpperCase()}
                       </span>
                     </td>
@@ -198,3 +250,13 @@ const SimulateTrading: React.FC<SimulateTradingProps> = ({ tokenPairs }) => {
 };
 
 export default SimulateTrading; 
+
+
+const CustomInput = forwardRef(({ value, onClick }: any, ref: any) => (
+  // <input onClick={onClick} ref={ref} onChange={(e) => {
+  //     setSt(e.target.value)
+  // }} value={st} placeholder="18" className="placeholder:text-slate-700 text-slate-300 focus:outline-none border rounded p-2  border-gray-600 w-full bg-[#14151A]" />
+  <button  className="placeholder:text-slate-700 w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-left focus:outline-none" onClick={onClick} ref={ref}>
+      {value}
+  </button>
+));

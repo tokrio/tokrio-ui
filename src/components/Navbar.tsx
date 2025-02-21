@@ -5,6 +5,7 @@ import Logo from './Logo';
 import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { useAccount } from 'wagmi';
 import { tokenStorage } from '../services/api';
+import { LogoIcon } from '../img/FileImports';
 
 interface Props {
   showMenu?: boolean
@@ -41,7 +42,8 @@ const Navbar = ({ showMenu = true }: Props) => {
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => navigate('/')}
           >
-            <Logo size={32} />
+            {/* <Logo size={32} /> */}
+            <img src={process.env.PUBLIC_URL + 'logo.png'} alt="logo" className="h-8 w-auto  rounded-full" />
             <span className="text-xl tracking-widest hidden md:block uppercase main-font  font-medium text-primary">Tokrio</span>
           </motion.div>
 

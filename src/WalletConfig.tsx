@@ -36,7 +36,7 @@ const APP_NAME = 'TradeOFF Dapp'
 //     },
 // })
 
-export const chainConfig = getDefaultConfig(
+export const chainConfig:any = getDefaultConfig(
     {
       appName: 'Tokrio',
       projectId: WALLET_CONNECT_PROJECT_ID,

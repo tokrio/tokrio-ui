@@ -212,9 +212,9 @@ export const tokenStorage = {
 
 // Axios Interceptor for Bearer Token
 axios.interceptors.request.use((config: any) => {
-  // const token = tokenStorage.getToken();
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  // }
+  const token = tokenStorage.getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 }); 

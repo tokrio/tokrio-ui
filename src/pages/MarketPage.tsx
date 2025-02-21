@@ -12,6 +12,8 @@ import toast from 'react-hot-toast';
 import { erc20Abi } from 'viem';
 import { fetchBalanceObj } from '../contract/api';
 import TokenName from '../components/TokenName';
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 
 interface Sponsor {
   creator: string;
@@ -69,15 +71,15 @@ const MarketPage = () => {
 
     let list = sponsorList[0]
 
-    console.log("list=",list)
-    
-    
+    console.log("list=", list)
+
+
     setSponsors([...list])
 
 
   }
 
-  const buySponsor = async (offerId: string,usdtAmount: string) => {
+  const buySponsor = async (offerId: string, usdtAmount: string) => {
     setBuyOfferLoading(true)
     try {
 
@@ -93,7 +95,7 @@ const MarketPage = () => {
         functionName: 'allowance',
         args: [address as `0x${string}`, config.SPONSOR as `0x${string}`],
       })
-      console.log("allowance=",allowance)
+      console.log("allowance=", allowance)
 
       if (new BigNumber(allowance.toString()).isLessThan(usdtAmount)) {
 
@@ -191,17 +193,27 @@ const MarketPage = () => {
               <label className="block text-sm font-medium text-gray-400 mb-2">
                 Level
               </label>
-              <select
-                value={filters.level}
-                onChange={(e) => setFilters({ ...filters, level: e.target.value === 'all' ? 'all' : Number(e.target.value) })}
-                className="w-full bg-black border border-gray-600 rounded px-3 py-2 text-white"
-              >
-                <option value="all">All Levels</option>
-                <option value="1">Level 1</option>
-                <option value="2">Level 2</option>
-                <option value="3">Level 3</option>
-                <option value="4">Level 4</option>
-              </select>
+              <Listbox value={filters.level} onChange={(value) => setFilters({ ...filters, level: value })}>
+                <div className="relative">
+                  <ListboxButton className="w-full bg-black border border-gray-600 rounded px-3 py-2 text-white text-left">
+                    {filters.level === 'all' ? 'All Levels' : `Level ${filters.level}`}
+                    <ChevronDownIcon
+                      className="group pointer-events-none absolute top-2.5 right-2.5 size-4 fill-white/60"
+                      aria-hidden="true"
+                    />
+                  </ListboxButton>
+                  <ListboxOptions className="absolute mt-1 w-full bg-black border border-gray-600 rounded shadow-lg z-10">
+                    <ListboxOption value="all" className="cursor-pointer select-none relative py-2 px-3 text-white hover:bg-gray-700">
+                      All Levels
+                    </ListboxOption>
+                    {[1, 2, 3, 4].map((level) => (
+                      <ListboxOption key={level} value={level} className="cursor-pointer select-none relative py-2 px-3 text-white hover:bg-gray-700">
+                        Level {level}
+                      </ListboxOption>
+                    ))}
+                  </ListboxOptions>
+                </div>
+              </Listbox>
             </div>
 
             <div>
@@ -273,7 +285,7 @@ const MarketPage = () => {
                   <div className="text-sm text-gray-400">
                     {new BigNumber(sponsor.duration.toString()).dividedBy(24 * 3600).toFixed()} Days
                   </div>
-                 
+
                 </div>
               </div>
 
@@ -297,7 +309,7 @@ const MarketPage = () => {
               <button
                 onClick={() => {
                   setOfferId(sponsor.offerId.toString())
-                  buySponsor(sponsor.offerId.toString(),sponsor.usdtAmount.toString())
+                  buySponsor(sponsor.offerId.toString(), sponsor.usdtAmount.toString())
                 }}
                 disabled={buyOfferLoading}
                 className="w-full px-4 py-2 cta-button disabled:opacity-50"

@@ -78,6 +78,10 @@ body {
   @apply bg-[#020202] text-[#999] text-sm font-medium;
 }
 
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
 .custom-progress {
   background-color:#FFA41C;
 }

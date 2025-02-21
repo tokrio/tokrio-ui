@@ -383,7 +383,7 @@ const StakingPage = () => {
                 <label className="block font-medium text-gray-400 mb-2">
                   Stake Amount
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex space-x-0 md:space-x-2">
                   <input
                     type="number"
                     value={stakeAmount}
@@ -418,7 +418,7 @@ const StakingPage = () => {
                 <label className="block font-medium text-gray-400 mb-2">
                   Unstake Amount
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex space-x-0 md:space-x-2">
                   <input
                     type="number"
                     value={unstakeAmount}
