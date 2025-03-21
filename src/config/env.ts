@@ -46,12 +46,10 @@ const ENV_CONFIG: Record<string, EnvConfig> = {
   }
 };
 
-// 使用 REACT_APP_ENV 环境变量
 const getEnvConfig = (): EnvConfig => {
   const env = process.env.REACT_APP_ENV || 'development';
   const config = ENV_CONFIG[env] || ENV_CONFIG.development;
 
-  // 添加调试日志
   console.log('=================================');
   console.log('Environment:', env);
   console.log('API_BASE_URL:', config.API_BASE_URL);
