@@ -12,7 +12,7 @@ interface EnvConfig {
 
 const ENV_CONFIG: Record<string, EnvConfig> = {
   development: {
-    API_BASE_URL: 'http://localhost:6500/api',
+    API_BASE_URL: 'https://beta-api-1.tokrio.com/api',
     ECONOMY: '0x1f246fC9E9D1AdCb8a1939cf96E575Db6cE0F92F',
     USDT_TOKEN: '0x88e9C81F4b1D0721755F882dAfa2607D849ED1a3',
     STAKING: '0x8A502A63DdD970C319D9F50B259B784BBB819312',

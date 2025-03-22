@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import { useAccount } from 'wagmi';
 import { Link } from 'react-router-dom';
-import { FaArrowDown, FaChevronDown } from 'react-icons/fa';
 
 // Tab Type Definition
 type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate';
@@ -95,7 +94,7 @@ const Dashboard = () => {
   const [selectedPair, setSelectedPair] = useState<TradingPairConfig | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [tradeHistory, setTradeHistory] = useState<Record<string, TradeHistory[]>>({
-    '1': [
+    '1': [ 
       {
         id: '1',
         orderId: 'ORD123456',
@@ -149,7 +148,6 @@ const Dashboard = () => {
   const [tokenLoading, setTokenLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTokens, setTotalTokens] = useState(0);
-  const [userGroup, setUserGroup] = useState<any[]>([]);
 
   // Fetch Portfolio Data
   const fetchPortfolioData = async () => {
@@ -182,21 +180,8 @@ const Dashboard = () => {
   useEffect(() => {
     if (activeTab === 'apikeys') {
       fetchApiKeys();
-    } else if (activeTab === 'trading') {
-      getUserGroup();
     }
   }, [activeTab]);
-
-  const getUserGroup = async () => {
-
-    const response = await api.getUserGroup();
-    if (response.code === 200 && response.body.data) {
-      if (response.body.data && response.body.data.length > 0) {
-        setUserGroup(response.body.data)
-      }
-    }
-
-  };
 
   useEffect(() => {
     fetchPortfolioData();
@@ -213,19 +198,6 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Failed to create API key:', error);
-    }
-  };
-
-  const deactivateGroup = async (groupId: number) => {
-    try {
-      const response = await api.deactivateGroup({
-        userGroupId: groupId,
-      }); 
-      if (response.code === 200) {
-        getUserGroup();
-      }
-    } catch (error) {
-      console.error('Failed to deactivate group:', error);
     }
   };
 
@@ -402,12 +374,12 @@ const Dashboard = () => {
                     : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
-                  Trading Group
-                  {/* <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
+                  Trading Pairs
+                  <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
                     {portfolioData?.positions?.length || 0}
-                  </span> */}
+                  </span>
                 </button>
-
+                
                 <button
                   onClick={() => setActiveTab('apikeys')}
                   className={`${activeTab === 'apikeys'
@@ -443,163 +415,144 @@ const Dashboard = () => {
               <div className="bg-card  rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h3 className="text-lg font-medium text-white">Trading Group</h3>
-                    {/* <p className="text-sm text-gray-400 mt-1">
+                    <h3 className="text-lg font-medium text-white">Trading Pairs</h3>
+                    <p className="text-sm text-gray-400 mt-1">
                       Active: {portfolioData?.activeTrades || 0} / Total: {portfolioData?.positions.length || 0}
-                    </p> */}
+                    </p>
                   </div>
                   <button
                     onClick={handleOpenTradingPairManager}
                     className="px-4 py-2 cta-button"
                   >
-                    Add Trading Group
+                    Add Trading Pair
                   </button>
                 </div>
 
-                {!userGroup?.length ? (
+                {!portfolioData?.positions.length ? (
                   <div className="text-center py-8 text-gray-400">
-                    No trading group configured yet. Click the button above to add one.
+                    No trading pairs configured yet. Click the button above to add one.
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {userGroup.map((group) => (
-                      <div key={group.id} className="bg-card rounded-lg p-2">
-
-                        <div className='flex text-white mb-2 justify-between items-center'>
-                          <div className='text-base'>{group.groupName} ${group.currentTotalValue}
-                          <span className={`ml-2 bg-slate-500 p-1 rounded-md ${group.active===1? 'text-green-400':'text-red-400'}`}>{group.active === 1? 'Active':'Deactivate'}</span>
+                    {portfolioData.positions.map((position) => (
+                      <div
+                        key={position.tokenSymbol}
+                        className="bg-card rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
+                      >
+                        <div className="flex justify-between items-start mb-6">
+                          <div className="flex items-center space-x-4">
+                            <div>
+                              <div className="text-xl font-medium text-white">{position.tokenSymbol}</div>
+                              <div className="text-sm text-gray-400 mt-1">
+                                Initial: {position.initialUSDT} USDT
+                              </div>
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-sm ${position.trending > 0
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-red-500/20 text-red-400'
+                            }`}>
+                            {position.trending > 0 ? '↗' : '↘'} 
                           </div>
-                          
-                          {/* <FaChevronDown className='ml-2' /> */}
-                          {group.active === 1 && <button onClick={()=>{
-                              deactivateGroup(group.id)
-                          }} className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">Deactivate Group</button>}
-                        </div>
-                        <div className='grid grid-cols-1 gap-4'>
-                          {group.positions.map((position:any) => (
-                            <div
-                              key={position.tokenSymbol}
-                              className="bg-card rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
+                          </div>
+
+                          <div className="flex items-center space-x-3">
+                            <button
+                              onClick={() => handleViewHistory({
+                                id: position.id || position.tokenSymbol,
+                                symbol: position.tokenSymbol,
+                                initialUSDT: position.initialUSDT,
+                                apiKeyId: '1',
+                                enabled: position.enabled,
+                                trending: position.trending,
+                                createdAt: new Date(position.trendingUpdateTime),
+                                balance: {
+                                  usdt: position.value,
+                                  token: position.tokenAmount,
+                                  tokenPrice: position.currentPrice
+                                },
+                                performance: {
+                                  totalValue: position.value,
+                                  pnl: position.profitRate,
+                                  pnlAmount: position.profit
+                                }
+                              })}
+                              className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
                             >
-                              <div className=" mb-6 gap-3 grid grid-cols-1 md:grid-cols-2">
-                                <div className="flex items-center space-x-4">
-                                  <div>
-                                    <div className="text-xl font-medium text-white">{position.tokenSymbol}</div>
-                                    <div className="text-sm text-gray-400 mt-1">
-                                      Initial: {position.initialUSDT} USDT
-                                    </div>
-                                  </div>
-                                  <div className={`px-3 py-1 rounded-full text-sm ${position.trending > 0
-                                    ? 'bg-green-500/20 text-green-400'
-                                    : 'bg-red-500/20 text-red-400'
-                                    }`}>
-                                    {position.trending > 0 ? '↗' : '↘'}
-                                  </div>
-                                </div>
+                              History
+                            </button>
+                            <button
+                              onClick={() => handleTradingPairToggle(position.id || position.tokenSymbol)}
+                              className={`px-4 py-1.5 rounded-lg text-sm font-medium ${position.enabled
+                                ? 'bg-primary text-white'
+                                : 'bg-gray-700 text-gray-400'
+                                }`}
+                            >
+                              {position.enabled ? 'Enabled' : 'Disabled'}
+                            </button>
+                            <button className="px-3 py-1.5 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-900/50 text-sm">
+                              Delete
+                            </button>
+                          </div>
+                        </div>
 
-                                <div className="flex items-center space-x-3">
-                                  <button
-                                    onClick={() => handleViewHistory({
-                                      id: position.id || position.tokenSymbol,
-                                      symbol: position.tokenSymbol,
-                                      initialUSDT: position.initialUSDT,
-                                      apiKeyId: '1',
-                                      enabled: position.enabled,
-                                      trending: position.trending,
-                                      createdAt: new Date(position.trendingUpdateTime),
-                                      balance: {
-                                        usdt: position.value,
-                                        token: position.tokenAmount,
-                                        tokenPrice: position.currentPrice
-                                      },
-                                      performance: {
-                                        totalValue: position.value,
-                                        pnl: position.profitRate,
-                                        pnlAmount: position.profit
-                                      }
-                                    })}
-                                    className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
-                                  >
-                                    History
-                                  </button>
-                                  {/* <button
-                                    onClick={() => handleTradingPairToggle(position.id || position.tokenSymbol)}
-                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium ${position.enabled
-                                      ? 'bg-primary text-white'
-                                      : 'bg-gray-700 text-gray-400'
-                                      }`}
-                                  >
-                                    {position.enabled ? 'Enabled' : 'Disabled'}
-                                  </button> */}
-                                 
+                        <div className="grid grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <div className="text-sm text-gray-400">Current Balance</div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <div className="text-sm text-gray-400">USDT</div>
+                                <div className="text-white font-medium">
+                                  ${position.value.toFixed(2)}
                                 </div>
                               </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                  <div className="text-sm text-gray-400">Current Balance</div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <div className="text-sm text-gray-400">USDT</div>
-                                      <div className="text-white font-medium">
-                                        ${position.value.toFixed(2)}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="text-sm text-gray-400">{position.tokenSymbol.split('USDT')[0]}</div>
-                                      <div className="text-white font-medium">
-                                        {position.tokenAmount.toFixed(6)}
-                                        <span className="text-sm text-gray-400 ml-1">
-                                          (${(position.tokenAmount * position.currentPrice).toFixed(2)})
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                  <div className="text-sm text-gray-400">Performance</div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <div className="text-sm text-gray-400">Total Value</div>
-                                      <div className="text-white font-medium">
-                                        ${position.value.toFixed(2)}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="text-sm text-gray-400">PNL</div>
-                                      <div className={`font-medium flex items-center ${position.profitRate >= 0 ? 'text-green-400' : 'text-red-400'
-                                        }`}>
-                                        {position.profitRate >= 0 ? '+' : ''}{position.profitRate}%
-                                        <span className="block ml-2 text-sm">
-                                          ${Math.abs(position.profit).toFixed(2)}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="mt-4 pt-4 border-t border-gray-700">
-                                <div className="text-sm text-gray-400">
-                                  Last Update: {position.trendingUpdateTime}
+                              <div>
+                                <div className="text-sm text-gray-400">{position.tokenSymbol.split('USDT')[0]}</div>
+                                <div className="text-white font-medium">
+                                  {position.tokenAmount.toFixed(6)}
+                                  <span className="text-sm text-gray-400 ml-1">
+                                    (${(position.tokenAmount * position.currentPrice).toFixed(2)})
+                                  </span>
                                 </div>
                               </div>
                             </div>
-                          ))}
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="text-sm text-gray-400">Performance</div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <div className="text-sm text-gray-400">Total Value</div>
+                                <div className="text-white font-medium">
+                                  ${position.value.toFixed(2)}
+                                </div>
+                              </div>
+                              <div>
+                                <div className="text-sm text-gray-400">PNL</div>
+                                <div className={`font-medium ${position.profitRate >= 0 ? 'text-green-400' : 'text-red-400'
+                                  }`}>
+                                  {position.profitRate >= 0 ? '+' : ''}{position.profitRate}%
+                                  <span className="block text-sm">
+                                    ${Math.abs(position.profit).toFixed(2)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-gray-700">
+                          <div className="text-sm text-gray-400">
+                            Last Update: {position.trendingUpdateTime}
+                          </div>
                         </div>
                       </div>
-
                     ))}
-
-
-
                   </div>
                 )}
               </div>
             )}
 
-
+           
             {activeTab === 'apikeys' && (
               <div className="bg-card  rounded-lg p-6">
                 <div className="flex  items-center mb-6">
@@ -701,7 +654,7 @@ const Dashboard = () => {
                             ? 'bg-green-500/20 text-green-400'
                             : 'bg-red-500/20 text-red-400'
                             }`}>
-                            {token.trending > 0 ? '↗' : '↘'}
+                            {token.trending > 0 ? '↗' : '↘'} 
                           </div>
                         </div>
 
@@ -768,7 +721,7 @@ const Dashboard = () => {
         />
       )}
 
-
+      
     </div>
   );
 };

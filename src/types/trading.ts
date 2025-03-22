@@ -28,6 +28,20 @@ export interface NewTradingPairConfig {
   createdAt: Date;
 }
 
+export interface NewTradingPairGroupConfig {
+  groupId: number;
+  groupName: string;
+  totalBalance: string;
+  apiKeyId: string;
+}
+
+export interface NewTradingPairGroupParam {
+  groupId: number;
+  groupName: string;
+  totalBalance: number;
+  apiKeyId: string;
+}
+
 export interface TradeHistory {
   id: string;
   orderId: string;

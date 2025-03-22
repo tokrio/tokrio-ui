@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { config } from '../config/env';
+import { NewTradingPairGroupConfig, NewTradingPairGroupParam } from '../types/trading';
 
 const API_BASE_URL = config.API_BASE_URL;
 
@@ -70,6 +71,17 @@ export interface TokenPairParam {
 
 export interface TokenPairsResponse {
   pairs: TokenPair[];
+  total: number;
+}
+
+export interface TokenPairsGroup {
+  groupDescription: string;
+  groupName: string;
+  id: number;
+}
+
+export interface TokenPairsGroupResponse {
+  data: TokenPairsGroup[];
   total: number;
 }
 
@@ -171,9 +183,47 @@ export const api = {
     return response.data;
   },
 
+    // Token Pairs API
+    listTokenPairsGroup: async (): Promise<ApiResponse<TokenPairsGroupResponse>> => {
+      const response = await axios.get(`${API_BASE_URL}/token/pair-groups`);
+      return response.data;
+    },
+
   // Add Token Pairs API
   addTokenPairs: async (data: TokenPairParam): Promise<ApiResponse<TokenPairParam>> => {
     const response = await axios.post(`${API_BASE_URL}/token/account`, data);
+    return response.data;
+  },
+
+  addTokenPairsGroup: async (data: any): Promise<ApiResponse<NewTradingPairGroupConfig>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/init-group`, data);
+    return response.data;
+  },
+
+  deactivateGroup: async (data: any): Promise<ApiResponse<any>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/deactivate-group`, data);
+    return response.data;
+  },
+
+  getTokenPairsGroupById: async (group_id: number): Promise<ApiResponse<any>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/group-tokens`, {
+      params: {
+        group_id: group_id
+      }
+    });
+    return response.data;
+  },
+
+  getUserGroup: async (page: number = 1, pageSize: number = 10): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/user-groups`, {
+      params: {
+        page,
+        pageSize
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     return response.data;
   },
 
