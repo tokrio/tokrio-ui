@@ -8,7 +8,7 @@ import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 interface TradingPairManagerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (pairConfig: NewTradingPairConfig) => void;
+  onSave: () => void;
   apiKeys: ApiKey[];
 }
 
@@ -30,13 +30,12 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUserGroup();
     const fetchTokenPairs = async () => {
       try {
         setLoading(true);
         const response = await api.listTokenPairsGroup();
         if (response.code === 200 && response.body.data) {
-          setTokenPairsGroup(response.body.data);
+          setTokenPairsGroup([...response.body.data]);
           if (response.body.data.length > 0) {
             setFormData(prev => ({
               ...prev,
@@ -56,17 +55,6 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
     }
   }, [isOpen]);
 
-  const getUserGroup = async () => {
-
-    const response = await api.getUserGroup();
-    if (response.code === 200 && response.body.data) {
-      setTokenPairsGroup(response.body.data);
-      if (response.body.data.length > 0) {
-
-      }
-    }
-
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +67,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
       }
       const response = await api.addTokenPairsGroup(param);
       if (response.code === 200) {
+        onSave()
         // onSave({
         //   ...formData,
         //   id: Date.now().toString(),
@@ -105,9 +94,9 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
         exit={{ opacity: 0, scale: 0.95 }}
         className="bg-gray-800 rounded-lg p-6 w-full max-w-md"
       >
-        <h2 className="text-xl font-bold text-white mb-6">Add New Trading Group</h2>
+        <h2 className="text-xl font-bold text-white mb-6">Add New Trade Set</h2>
         {loading ? (
-          <div className="text-center py-4 text-gray-400">Loading trading group...</div>
+          <div className="text-center py-4 text-gray-400">Loading trade set...</div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -147,7 +136,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
-                Trading Group
+              Select Trade Set
               </label>
               <Listbox value={formData.groupId} onChange={(value) => setFormData({ ...formData, groupId: value })}>
                 <div className="relative">
@@ -162,7 +151,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
                     <ListboxOption value="">
                       {({ selected }) => (
                         <div className={`cursor-default select-none relative py-2 px-4 ${selected ? 'text-white' : 'text-gray-300'}`}>
-                          Select a trading Group
+                          Select a Trade Set
                         </div>
                       )}
                     </ListboxOption>
@@ -208,7 +197,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
                 type="submit"
                 className="px-4 py-2 bg-[#412700] border text-white rounded-lg border-[#FFA41C] hover:bg-[#000]"
               >
-                Add Trading Group
+                Add Trade Set
               </button>
             </div>
           </form>

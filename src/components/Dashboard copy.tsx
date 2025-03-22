@@ -229,21 +229,22 @@ const Dashboard = () => {
     );
   };
 
-  const handleTradingPairSave = (newPair: NewTradingPairConfig) => {
-    const fullPair: TradingPairConfig = {
-      ...newPair,
-      balance: {
-        usdt: newPair.initialUSDT,
-        token: 0,
-        tokenPrice: 0,
-      },
-      performance: {
-        totalValue: newPair.initialUSDT,
-        pnl: 0,
-        pnlAmount: 0,
-      }
-    };
-    setTradingPairs([...tradingPairs, fullPair]);
+  const handleTradingPairSave = () => {
+    // newPair: NewTradingPairConfig
+    // const fullPair: TradingPairConfig = {
+    //   ...newPair,
+    //   balance: {
+    //     usdt: newPair.initialUSDT,
+    //     token: 0,
+    //     tokenPrice: 0,
+    //   },
+    //   performance: {
+    //     totalValue: newPair.initialUSDT,
+    //     pnl: 0,
+    //     pnlAmount: 0,
+    //   }
+    // };
+    // setTradingPairs([...tradingPairs, fullPair]);
   };
 
   const handleViewHistory = (pair: TradingPairConfig) => {

@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import { useAccount } from 'wagmi';
 import { Link } from 'react-router-dom';
-import { FaArrowDown, FaChevronDown } from 'react-icons/fa';
+import { FaArrowDown, FaChevronDown, FaQuestion, FaQuestionCircle } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
 
 // Tab Type Definition
 type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate';
@@ -147,6 +148,7 @@ const Dashboard = () => {
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
   const [tokens, setTokens] = useState<Token[]>([]);
   const [tokenLoading, setTokenLoading] = useState(false);
+  const [loadingGroup, setLoadingGroup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTokens, setTotalTokens] = useState(0);
   const [userGroup, setUserGroup] = useState<any[]>([]);
@@ -188,13 +190,14 @@ const Dashboard = () => {
   }, [activeTab]);
 
   const getUserGroup = async () => {
-
+    setLoadingGroup(true);
     const response = await api.getUserGroup();
     if (response.code === 200 && response.body.data) {
       if (response.body.data && response.body.data.length > 0) {
         setUserGroup(response.body.data)
       }
     }
+    setLoadingGroup(false);
 
   };
 
@@ -220,7 +223,7 @@ const Dashboard = () => {
     try {
       const response = await api.deactivateGroup({
         userGroupId: groupId,
-      }); 
+      });
       if (response.code === 200) {
         getUserGroup();
       }
@@ -257,21 +260,8 @@ const Dashboard = () => {
     );
   };
 
-  const handleTradingPairSave = (newPair: NewTradingPairConfig) => {
-    const fullPair: TradingPairConfig = {
-      ...newPair,
-      balance: {
-        usdt: newPair.initialUSDT,
-        token: 0,
-        tokenPrice: 0,
-      },
-      performance: {
-        totalValue: newPair.initialUSDT,
-        pnl: 0,
-        pnlAmount: 0,
-      }
-    };
-    setTradingPairs([...tradingPairs, fullPair]);
+  const handleTradingPairSave = () => {
+    getUserGroup();
   };
 
   const handleViewHistory = (pair: TradingPairConfig) => {
@@ -402,7 +392,7 @@ const Dashboard = () => {
                     : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
-                  Trading Group
+                  Trade Mgmt.
                   {/* <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
                     {portfolioData?.positions?.length || 0}
                   </span> */}
@@ -420,7 +410,7 @@ const Dashboard = () => {
                     {apiKeys?.length || 0}
                   </span>
                 </button>
-                <button
+                {/* <button
                   onClick={() => setActiveTab('simulate')}
                   className={`${activeTab === 'simulate'
                     ? 'border-primary text-primary'
@@ -428,7 +418,7 @@ const Dashboard = () => {
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium`}
                 >
                   Simulate
-                </button>
+                </button> */}
               </nav>
             </div>
           </div>
@@ -443,22 +433,33 @@ const Dashboard = () => {
               <div className="bg-card  rounded-lg p-6">
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <h3 className="text-lg font-medium text-white">Trading Group</h3>
+                    <h3 className="text-lg font-medium text-white">Trade Set</h3>
                     {/* <p className="text-sm text-gray-400 mt-1">
                       Active: {portfolioData?.activeTrades || 0} / Total: {portfolioData?.positions.length || 0}
                     </p> */}
                   </div>
-                  <button
-                    onClick={handleOpenTradingPairManager}
-                    className="px-4 py-2 cta-button"
-                  >
-                    Add Trading Group
-                  </button>
+                  <Tooltip id="add-trade-set" />
+                  <div className='flex items-center'>
+
+                    <a data-tooltip-html="The trading pair group utilizes<br/> a trend algorithm to trade multiple tokens.<br/> While individual tokens may incur losses,<br/> the overall strategy achieves an 88% win rate,<br/> maximizing returns and minimizing risk." data-tooltip-id="add-trade-set">
+                      <FaQuestionCircle className='mr-2 cursor-pointer text-xl text-amber-400' />
+                    </a>
+                    <button
+                      onClick={handleOpenTradingPairManager}
+                      className="px-4 py-2 cta-button"
+                    >
+                      Add Trade Set
+                    </button>
+                  </div>
                 </div>
 
-                {!userGroup?.length ? (
+                {loadingGroup ? (
                   <div className="text-center py-8 text-gray-400">
-                    No trading group configured yet. Click the button above to add one.
+                    Loading trade set...
+                  </div>
+                ) : !userGroup?.length ? (
+                  <div className="text-center py-8 text-gray-400">
+                    No Trade Set configured yet. Click the button above to add one.
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -466,17 +467,17 @@ const Dashboard = () => {
                       <div key={group.id} className="bg-card rounded-lg p-2">
 
                         <div className='flex text-white mb-2 justify-between items-center'>
-                          <div className='text-base'>{group.groupName} ${group.currentTotalValue}
-                          <span className={`ml-2 bg-slate-500 p-1 rounded-md ${group.active===1? 'text-green-400':'text-red-400'}`}>{group.active === 1? 'Active':'Deactivate'}</span>
+                          <div className='text-base'>{group.groupName} ${group.groupTotalBalance}
+                            <span className={`ml-2 bg-slate-500 p-1 rounded-md ${group.active === 1 ? 'text-green-400' : 'text-red-400'}`}>{group.active === 1 ? 'Active' : 'Deactivate'}</span>
                           </div>
-                          
+
                           {/* <FaChevronDown className='ml-2' /> */}
-                          {group.active === 1 && <button onClick={()=>{
-                              deactivateGroup(group.id)
+                          {group.active === 1 && <button onClick={() => {
+                            deactivateGroup(group.id)
                           }} className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">Deactivate Group</button>}
                         </div>
                         <div className='grid grid-cols-1 gap-4'>
-                          {group.positions.map((position:any) => (
+                          {group?.positions && group.positions.map((position: any) => (
                             <div
                               key={position.tokenSymbol}
                               className="bg-card rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
@@ -531,7 +532,7 @@ const Dashboard = () => {
                                   >
                                     {position.enabled ? 'Enabled' : 'Disabled'}
                                   </button> */}
-                                 
+
                                 </div>
                               </div>
 
@@ -668,9 +669,9 @@ const Dashboard = () => {
               </div>
             )}
 
-            {activeTab === 'simulate' && (
+            {/* {activeTab === 'simulate' && (
               <SimulateTrading tokenPairs={tokenPairs} />
-            )}
+            )} */}
 
             {activeTab === 'tokens' && (
               <div className="bg-card rounded-lg p-6">

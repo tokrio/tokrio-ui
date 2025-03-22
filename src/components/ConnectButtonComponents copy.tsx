@@ -176,7 +176,7 @@ function UserProfile() {
     })
 
     useEffect(() => {
-        //getLevel();
+        getLevel();
     }, [address])
 
     const getLevel = async () => {
@@ -263,17 +263,17 @@ function UserProfile() {
                 <button onClick={disconnectWallet} className='inter-font hover:bg-[#111] bg-[#222] rounded-full px-3 py-2 text-xs'>Disconnect</button>
             </div>
 
-            {/* {userInfo && <div className='flex items-center text-xs mt-3'>
+            {userInfo && <div className='flex items-center text-xs mt-3'>
                 <span className='bg-[#FFA41C] px-1 rounded-sm'>LV{userInfo.level}</span>
                 <progress className='w-full h-1.5 mx-2 custom-progress' value={userInfo.progress + ""} max="100"></progress>
                 <span className='bg-[#FFA41C] px-1 rounded-sm'>LV{userInfo.level + 1}</span>
             </div>}
 
-            {userInfo && <div className='text-[#666] main-font-none normal-case text-xs mt-2'>The current experience value is {userInfo.total}, and it still needs {userInfo.needValue} <TokenName address={config.LEVEL_TOKEN} /> to upgrade to LV{userInfo.level + 1}.</div>} */}
+            {userInfo && <div className='text-[#666] main-font-none normal-case text-xs mt-2'>The current experience value is {userInfo.total}, and it still needs {userInfo.needValue} <TokenName address={config.LEVEL_TOKEN} /> to upgrade to LV{userInfo.level + 1}.</div>}
 
             <button onClick={toDashBoard} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>To My Dashboard</button>
 
-            {/* <button onClick={() => {
+            <button onClick={() => {
                 navigate('/sponsor');
             }} className=' p-3 w-full mt-3  hover:bg-[#FFA41C] bg-[#222] rounded-sm '>
                 To My Sponsors
@@ -312,7 +312,7 @@ function UserProfile() {
                     <div className='flex-1'></div>
                     <TokenBalance token={config.USDT_TOKEN} decimalPlaces={2} />
                 </div>
-            </>} */}
+            </>}
 
         </div>
 

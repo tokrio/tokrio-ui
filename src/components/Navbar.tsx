@@ -6,6 +6,7 @@ import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { useAccount } from 'wagmi';
 import { tokenStorage } from '../services/api';
 import { LogoIcon } from '../img/FileImports';
+import { Tooltip } from 'react-tooltip';
 
 interface Props {
   showMenu?: boolean
@@ -52,7 +53,29 @@ const Navbar = ({ showMenu = true }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center space-x-8"
           >
-            <Link
+            <Tooltip id="comming-soon" />
+            <a
+              data-tooltip-content="Comming Soon"
+              data-tooltip-id="comming-soon"
+              className="text-gray-600 cursor-pointer text-sm main-font  uppercase  transition-colors duration-200"
+            >
+              Staking
+            </a>
+            <a
+              data-tooltip-content="Comming Soon"
+              data-tooltip-id="comming-soon"
+              className="text-gray-600 cursor-pointer text-sm main-font  uppercase  transition-colors duration-200"
+            >
+              Jarvis
+            </a>
+            <a
+              data-tooltip-content="Comming Soon"
+              data-tooltip-id="comming-soon"
+              className="text-gray-600 cursor-pointer text-sm main-font  uppercase  transition-colors duration-200"
+            >
+              Market
+            </a>
+            {/* <Link
               to="/staking"
               className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
             >
@@ -69,7 +92,7 @@ const Navbar = ({ showMenu = true }: Props) => {
               className="text-gray-300 text-sm main-font uppercase hover:text-primary transition-colors duration-200"
             >
               Market
-            </Link>
+            </Link> */}
             <ConnectButtonComponents />
           </motion.div>
         </div>
