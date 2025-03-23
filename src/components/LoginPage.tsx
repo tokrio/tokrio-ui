@@ -7,11 +7,15 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { signMessage } from "@wagmi/core";
 import { chainConfig } from '../WalletConfig';
 import AnimationButton from './AnimationButton';
+import { switchChain } from '@wagmi/core'
+import { FaRegTimesCircle, FaWindowClose } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { address } = useAccount();
+  const { address,chainId } = useAccount();
   const { openConnectModal } = useConnectModal();
+  
 
   const handleLogin = async () => {
     if (!address) {
@@ -19,6 +23,10 @@ const LoginPage = () => {
         openConnectModal()
       }
       return
+    }
+
+    if (chainId !== chainConfig.chains[0].id) {
+      switchChain(chainConfig,{ chainId: Number(chainConfig.chains[0].id)})
     }
 
     if (tokenStorage.getToken()) {
@@ -39,7 +47,6 @@ const LoginPage = () => {
 
 
     try {
-      // 使用指定的参数值登录
       const response = await api.login({
         walletAddress: address,
         timestamp: now,
@@ -47,9 +54,7 @@ const LoginPage = () => {
       });
 
       if (response.code === 200) {
-        // 保存 token
         tokenStorage.setToken(response.body);
-        // 跳转到 dashboard
         navigate('/dashboard');
       } else {
         console.error('Login failed:', response.message);
@@ -67,6 +72,9 @@ const LoginPage = () => {
         className="max-w-md w-full space-y-8 bg-[#111] border border-[#222] p-8 rounded-xl"
       >
         <div>
+          <div className='flex justify-end'>
+            <Link to={"/"} ><FaRegTimesCircle className=' text-2xl'  /></Link>
+          </div>
           <h2 className="mt-6 main-font text-center text-3xl font-extrabold text-white ">
             Welcome to Tokrio
           </h2>

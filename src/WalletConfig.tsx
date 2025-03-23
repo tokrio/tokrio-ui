@@ -41,7 +41,7 @@ export const chainConfig:any = getDefaultConfig(
       appName: 'Tokrio',
       projectId: WALLET_CONNECT_PROJECT_ID,
       chains: [
-        bscTestnet
+        bsc
         // net == "TEST" ? TestNet : net == "BSCTEST" ? bscTestnet : bsc,
       ],
       wallets: [
