@@ -29,7 +29,7 @@ export const ConnectButtonComponents = () => {
     const { address } = useAccount();
 
     const togglePop = (event: React.MouseEvent) => {
-        event.stopPropagation(); // 阻止事件冒泡
+        event.stopPropagation(); 
         setShowPop(prevShowPop => !prevShowPop);
     };
 
@@ -201,9 +201,11 @@ function UserProfile() {
 
 
     const disconnectWallet = () => {
+        tokenStorage.removeToken();
         if (disconnect) {
             disconnect()
         }
+        navigate('/');
     }
 
     const toDashBoard = async () => {

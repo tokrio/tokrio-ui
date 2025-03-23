@@ -86,7 +86,7 @@ const HeroSection = () => {
           </div>
 
           {/* 添加价格显示 */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -98,10 +98,10 @@ const HeroSection = () => {
             <div className="text-sm text-gray-400 mt-1">
               Market Cap: ${unitPrice === "???"?"???": new BigNumber(unitPrice).multipliedBy(1000000000).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} USDT
             </div>
-          </motion.div>
+          </motion.div> */}
 
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
 
 
             <AnimationButton onClick={() => {
@@ -109,9 +109,9 @@ const HeroSection = () => {
             }}>
               Trading NOW
             </AnimationButton>
-            <AnimationButton onClick={handleBuyToken}>
+            {/* <AnimationButton onClick={handleBuyToken}>
               Buy TOKR
-            </AnimationButton>
+            </AnimationButton> */}
           </div>
 
 

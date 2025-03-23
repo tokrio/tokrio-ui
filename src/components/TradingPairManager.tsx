@@ -4,6 +4,7 @@ import { ApiKey, api, TokenPair, TokenPairsGroup } from '../services/api';
 import { NewTradingPairConfig, NewTradingPairGroupConfig } from '../types/trading';
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
+import toast from 'react-hot-toast';
 
 interface TradingPairManagerProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
   const [tokenPairsGroup, setTokenPairsGroup] = useState<TokenPairsGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addLoading, setAddLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchTokenPairs = async () => {
@@ -57,7 +59,34 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
 
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
+
+    if (!formData.apiKeyId) {
+      toast.error('Please select an API key.');
+      return; 
+    }
+    if(formData.groupId === 0) {
+      toast.error('Please select a trading pair.');
+      return;
+
+    }
+
+    if (!formData.groupName) {
+      toast.error('Please enter a group name.');
+      return;
+    }
+
+    if (!formData.totalBalance || Number(formData.totalBalance) <= 0) {
+      toast.error('Please enter the initial USDT amount.');
+      return; 
+    }
+
+    if(addLoading) {
+      return
+    }
+    setAddLoading(true)
+    
     try {
       const param = {
         apiKeyId: Number(formData.apiKeyId),
@@ -67,6 +96,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
       }
       const response = await api.addTokenPairsGroup(param);
       if (response.code === 200) {
+        setAddLoading(false)
         onSave()
         // onSave({
         //   ...formData,
@@ -78,6 +108,7 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
         onClose();
       }
     } catch (error) {
+      setAddLoading(false)
       console.error('Failed to create API key:', error);
     }
 
@@ -194,10 +225,11 @@ const TradingPairManager: React.FC<TradingPairManagerProps> = ({
                 Cancel
               </button>
               <button
+                disabled={addLoading}
                 type="submit"
                 className="px-4 py-2 bg-[#412700] border text-white rounded-lg border-[#FFA41C] hover:bg-[#000]"
               >
-                Add Trade Set
+                {addLoading?"Loading...":"Add Trade Set"}
               </button>
             </div>
           </form>

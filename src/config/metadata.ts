@@ -15,7 +15,7 @@ export const siteMetadata = {
   ],
   author: 'Tokrio Team',
   siteUrl: 'https://www.tokrio.io',
-  twitterHandle: '@tokrio',
+  twitterHandle: '@tokrio_com',
   language: 'en',
   themeColor: '#3B82F6'
 };

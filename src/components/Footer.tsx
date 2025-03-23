@@ -49,7 +49,7 @@ const Footer = () => {
             <h3 className="text-white font-bold mb-4">Connect With Us</h3>
             <div className="flex space-x-4">
               <a
-                href="https://twitter.com/tokrio"
+                href="https://x.com/tokrio_com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-primary"

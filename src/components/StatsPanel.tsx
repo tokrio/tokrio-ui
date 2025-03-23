@@ -28,9 +28,9 @@ const StatsPanel = () => {
             <h3 className="text-xl font-semibold text-white mb-4 uppercase main-font">
               Win Rate
             </h3>
-            <CountUpAnimation end={65} suffix="%" />
+            <CountUpAnimation end={87} suffix="%" />
             <p className="text-gray-400 mt-2">
-              Above 65% Trading Success Rate
+              Above 87% Trading Success Rate
             </p>
           </motion.div>
 
@@ -43,7 +43,7 @@ const StatsPanel = () => {
             <h3 className="text-xl font-semibold text-white mb-4 uppercase main-font">
               Annual ROI
             </h3>
-            <CountUpAnimation end={2000} suffix="%" />
+            <CountUpAnimation end={663} suffix="%" />
             <p className="text-gray-400 mt-2">
               Maximum Annual Return
             </p>

@@ -41,9 +41,9 @@ function App() {
           <StatsPanel />
           <AdvantagesSection />
           <Guidelines />
-          <TokenUsageSection />
-          <TokenUtilitySection />
-          <Tokenomics />
+          {/* <TokenUsageSection /> */}
+          {/* <TokenUtilitySection /> */}
+          {/* <Tokenomics /> */}
           <FeaturesSection />
           <DocumentationSection />
           <Footer />
