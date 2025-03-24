@@ -34,115 +34,8 @@ const Dashboard = () => {
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
   const [isTradingPairManagerOpen, setIsTradingPairManagerOpen] = useState(false);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
-  const [tradingPairs, setTradingPairs] = useState<TradingPairConfig[]>([
-    {
-      id: '1',
-      symbol: 'BTC/USDT',
-      initialUSDT: 1000,
-      apiKeyId: '1',
-      enabled: true,
-      trending: -1,
-      createdAt: new Date('2024-03-15'),
-      balance: {
-        usdt: 500,
-        token: 0.012,
-        tokenPrice: 65000,
-      },
-      performance: {
-        totalValue: 1280,
-        pnl: 28,
-        pnlAmount: 280,
-      }
-    },
-    {
-      id: '2',
-      symbol: 'ETH/USDT',
-      initialUSDT: 500,
-      apiKeyId: '1',
-      enabled: false,
-      trending: 1,
-      createdAt: new Date('2024-03-15'),
-      balance: {
-        usdt: 300,
-        token: 0.15,
-        tokenPrice: 3500,
-      },
-      performance: {
-        totalValue: 825,
-        pnl: -15,
-        pnlAmount: -75,
-      }
-    },
-    {
-      id: '3',
-      symbol: 'SOL/USDT',
-      initialUSDT: 300,
-      apiKeyId: '2',
-      enabled: true,
-      trending: -1,
-      createdAt: new Date('2024-03-16'),
-      balance: {
-        usdt: 200,
-        token: 0.005,
-        tokenPrice: 70000,
-      },
-      performance: {
-        totalValue: 1000,
-        pnl: 10,
-        pnlAmount: 100,
-      }
-    }
-  ]);
   const [selectedPair, setSelectedPair] = useState<TradingPairConfig | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [tradeHistory, setTradeHistory] = useState<Record<string, TradeHistory[]>>({
-    '1': [
-      {
-        id: '1',
-        orderId: 'ORD123456',
-        pairId: '1',
-        type: 'BUY',
-        price: 65000,
-        amount: 0.01,
-        total: 650,
-        timestamp: new Date('2024-03-15T10:30:00'),
-        balanceAfter: {
-          usdt: 350,
-          token: 0.01
-        }
-      },
-      {
-        id: '2',
-        orderId: 'ORD123457',
-        pairId: '1',
-        type: 'SELL',
-        price: 66000,
-        amount: 0.005,
-        total: 330,
-        timestamp: new Date('2024-03-15T14:20:00'),
-        balanceAfter: {
-          usdt: 680,
-          token: 0.005
-        }
-      }
-    ],
-    '2': [
-      {
-        id: '3',
-        orderId: 'ORD123458',
-        pairId: '2',
-        type: 'BUY',
-        price: 3500,
-        amount: 0.15,
-        total: 525,
-        timestamp: new Date('2024-03-15T11:45:00'),
-        balanceAfter: {
-          usdt: 475,
-          token: 0.15
-        }
-      }
-    ]
-  });
   const [portfolioData, setPortfolioData] = useState<PortfolioOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [tokenPairs, setTokenPairs] = useState<TokenPair[]>([]);
@@ -244,21 +137,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleTradingPairApiKeyChange = (index: number, apiKeyId: string) => {
-    const newPairs = [...tradingPairs];
-    newPairs[index] = { ...newPairs[index], apiKeyId };
-    setTradingPairs(newPairs);
-  };
-
-  const handleTradingPairToggle = (pairId: string) => {
-    setTradingPairs(pairs =>
-      pairs.map(pair =>
-        pair.id === pairId
-          ? { ...pair, enabled: !pair.enabled }
-          : pair
-      )
-    );
-  };
 
   const handleTradingPairSave = () => {
     getUserGroup();
@@ -501,7 +379,7 @@ const Dashboard = () => {
                                 <div className="flex items-center space-x-3">
                                   <button
                                     onClick={() => handleViewHistory({
-                                      id: position.id || position.tokenSymbol,
+                                      tokenAccountID: position.tokenAccountID,
                                       symbol: position.tokenSymbol,
                                       initialUSDT: position.initialUSDT,
                                       apiKeyId: '1',
@@ -765,7 +643,6 @@ const Dashboard = () => {
             setSelectedPair(null);
           }}
           tradingPair={selectedPair}
-          history={tradeHistory[selectedPair.id] || []}
         />
       )}
 

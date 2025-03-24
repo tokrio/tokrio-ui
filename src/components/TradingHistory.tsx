@@ -1,24 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TradeHistory, TradingPairConfig } from '../types/trading';
+import { api } from '../services/api';
 
 interface TradingHistoryProps {
   isOpen: boolean;
   onClose: () => void;
   tradingPair: TradingPairConfig;
-  history: TradeHistory[];
 }
 
 const TradingHistory: React.FC<TradingHistoryProps> = ({
   isOpen,
   onClose,
-  tradingPair,
-  history
+  tradingPair
 }) => {
+
+  const [history, setHistory] = React.useState<TradeHistory[]>([]);
+  const [loadingGroup, setLoadingGroup] = React.useState(false);
+
   if (!isOpen) return null;
 
+  useEffect(() => {
+    if (isOpen) {
+      getHistory();
+    }
+  }, [isOpen])
+
+  const getHistory = async () => {
+    setLoadingGroup(true);
+    const response = await api.getOrderHistory(tradingPair.tokenAccountID);
+    if (response.code === 200 && response.body) {
+      if (response.body.trades && response.body.trades.length > 0) {
+        setHistory([...response.body.trades])
+      }
+    }
+    setLoadingGroup(false);
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed mx-4 inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -45,7 +65,9 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
         </div>
 
         <div className="flex-1 overflow-auto">
-          {history.length === 0 ? (
+          {loadingGroup ? (<div className="text-center py-8 text-gray-400">
+              Loading history yet...
+            </div>) : history.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
               No trading history yet.
             </div>
@@ -59,9 +81,8 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          trade.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                        }`}>
+                        <span className={`px-2 py-1 rounded text-xs ${trade.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                          }`}>
                           {trade.type}
                         </span>
                         <span className="text-gray-400 text-sm">
@@ -69,39 +90,27 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
                         </span>
                       </div>
                       <div className="text-white font-medium mt-1">
-                        Price: ${trade.price.toFixed(2)}
+                        Trade Price: ${trade.price.toFixed(2)}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-gray-400 text-sm">
-                        {trade.timestamp.toLocaleString()}
+                        {trade.tradeTime}
                       </div>
                       <div className="text-white font-medium mt-1">
-                        Amount: {trade.amount.toFixed(6)} {tradingPair.symbol.split('/')[0]}
+                      Trade Volumn: ${trade.executedAmount.toFixed(2)}
                       </div>
                     </div>
                   </div>
 
                   <div className="border-t border-gray-600 pt-3 mt-3">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-sm text-gray-400 mb-1">Total</div>
+                    
+                    <div>
+                        <div className="text-sm text-gray-400 mb-1">Trade Comment</div>
                         <div className="text-white">
-                          ${trade.total.toFixed(2)}
+                          {trade.tradeComment}
                         </div>
                       </div>
-                      <div>
-                        <div className="text-sm text-gray-400 mb-1">Balance After Trade</div>
-                        <div className="space-y-1">
-                          <div className="text-white">
-                            USDT: ${trade.balanceAfter.usdt.toFixed(2)}
-                          </div>
-                          <div className="text-white">
-                            {tradingPair.symbol.split('/')[0]}: {trade.balanceAfter.token.toFixed(6)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               ))}

@@ -214,6 +214,15 @@ export const api = {
     return response.data;
   },
 
+  getOrderHistory: async (tokenAccountId: number): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/trade-history`, {
+      params: {
+        tokenAccountId: tokenAccountId
+      }
+    });
+    return response.data;
+  },
+
   getUserGroup: async (page: number = 1, pageSize: number = 10): Promise<ApiResponse<any>> => {
     const response = await axios.get(`${API_BASE_URL}/token/user-groups`, {
       params: {

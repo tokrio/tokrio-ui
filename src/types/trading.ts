@@ -1,5 +1,5 @@
 export interface TradingPairConfig {
-  id: string;
+  tokenAccountID: number;
   symbol: string;
   initialUSDT: number;
   apiKeyId: string;
@@ -43,16 +43,19 @@ export interface NewTradingPairGroupParam {
 }
 
 export interface TradeHistory {
-  id: string;
-  orderId: string;
-  pairId: string;
-  type: 'BUY' | 'SELL';
-  price: number;
+  afterToken: number;
+  afterUSDT: number;
   amount: number;
-  total: number;
-  timestamp: Date;
-  balanceAfter: {
-    usdt: number;
-    token: number;
-  };
+  beforeToken: number;
+  beforeUSDT: number;
+  executedAmount: number;
+  id: number;
+  orderId: string;
+  price: number;
+  status: string;
+  tokenSymbol: string;
+  tradeComment: string;
+  tradeTime: string;
+  trendingType: string;
+  type: string;
 } 
