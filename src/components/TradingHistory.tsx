@@ -81,7 +81,7 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded text-xs ${trade.type === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                        <span className={`px-2 py-1 rounded text-xs ${trade.type === 'buy' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                           }`}>
                           {trade.type}
                         </span>
@@ -98,7 +98,7 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
                         {trade.tradeTime}
                       </div>
                       <div className="text-white font-medium mt-1">
-                      Trade Volumn: ${trade.executedAmount.toFixed(2)}
+                      Trade Volumn: {trade.executedAmount.toFixed(2)}
                       </div>
                     </div>
                   </div>
