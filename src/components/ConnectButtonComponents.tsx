@@ -4,6 +4,7 @@ import { RobotUser, User } from '../img/FileImports';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import formatStringNumber from '../util/utils';
 import AnimationButton from './AnimationButton';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import TokenName from './TokenName';
 import { config } from '../config/env';
 import TokenBalance from './TokenBalance';
@@ -27,9 +28,16 @@ export const ConnectButtonComponents = () => {
     const [showPop, setShowPop] = useState(false);
     const [hasRebot, setHasRebot] = useState(false);
     const { address } = useAccount();
+    const navigate = useNavigate();
 
     const togglePop = (event: React.MouseEvent) => {
         event.stopPropagation(); 
+        if(!tokenStorage.getToken()){
+            toast.error("Please login first");
+            navigate("/login")
+            return;
+        }
+
         setShowPop(prevShowPop => !prevShowPop);
     };
 
@@ -165,6 +173,7 @@ function UserProfile() {
     const { disconnect } = useDisconnect()
     const [isOpen, setIsOpen] = useState(false)
     const [isUp, setIsUp] = useState(false)
+    const [code, setCode] = useState("")
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState<any>({
         equity: 0,
@@ -177,7 +186,21 @@ function UserProfile() {
 
     useEffect(() => {
         //getLevel();
+        getCode();
     }, [address])
+
+    const  getCode = async () => {
+
+        if(localStorage.getItem("code" + address)){
+            setCode(localStorage.getItem("code" + address) || "")
+        }
+
+        const response = await api.getCode();
+        if (response.code == 200 && response?.body?.inviteCode) {
+            localStorage.setItem("code" + address, response.body.inviteCode)
+           setCode(response.body.inviteCode) 
+        }
+    }
 
     const getLevel = async () => {
         let { data, code }: IResponse = await getReadData("getUserEquity", TokrioLevelAbi, config.SPONSOR, [address])
@@ -227,17 +250,18 @@ function UserProfile() {
 
 
         try {
-            // 使用指定的参数值登录
+           
             const response = await api.login({
                 walletAddress: address?.toString() || "",
                 timestamp: now,
-                signature: sign
+                signature: sign,
+                inviteCode: code,
             });
 
             if (response.code === 200) {
-                // 保存 token
+                
                 tokenStorage.setToken(response.body);
-                // 跳转到 dashboard
+               
                 navigate('/dashboard');
             } else {
                 console.error('Login failed:', response.message);
@@ -246,6 +270,10 @@ function UserProfile() {
             console.error('Login error:', error);
         }
     }
+
+    const copyToast = () => {
+        toast.success('Copied to clipboard');
+    };
 
     return <div className='w-[350px] h-screen pb-28 '>
         <IncreaseEquity isUp={isUp} isOpen={isOpen} setIsOpen={setIsOpen} finish={getLevel} />
@@ -274,6 +302,10 @@ function UserProfile() {
             {userInfo && <div className='text-[#666] main-font-none normal-case text-xs mt-2'>The current experience value is {userInfo.total}, and it still needs {userInfo.needValue} <TokenName address={config.LEVEL_TOKEN} /> to upgrade to LV{userInfo.level + 1}.</div>} */}
 
             <button onClick={toDashBoard} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>To My Dashboard</button>
+
+            {code && <div className='mt-4  normal-case'>My invitation code: {code}</div>}
+            
+            {code && <CopyToClipboard text={`Come to Tokrio (${config.WEB_URL + code}) to easily achieve AI-driven high returns + leveraged DEFI profits. We are currently offering an invite-only beta for real trading, so hurry up and give it a try!`} onCopy={copyToast}><button onClick={toDashBoard} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>Share link</button></CopyToClipboard>}
 
             {/* <button onClick={() => {
                 navigate('/sponsor');

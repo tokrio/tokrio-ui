@@ -26,7 +26,7 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <Link to="/staking" className="text-gray-400 hover:text-primary">
                   Staking
                 </Link>
@@ -35,6 +35,16 @@ const Footer = () => {
                 <Link to="/market" className="text-gray-400 hover:text-primary">
                   Market
                 </Link>
+              </li> */}
+               <li>
+                <span className="text-gray-400">
+                  Staking
+                </span>
+              </li>
+              <li>
+                <span className="text-gray-400">
+                  Market
+                </span>
               </li>
               <li>
                 <a href="#documentation" className="text-gray-400 hover:text-primary">

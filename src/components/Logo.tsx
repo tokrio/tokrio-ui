@@ -15,7 +15,6 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* 外环 - 代表全球化交易网络 */}
       <circle
         cx="50"
         cy="50"
@@ -34,7 +33,6 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
         />
       </circle>
       
-      {/* 神经网络节点连接 - 代表AI */}
       <path
         d="M20 50C20 30 35 20 50 20M80 50C80 70 65 80 50 80"
         stroke="url(#gradientAI)"
@@ -50,7 +48,6 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
         />
       </path>
 
-      {/* 中心图形 - 结合T和箭头，代表上升趋势 */}
       <path
         d="M35 30H65M50 30L50 70L65 55"
         stroke="url(#gradientPrimary)"
@@ -59,7 +56,6 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
         strokeLinejoin="round"
       />
 
-      {/* 数据节点 - 代表数据分析点 */}
       <circle cx="35" cy="30" r="4" fill="url(#gradientAccent)">
         <animate
           attributeName="opacity"
@@ -87,7 +83,6 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
         />
       </circle>
 
-      {/* 金融数据流动效果 */}
       <path
         d="M25 60Q50 40 75 60"
         stroke="url(#gradientFinance)"
@@ -103,7 +98,6 @@ const Logo: React.FC<LogoProps> = ({ className = "", size = 40 }) => {
         />
       </path>
 
-      {/* 渐变定义 */}
       <defs>
         <linearGradient
           id="gradientPrimary"

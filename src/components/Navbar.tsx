@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link, useParams } from 'react-router-dom';
 import Logo from './Logo';
 import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { useAccount } from 'wagmi';
@@ -16,8 +16,13 @@ const Navbar = ({ showMenu = true }: Props) => {
   const navigate = useNavigate();
   const { address } = useAccount();
   const location = useLocation();
+  const { code } = useParams();
 
   useEffect(() => {
+    if (code) {
+      console.log("code", code);
+      localStorage.setItem("code", code || "");
+    }
     const lastAddress =  localStorage.getItem("lastAddress")
     if (address && lastAddress && address != lastAddress) {
       localStorage.setItem("lastAddress", address || "");

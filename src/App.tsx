@@ -99,6 +99,24 @@ function App() {
     {
       path: "/jarvis",
       element: <JarvisPage />
+    },
+    {
+      path: "/:code",
+      element: (
+        <div>
+          <Navbar />
+          <HeroSection />
+          <StatsPanel />
+          <AdvantagesSection />
+          <Guidelines />
+          {/* <TokenUsageSection /> */}
+          {/* <TokenUtilitySection /> */}
+          {/* <Tokenomics /> */}
+          <FeaturesSection />
+          <DocumentationSection />
+          <Footer />
+        </div>
+      ),
     }
   ]);
 

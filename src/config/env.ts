@@ -8,11 +8,13 @@ interface EnvConfig {
   LEVEL_TOKEN: string;
   TOKRIO_LEVEL: string;
   TOKRIO_VESTING: string;
+  WEB_URL: string;
 }
 
 const ENV_CONFIG: Record<string, EnvConfig> = {
   development: {
     API_BASE_URL: 'https://beta-api-1.tokrio.com/api',
+    WEB_URL: 'https://beta-1.tokrio.com/',
     ECONOMY: '0x1f246fC9E9D1AdCb8a1939cf96E575Db6cE0F92F',
     USDT_TOKEN: '0x88e9C81F4b1D0721755F882dAfa2607D849ED1a3',
     STAKING: '0x8A502A63DdD970C319D9F50B259B784BBB819312',
@@ -24,6 +26,7 @@ const ENV_CONFIG: Record<string, EnvConfig> = {
   },
   beta: {
     API_BASE_URL: 'https://beta-api-1.tokrio.com/api',
+    WEB_URL: 'https://beta-1.tokrio.com/',
     ECONOMY: '0x1f246fC9E9D1AdCb8a1939cf96E575Db6cE0F92F',
     USDT_TOKEN: '0x88e9C81F4b1D0721755F882dAfa2607D849ED1a3',
     STAKING: '0x8A502A63DdD970C319D9F50B259B784BBB819312',
@@ -35,6 +38,7 @@ const ENV_CONFIG: Record<string, EnvConfig> = {
   },
   production: {
     API_BASE_URL: 'https://api.tokrio.io/api',
+    WEB_URL: 'https://tokrio.com/',
     ECONOMY: '',
     USDT_TOKEN: '',
     STAKING: '',

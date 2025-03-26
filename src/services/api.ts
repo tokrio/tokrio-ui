@@ -127,7 +127,7 @@ export interface TokenListResponse {
 
 export const api = {
   // Login API
-  login: async (data: { walletAddress: string; signature: string, timestamp?: number }): Promise<ApiResponse<string>> => {
+  login: async (data: { walletAddress: string; signature: string, timestamp?: number, inviteCode?:string }): Promise<ApiResponse<string>> => {
     const response = await axios.post(`${API_BASE_URL}/login`, data, {
       headers: {
         'Content-Type': 'application/json'
@@ -164,6 +164,16 @@ export const api = {
   // API Key Management APIs
   createApiKey: async (data: CreateApiKeyRequest): Promise<ApiResponse<ApiKey>> => {
     const response = await axios.post(`${API_BASE_URL}/api-keys`, data);
+    return response.data;
+  },
+
+  isRegister: async (walletAddress: any): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/user/check-wallet?walletAddress=${walletAddress}`);
+    return response.data;
+  },
+
+  getCode: async (): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/user/invite-code`);
     return response.data;
   },
 
