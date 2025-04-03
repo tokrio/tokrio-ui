@@ -1,5 +1,5 @@
 import Navbar from "../components/Navbar";
-import { Intro1Icon, Intro2Icon, Intro3Icon, Intro4Icon, Intro5Icon } from "../img/BnApi";
+import { Intro1Icon, Intro2Icon, Intro3Icon, Intro4Icon, Intro5Icon, Step5Icon } from "../img/BnApi";
 
 
 export default function IntroPage() {
@@ -18,7 +18,10 @@ export default function IntroPage() {
                 <img className="mx-auto w-[80%] mb-6" src={Intro3Icon} alt="Generated API Key" />
                 <p>Step 4: Give your API Key a descriptive label</p>
                 <img className="mx-auto w-[80%] mb-6" src={Intro4Icon} alt="API Key labeling" />
-                <p>Step 5: Store your API Key and Secret Key securely</p>
+                <p>Step 5: Set Trading Permissions (<span className=" text-red-500">Extremely Important</span>)</p>
+                <p className="my-2">Click “Edit restrictions”, then check “Enable Reading” and “Enable Spot & Margin Trading” to allow Tokrio to execute trades.</p>
+                <img className="mx-auto w-[80%] mb-6" src={Step5Icon} alt="API and Secret Keys" />
+                <p>Step 6: Store your API Key and Secret Key securely</p>
                 <img className="mx-auto w-[80%] mb-6" src={Intro5Icon} alt="API and Secret Keys" />
             </div>
         </div>

@@ -30,7 +30,7 @@ interface Token {
 const Dashboard = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('tokens');
+  const [activeTab, setActiveTab] = useState<TabType>('trading');
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
   const [isTradingPairManagerOpen, setIsTradingPairManagerOpen] = useState(false);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
@@ -251,7 +251,7 @@ const Dashboard = () => {
           <div className="mb-6">
             <div className="border-b border-gray-700">
               <nav className="-mb-px flex space-x-8 overflow-x-scroll scrollbar-hide">
-                <button
+                {/* <button
                   onClick={() => setActiveTab('tokens')}
                   className={`${activeTab === 'tokens'
                     ? 'border-primary text-primary'
@@ -262,7 +262,7 @@ const Dashboard = () => {
                   <span className="ml-2 py-0.5 px-2.5 text-xs rounded-full bg-card-num">
                     {totalTokens}
                   </span>
-                </button>
+                </button> */}
                 <button
                   onClick={() => setActiveTab('trading')}
                   className={`${activeTab === 'trading'

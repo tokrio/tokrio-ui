@@ -37,7 +37,7 @@ const ENV_CONFIG: Record<string, EnvConfig> = {
     TOKRIO_VESTING: '0xFBfE4c349801ED0190384E578ccddc13e7A1E8b7',
   },
   production: {
-    API_BASE_URL: 'https://api.tokrio.io/api',
+    API_BASE_URL: 'https://api-1.tokrio.io/api',
     WEB_URL: 'https://tokrio.com/',
     ECONOMY: '',
     USDT_TOKEN: '',

@@ -4,5 +4,6 @@ import Intro3Icon from './binance/api/02_System_generated.png';
 import Intro4Icon from './binance/api/03_Label_API.png';
 import Intro5Icon from './binance/api/04_Edit_restrictions.png';
 import Intro6Icon from './binance/api/05_Enable_reading_Enable_spot_margin_trading.png';
+import Step5Icon from './binance/api/05.png';
 
-export { Intro1Icon, Intro2Icon, Intro3Icon, Intro4Icon, Intro5Icon, Intro6Icon };
+export { Intro1Icon,Step5Icon, Intro2Icon, Intro3Icon, Intro4Icon, Intro5Icon, Intro6Icon };
