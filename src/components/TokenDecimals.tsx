@@ -50,5 +50,5 @@ export default function TokenDecimals({ token, tokenType = 20, setDecimals, amou
         }
     }
 
-    return amount ? <>{tokenType && tokenType != 20 ? 1 : convertFix(amount, decimal, fixed)}</> : <> </>
+    return amount ? <>{tokenType && tokenType != 20 ? 1 : convertFix(amount, decimal, fixed)}</> : <>0</>
 }

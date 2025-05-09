@@ -57,6 +57,11 @@ export interface CreateApiKeyRequest {
   apiName: string;
 }
 
+export interface WithdrwaRequest {
+  tokenAddress: string;
+  amount: string;
+}
+
 // Token Pairs Interface
 export interface TokenPair {
   tokenSymbol: string;
@@ -67,6 +72,16 @@ export interface TokenPairParam {
   tokenSymbol: string;
   usdtAmount: number;
   apiKeyId: number;
+}
+
+export interface DexParam {
+  groupId: number;
+  chainId: number | undefined;
+  initialUsdt:number
+}
+
+export interface SetUsdtParam {
+  totalUsdt: string;
 }
 
 export interface TokenPairsResponse {
@@ -125,9 +140,81 @@ export interface TokenListResponse {
   total: number;
 }
 
+export interface DexTokenData {
+  total: number;
+  tokens: DexToken[];
+}
+
+export interface TokenBalanceProps {
+  uiBalance: string;
+  decimals: number;
+}
+
+export interface DexToken {
+  id: number;
+  tokenSymbol: string;
+  tokenName: string;
+  profitPercent: number;
+  initUSDT: string;
+  tokenLeft: string;
+  usdtLeft: string;
+  allocation: number;
+  lastTradingOrder: string;
+  lastTradingType: string;
+  lastTradingDataTime: string;
+  userWallet: string;
+  chainId: number;
+  tokenAddress: string;
+  active: number;
+  strategyId: number;
+}
+
+export interface DexTokenResponse {
+  id: number;
+  tokenSymbol: string;
+  initUSDT: string;
+  tokenLeft: string;
+  usdtLeft: string;
+  lastTradingOrder: string;
+  lastTradingType: string;
+  lastTradingDataTime: string;
+  userWallet: string;
+  chainId: number;
+  tokenAddress: string;
+  active: number;
+  strategyId: number;
+}
+
+export interface VaultLog {
+  id: number;
+  walletAddress: string;
+  tokenAddress: string;
+  actionType: string;
+  tokenBefore: string;
+  tokenChanged: string;
+  updatedAt: string;
+  tokenAfter: string;
+  changeType: number;
+  tokenSymbol: string;
+  eventId: number;
+  dex:string;
+  eventHash: string;
+  vaultComment: string;
+}
+
+export interface VaultLogsResponse {
+  total: number;
+  page: number;
+  size: number;
+  logs: VaultLog[];
+  chainId: number;
+  tokenSymbol: string;
+  wallet: string;
+}
+
 export const api = {
   // Login API
-  login: async (data: { walletAddress: string; signature: string, timestamp?: number, inviteCode?:string }): Promise<ApiResponse<string>> => {
+  login: async (data: { walletAddress: string; signature: string, timestamp?: number, inviteCode?: string }): Promise<ApiResponse<string>> => {
     const response = await axios.post(`${API_BASE_URL}/login`, data, {
       headers: {
         'Content-Type': 'application/json'
@@ -143,6 +230,71 @@ export const api = {
         'Content-Type': 'application/json'
       }
     });
+    return response.data;
+  },
+
+  // DEX Tokens API
+  getDexTokens: async (): Promise<ApiResponse<DexTokenData>> => {
+    const response = await axios.get(`${API_BASE_URL}/dex/tokens`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  // Portfolio Overview API
+  getWeb3PortfolioOverview: async (): Promise<ApiResponse<PortfolioOverview>> => {
+    const response = await axios.get(`${API_BASE_URL}/dex/portfolio/overview`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+
+  getDexToken: async (chainId: number, tokenSymbol: string): Promise<ApiResponse<DexTokenResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/dex/token`, {
+      params: {
+        chainId,
+        tokenSymbol
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+
+  getVaultLogs: async (params: {
+    chainId: number;
+    tokenSymbol: string;
+    page: number;
+    size: number;
+  }): Promise<ApiResponse<VaultLogsResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/dex/vault-logs`, {
+      params,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  setTradeTokens: async (data: DexParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/set-trade-tokens`, data);
+    return response.data;
+  },
+
+  setTradeToken: async (): Promise<ApiResponse<any>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/init-all-tokens`);
+    return response.data;
+  },
+  
+  setTradeTokeUSDT: async (data: SetUsdtParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/set-trade-usdt`, data);
     return response.data;
   },
 
@@ -164,6 +316,16 @@ export const api = {
   // API Key Management APIs
   createApiKey: async (data: CreateApiKeyRequest): Promise<ApiResponse<ApiKey>> => {
     const response = await axios.post(`${API_BASE_URL}/api-keys`, data);
+    return response.data;
+  },
+
+  tokenTrendingView: async (tokenSymbol: string, startTime: string, endTime: string): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/analysis?tokenSymbol=${tokenSymbol}&startTime=${startTime}&endTime=${endTime}`);
+    return response.data;
+  },
+
+  tokenTrends: async (): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/trends`);
     return response.data;
   },
 
@@ -193,11 +355,11 @@ export const api = {
     return response.data;
   },
 
-    // Token Pairs API
-    listTokenPairsGroup: async (): Promise<ApiResponse<TokenPairsGroupResponse>> => {
-      const response = await axios.get(`${API_BASE_URL}/token/pair-groups`);
-      return response.data;
-    },
+  // Token Pairs API
+  listTokenPairsGroup: async (): Promise<ApiResponse<TokenPairsGroupResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/pair-groups`);
+    return response.data;
+  },
 
   // Add Token Pairs API
   addTokenPairs: async (data: TokenPairParam): Promise<ApiResponse<TokenPairParam>> => {

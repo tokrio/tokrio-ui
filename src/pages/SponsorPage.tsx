@@ -39,9 +39,9 @@ interface CreateSponsorModalProps {
 }
 
 interface PricingOption {
-  duration: number;  // 天数
-  price: number;    // USDT 价格
-  level: number;    // 等级
+  duration: number;  
+  price: number;    
+  level: number;   
 }
 
 const PRICING_OPTIONS: PricingOption[] = [
@@ -93,7 +93,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
           e.preventDefault();
           onSubmit(level, amount, duration, levelTokens[level as (1 | 2 | 3 | 4)]);
         }} className="space-y-6">
-          {/* 等级选择 */}
+        
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Sponsor Level (Balance: <TokenBalance token={config.LEVEL_TOKEN} decimalPlaces={0} /> <TokenName address={config.LEVEL_TOKEN} />)
@@ -111,7 +111,6 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             </select>
           </div>
 
-          {/* USDT 金额输入 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Sponsor Amount (USDT)
@@ -126,7 +125,6 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             />
           </div>
 
-          {/* 时长选择 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Duration (Months)
@@ -144,7 +142,6 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             </select>
           </div>
 
-          {/* 按钮 */}
           <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"

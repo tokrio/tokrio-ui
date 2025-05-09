@@ -12,6 +12,8 @@ import { useAccount } from 'wagmi';
 import { Link } from 'react-router-dom';
 import { FaArrowDown, FaChevronDown, FaQuestion, FaQuestionCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
+import TradingContract from './TradingContract';
+import TradingView from './TradingView';
 
 // Tab Type Definition
 type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate';
@@ -30,6 +32,7 @@ interface Token {
 const Dashboard = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
+  const [mode, setMode] = useState<'web2' | 'web3' | 'signals'>('web2');
   const [activeTab, setActiveTab] = useState<TabType>('trading');
   const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
   const [isTradingPairManagerOpen, setIsTradingPairManagerOpen] = useState(false);
@@ -245,8 +248,41 @@ const Dashboard = () => {
     <div className="min-h-screen">
       <Navbar showMenu={false} />
 
-      <main className="max-w-6xl mt-16 mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <main className="max-w-6xl mt-20 mx-auto py-6 px-4 md:px-8">
+
+
+
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex space-x-4">
+            <button
+              onClick={() => setMode('web2')}
+              className={`${mode === 'web2' ? 'bg-gray-700 text-white' : 'border-gray-400 text-gray-400'} px-5 border py-2 rounded-md`}
+            >
+              CEX Trading
+            </button>
+            <button
+              onClick={() => setMode('web3')}
+              className={`${mode === 'web3' ? 'bg-gray-700 text-white' : 'border-gray-400 text-gray-400'} px-5 border py-2 rounded-md relative`}
+            >
+              DEX Trading
+              <span className="absolute bg-red-500 -top-3 -right-3 text-white text-xs px-1.5 rounded-sm  transform rotate-[-10deg] ">
+                New
+              </span>
+            </button>
+            <button
+              onClick={() => setMode('signals')}
+              className={`${mode === 'signals' ? 'bg-gray-700 text-white' : 'border-gray-400 text-gray-400'} px-5 border py-2 rounded-md relative`}
+            >
+             Trading Signals
+             {/* <span className="absolute bg-gray-500 -top-3 -right-16 text-xs px-1.5 rounded-sm  transform rotate-[-10deg] ">
+                Coming Soon
+              </span> */}
+            </button>
+
+          </div>
+        </div>
+
+       {mode === 'web2' ? <div>
           {renderOverviewCards()}
           <div className="mb-6">
             <div className="border-b border-gray-700">
@@ -628,7 +664,9 @@ const Dashboard = () => {
               </div>
             )}
           </motion.div>
-        </div>
+        </div>: (mode === 'web3' ?<>
+            <TradingContract />
+        </>:<TradingView />)}
       </main>
 
       <ApiKeyManager

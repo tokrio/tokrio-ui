@@ -191,7 +191,8 @@ export const showErr = (err: any) => {
   if (message.toString().length > 220) {
     message = message.substring(0, 220) + "...";
   }
-}
+  return message;
+};
 
 export const formatDateLocal = (millionSeconds: number) => {
   let date = new Date(millionSeconds);

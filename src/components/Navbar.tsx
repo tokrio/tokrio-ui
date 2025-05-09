@@ -24,11 +24,14 @@ const Navbar = ({ showMenu = true }: Props) => {
       localStorage.setItem("code", code || "");
     }
     const lastAddress =  localStorage.getItem("lastAddress")
+    console.log("address11lastAddress", lastAddress);
+    console.log("address12", address);
     if (address && lastAddress && address != lastAddress) {
-      localStorage.setItem("lastAddress", address || "");
+      
       tokenStorage.removeToken();
       navigate("/")
     }
+    localStorage.setItem("lastAddress", address || "");
   }, [address])
 
   useEffect(() => {
@@ -58,6 +61,18 @@ const Navbar = ({ showMenu = true }: Props) => {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center space-x-8"
           >
+            {/* <Link
+              to="/proxyPurchase"
+              className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
+            >
+              Proxy Purchase
+            </Link>
+            <Link
+              to="/proxyAdmin"
+              className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
+            >
+              Proxy Admin
+            </Link> */}
             <Tooltip id="comming-soon" />
             <a
               data-tooltip-content="Comming Soon"

@@ -23,6 +23,8 @@ import LevelBenefitsPage from './pages/LevelBenefitsPage';
 import JarvisPage from './pages/JarvisPage';
 import ClaimPage from './pages/ClaimPage';
 import IntroPage from './pages/IntroPage';
+import ProxyAdminPage from './pages/ProxyAdmin';
+import ProxyPurchase from './pages/ProxyPurchase';
 
 // Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -87,6 +89,14 @@ function App() {
     {
       path: "/userSponsors",
       element: <SponsorPage />
+    },
+    {
+      path: "/proxyAdmin",
+      element: <ProxyAdminPage />
+    },
+    {
+      path: "/proxyPurchase",
+      element: <ProxyPurchase />
     },
     {
       path: "/sponsor/share/:address",

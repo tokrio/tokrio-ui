@@ -48,7 +48,7 @@ const LoginPage = () => {
       }
       return
     }
-
+    console.log("chainId==",chainConfig.chains)
     if (chainId !== chainConfig.chains[0].id) {
       switchChain(chainConfig, { chainId: Number(chainConfig.chains[0].id) })
     }

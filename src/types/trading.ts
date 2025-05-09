@@ -28,6 +28,13 @@ export interface NewTradingPairConfig {
   createdAt: Date;
 }
 
+export interface  TradingPairContractConfig {
+  groupId: number;
+  chainId: number | undefined;
+  groupName: string;
+  initialUsdt: string; 
+}
+
 export interface NewTradingPairGroupConfig {
   groupId: number;
   groupName: string;

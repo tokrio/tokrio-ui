@@ -9,7 +9,6 @@ import App from './App'
 import { Toaster } from 'react-hot-toast'
 
 const WALLET_CONNECT_PROJECT_ID = 'ae6db5c9c381306507026b30055a5bbe'
-const APP_NAME = 'TradeOFF Dapp'
 
 
 // const recommendedWalletList: WalletList = [
@@ -36,13 +35,48 @@ const APP_NAME = 'TradeOFF Dapp'
 //     },
 // })
 
+const rpcs = [
+  "https://bsc-pokt.nodies.app",
+  "https://bsc.drpc.org",
+  "https://bsc.blockrazor.xyz",
+  "https://binance.llamarpc.com",
+  "https://bsc-mainnet.public.blastapi.io",
+  "https://endpoints.omniatech.io/v1/bsc/mainnet/public",
+  "https://bsc.blockrazor.xyz",
+  "https://bsc-dataseed.binance.org"
+]
+
+const bscMain: Chain = {
+  id: 56,
+  name: 'BNB Chain',
+  nativeCurrency: {
+      decimals: 18,
+      name: 'BNB',
+      symbol: 'BNB',
+  },
+  rpcUrls: {
+      default: { http: rpcs },
+      public: { http: rpcs },
+  },
+  blockExplorers: {
+      etherscan: { name: 'BscScan', url: 'https://bscscan.com' },
+      default: { name: 'BscScan', url: 'https://bscscan.com' },
+  },
+  contracts: {
+      multicall3: {
+          address: '0xca11bde05977b3631167028862be2a173976ca11',
+          blockCreated: 15921452,
+      },
+  },
+}
+
 export const chainConfig:any = getDefaultConfig(
     {
       appName: 'Tokrio',
       projectId: WALLET_CONNECT_PROJECT_ID,
       chains: [
-        bsc
-        // net == "TEST" ? TestNet : net == "BSCTEST" ? bscTestnet : bsc,
+        // bsc
+        (process.env.REACT_APP_ENV !== "production" && process.env.REACT_APP_ENV !== "alpha") ? bscTestnet : bscMain,
       ],
       wallets: [
         {

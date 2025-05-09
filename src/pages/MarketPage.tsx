@@ -147,7 +147,6 @@ const MarketPage = () => {
     }
   }
 
-  // 过滤赞助列表
   const filteredSponsors = sponsors.filter((sponsor: any) => {
     if (filters.level !== 'all' && Number(sponsor.targetLevel) !== filters.level) {
       return false;
