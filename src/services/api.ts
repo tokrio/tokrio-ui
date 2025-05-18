@@ -13,7 +13,7 @@ interface ApiResponse<T> {
 
 // Portfolio Overview Interface
 export interface Position {
-  id: string;
+  tokenAccountID: number;
   tokenSymbol: string;
   tokenAmount: number;
   currentPrice: number;
@@ -25,6 +25,7 @@ export interface Position {
   trendingStrength: number;
   trendingUpdateTime: string;
   enabled: boolean;
+  usdtLeft: string;
 }
 
 export interface PortfolioOverview {
@@ -34,6 +35,17 @@ export interface PortfolioOverview {
   totalProfit: number;
   profitRate: number;
   positions: Position[];
+}
+
+export interface AdminInfo {
+  status: number;           
+  receiverAddr: string;     
+  tierLevel: number;       
+  commissionRate: number;  
+  totalEarnings: string;    
+  last30DaysEarnings: string; 
+  tradeCount: number;      
+  lastTradeTime: string;   
 }
 
 // API Key Related Interfaces
@@ -75,13 +87,28 @@ export interface TokenPairParam {
 }
 
 export interface DexParam {
-  groupId: number;
-  chainId: number | undefined;
-  initialUsdt:number
+  tokenSymbol: string;
+  initUsdt:string,
+  chainId: number,
 }
 
 export interface SetUsdtParam {
-  totalUsdt: string;
+  tokenAccountId: string;
+}
+
+
+export interface SetCexUsdtParam {
+  tokenAccountId: number;
+  usdtAmount: string;
+}
+
+export interface CloseTokenParam {
+  tokenSymbol: string;
+}
+
+export interface SetDexUsdtParam {
+  tokenAccountId: number;
+  usdtAmount: string;
 }
 
 export interface TokenPairsResponse {
@@ -212,6 +239,21 @@ export interface VaultLogsResponse {
   wallet: string;
 }
 
+export interface ProxyEarning {
+  time: string;
+  type: string;
+  txHash: string;
+  tradeAmount: string;
+  commission: string;
+}
+
+export interface ProxyEarningResponse {
+  total: number;
+  page: number;
+  pageSize: number;
+  list: ProxyEarning[];
+}
+
 export const api = {
   // Login API
   login: async (data: { walletAddress: string; signature: string, timestamp?: number, inviteCode?: string }): Promise<ApiResponse<string>> => {
@@ -243,9 +285,49 @@ export const api = {
     return response.data;
   },
 
+  getDexTokenList: async (): Promise<ApiResponse<TokenListResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/list?page=1&pageSize=100&dexSupported=1`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  getCexTokenList: async (): Promise<ApiResponse<TokenListResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/token/list?page=1&pageSize=100&cexSupported=1`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
   // Portfolio Overview API
   getWeb3PortfolioOverview: async (): Promise<ApiResponse<PortfolioOverview>> => {
     const response = await axios.get(`${API_BASE_URL}/dex/portfolio/overview`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  getAdminInfo: async (): Promise<ApiResponse<AdminInfo>> => {
+    const response = await axios.get(`${API_BASE_URL}/proxy/info`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  getProxyEarnings: async (page: number = 1, pageSize: number = 10): Promise<ApiResponse<ProxyEarningResponse>> => {
+    const response = await axios.get(`${API_BASE_URL}/proxy/earnings`, {
+      params: {
+        page,
+        pageSize
+      },
       headers: {
         'Content-Type': 'application/json'
       }
@@ -283,10 +365,45 @@ export const api = {
     return response.data;
   },
 
-  setTradeTokens: async (data: DexParam): Promise<ApiResponse<TokenPairParam>> => {
+  setTradeTokens: async (data: any): Promise<ApiResponse<TokenPairParam>> => {
     const response = await axios.post(`${API_BASE_URL}/dex/set-trade-tokens`, data);
     return response.data;
   },
+
+  addCexToken: async (data: TokenPairParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/add-token`, data);
+    return response.data;
+  },
+
+  addDexToken: async (data: DexParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/add-token`, data);
+    return response.data;
+  },
+
+  setDexUsdt: async (data: SetDexUsdtParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/set-usdt`, data);
+    return response.data; 
+  },
+
+  setCexUsdt: async (data: SetCexUsdtParam): Promise<ApiResponse<TokenPairParam>> => {
+    let param = {
+      tokenAccountId: data.tokenAccountId,
+      usdtAmount: Number(data.usdtAmount)
+    }
+    const response = await axios.post(`${API_BASE_URL}/token/set-usdt`, param);
+    return response.data; 
+  },
+
+  closeCexToken: async (data: CloseTokenParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/close`, data);
+    return response.data; 
+  },
+
+  closeDexToken: async (data: CloseTokenParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/token/close`, data);
+    return response.data; 
+  },
+
 
   setTradeToken: async (): Promise<ApiResponse<any>> => {
     const response = await axios.post(`${API_BASE_URL}/dex/init-all-tokens`);
@@ -448,4 +565,4 @@ axios.interceptors.request.use((config: any) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-}); 
+});

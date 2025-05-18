@@ -53,7 +53,6 @@ const MarketPage = () => {
     maxDuration: ''
   });
 
-  // 模拟市场数据
   const [sponsors, setSponsors] = useState<any>([]);
 
   useEffect(() => {
@@ -65,7 +64,7 @@ const MarketPage = () => {
     const sponsorList: any = await readContract(chainConfig, {
       address: config.SPONSOR as `0x${string}`,
       abi: TokrioLevelAbi,
-      functionName: 'getOffers', // 调用的函数名称
+      functionName: 'getOffers', 
       args: [0, 100000, 0]
     });
 

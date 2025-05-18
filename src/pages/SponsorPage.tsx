@@ -414,11 +414,9 @@ const SponsorPage = () => {
     }
   }
 
-  // 购买赞助
   const handleBuySponsor = async (sponsorId: string) => {
     setLoading(true);
     try {
-      // 模拟延迟
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success('Sponsor purchased successfully');
     } catch (error) {
@@ -428,7 +426,6 @@ const SponsorPage = () => {
     }
   };
 
-  // 分享赞助
   const handleShare = (sponsorId: string) => {
     const url = `${window.location.origin}/sponsor/${sponsorId}`;
     navigator.clipboard.writeText(url);

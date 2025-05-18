@@ -84,7 +84,7 @@ const HeroSection = () => {
             Experience the next evolution in cryptocurrency trading with our AI-driven algorithms that analyze trends, predict movements, and execute trades with precision.
           </div>
 
-          {/* 添加价格显示 */}
+          
           {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

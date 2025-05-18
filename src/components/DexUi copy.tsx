@@ -20,7 +20,7 @@ import toast from "react-hot-toast";
 
 
 
-export default function TradingContract() {
+export default function DexUi() {
     const [portfolioData, setPortfolioData] = useState<PortfolioOverview | null>(null);
     const [dexTokens, setDexTokens] = useState<DexToken[] | null>(null);
     const [isDepositOpen, setIsDepositOpen] = useState(false);
@@ -233,8 +233,8 @@ export default function TradingContract() {
 
                         <div className="hidden md:flex items-center">
                             <button onClick={() => {
-                                setTradingAsset()
-                                // setIsPairOpen(1)
+                                // setTradingAsset()
+                                 setIsPairOpen(2)
                             }} className="px-3 py-2 cta-button">
                                 {addLoading ? (
                                     <div className="flex items-center">
@@ -243,11 +243,11 @@ export default function TradingContract() {
                                     </div>
                                 ) : 'Set Trading Asset'}
                             </button>
-                            <button onClick={() => {
+                            {/* <button onClick={() => {
                                 setIsPairOpen(2)
                             }} className="px-3 ml-2 py-2 cta-button">
                                 Set Trading USDT
-                            </button>
+                            </button> */}
 
                         </div>
                     </div>
@@ -332,6 +332,7 @@ export default function TradingContract() {
             />}
             <TradingPairContract
                 isOpen={isPairOpen}
+                isDex={true}
                 usdtBalance={usdtBalance}
                 onClose={() => setIsPairOpen(0)}
                 onSave={getDexTokensData}

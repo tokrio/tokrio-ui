@@ -5,6 +5,8 @@
   "dependencies": {
     "@binance/w3w-rainbow-connector-v2": "^1.0.0",
     "@craco/craco": "^6.4.5",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.0.18",
     "@rainbow-me/rainbowkit": "^2.1.2",

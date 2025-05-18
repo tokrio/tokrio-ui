@@ -25,6 +25,9 @@ import ClaimPage from './pages/ClaimPage';
 import IntroPage from './pages/IntroPage';
 import ProxyAdminPage from './pages/ProxyAdmin';
 import ProxyPurchase from './pages/ProxyPurchase';
+import PrivacyPage from './pages/PrivacyPage';
+import { Toaster } from 'react-hot-toast';
+import TermsPage from './pages/Terms';
 
 // Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -75,6 +78,14 @@ function App() {
     {
       path: "/intro",
       element: <IntroPage />
+    },
+    {
+      path: "/privacy",
+      element: <PrivacyPage />
+    },
+    {
+      path: "/terms",
+      element: <TermsPage />
     },
     {
       path: "/dashboard",
@@ -136,6 +147,7 @@ function App() {
     </div>
     <div className='absolute max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
       <RouterProvider router={router} />
+      <Toaster />
     </div>
   </div>
 }

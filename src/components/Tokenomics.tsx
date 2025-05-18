@@ -11,16 +11,16 @@ const Tokenomics = () => {
     { category: "Project Reserve", percentage: 5, color: "#9C27B0" }
   ];
 
-  // 计算饼图的SVG路径和标签位置
+  
   const generatePieChart = () => {
     const total = distribution.reduce((sum, item) => sum + item.percentage, 0);
     let currentAngle = 0;
     const paths = [];
     const labels = [];
-    const radius = 180; // 增大半径
-    const centerX = 250; // 增大中心点坐标
+    const radius = 180; 
+    const centerX = 250; 
     const centerY = 250;
-    const labelRadius = radius * 0.7; // 标签距离中心点的距离
+    const labelRadius = radius * 0.7; 
 
     for (const item of distribution) {
       const angle = (item.percentage / total) * 360;
@@ -28,22 +28,22 @@ const Tokenomics = () => {
       const endAngle = currentAngle + angle;
       const midAngle = (startAngle + endAngle) / 2;
       
-      // 转换角度为弧度
+     
       const startRad = (startAngle - 90) * Math.PI / 180;
       const endRad = (endAngle - 90) * Math.PI / 180;
       const midRad = (midAngle - 90) * Math.PI / 180;
       
-      // 计算路径点
+      
       const x1 = centerX + radius * Math.cos(startRad);
       const y1 = centerY + radius * Math.sin(startRad);
       const x2 = centerX + radius * Math.cos(endRad);
       const y2 = centerY + radius * Math.sin(endRad);
       
-      // 计算标签位置
+     
       const labelX = centerX + labelRadius * Math.cos(midRad);
       const labelY = centerY + labelRadius * Math.sin(midRad);
       
-      // 生成SVG路径
+     
       const largeArcFlag = angle > 180 ? 1 : 0;
       const path = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
       
@@ -74,14 +74,14 @@ const Tokenomics = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-          {/* 饼图 */}
+        
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative"
           >
             <svg viewBox="0 0 500 500" className="mx-auto md:w-[500px] md:h-[500px] w-[100%] h-[100%]">
-              {/* 绘制饼图扇形 */}
+            
               {paths.map((item, index) => (
                 <path
                   key={index}
@@ -95,7 +95,7 @@ const Tokenomics = () => {
                 </path>
               ))}
               
-              {/* 绘制百分比标签 */}
+             
               {labels.map((label, index) => (
                 <g key={`label-${index}`}>
                   <text
@@ -115,7 +115,7 @@ const Tokenomics = () => {
             </svg>
           </motion.div>
 
-          {/* 图例和详情 */}
+        
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

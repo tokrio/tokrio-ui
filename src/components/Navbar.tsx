@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation, Link, useParams } from 'react-router-dom';
-import Logo from './Logo';
-import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { useAccount } from 'wagmi';
 import { tokenStorage } from '../services/api';
-import { LogoIcon } from '../img/FileImports';
+import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { Tooltip } from 'react-tooltip';
+import { Menu, X } from 'lucide-react';
 
 interface Props {
   showMenu?: boolean
 }
 
 const Navbar = ({ showMenu = true }: Props) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { address } = useAccount();
   const location = useLocation();
@@ -23,16 +23,15 @@ const Navbar = ({ showMenu = true }: Props) => {
       console.log("code", code);
       localStorage.setItem("code", code || "");
     }
-    const lastAddress =  localStorage.getItem("lastAddress")
+    const lastAddress = localStorage.getItem("lastAddress")
     console.log("address11lastAddress", lastAddress);
     console.log("address12", address);
     if (address && lastAddress && address != lastAddress) {
-      
       tokenStorage.removeToken();
       navigate("/")
     }
     localStorage.setItem("lastAddress", address || "");
-  }, [address])
+  }, [address]) // When address changes
 
   useEffect(() => {
     if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor' && location.pathname !== '/market' && location.pathname !== '/jarvis') {
@@ -40,6 +39,14 @@ const Navbar = ({ showMenu = true }: Props) => {
       navigate("/")
     }
   }, [address, location.pathname])
+
+  const menuItems = [
+    { path: '/proxyPurchase', label: 'Proxy Purchase', enabled: true },
+    { path: '/proxyAdmin', label: 'Proxy Admin', enabled: true },
+    { label: 'Staking', enabled: false },
+    { label: 'Jarvis', enabled: false },
+    { label: 'Market', enabled: false },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-sm">
@@ -51,74 +58,90 @@ const Navbar = ({ showMenu = true }: Props) => {
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => navigate('/')}
           >
-            {/* <Logo size={32} /> */}
-            <img src={process.env.PUBLIC_URL + 'logo.png'} alt="logo" className="h-8 w-auto  rounded-full" />
-            <span className="text-xl tracking-widest hidden md:block uppercase main-font  font-medium text-primary">Tokrio</span>
+            <img src={process.env.PUBLIC_URL + 'logo.png'} alt="logo" className="h-8 w-auto rounded-full" />
+            <span className="text-xl tracking-widest hidden md:block uppercase main-font font-medium text-primary">
+              Tokrio
+            </span>
           </motion.div>
 
+          
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center space-x-8"
+            className="hidden md:flex items-center space-x-8"
           >
-            {/* <Link
-              to="/proxyPurchase"
-              className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
-            >
-              Proxy Purchase
-            </Link>
-            <Link
-              to="/proxyAdmin"
-              className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
-            >
-              Proxy Admin
-            </Link> */}
-            <Tooltip id="comming-soon" />
-            <a
-              data-tooltip-content="Comming Soon"
-              data-tooltip-id="comming-soon"
-              className="text-gray-600 cursor-pointer text-sm main-font  uppercase  transition-colors duration-200"
-            >
-              Staking
-            </a>
-            <a
-              data-tooltip-content="Comming Soon"
-              data-tooltip-id="comming-soon"
-              className="text-gray-600 cursor-pointer text-sm main-font  uppercase  transition-colors duration-200"
-            >
-              Jarvis
-            </a>
-            <a
-              data-tooltip-content="Comming Soon"
-              data-tooltip-id="comming-soon"
-              className="text-gray-600 cursor-pointer text-sm main-font  uppercase  transition-colors duration-200"
-            >
-              Market
-            </a>
-            {/* <Link
-              to="/staking"
-              className="text-white text-sm main-font  uppercase hover:text-primary transition-colors duration-200"
-            >
-              Staking
-            </Link>
-            <Link
-              to="/jarvis"
-              className="text-gray-300 text-sm main-font uppercase hover:text-primary transition-colors duration-200"
-            >
-              Jarvis
-            </Link>
-            <Link
-              to="/market"
-              className="text-gray-300 text-sm main-font uppercase hover:text-primary transition-colors duration-200"
-            >
-              Market
-            </Link> */}
+            {menuItems.map((item, index) => (
+              item.enabled ? (
+                <Link
+                  key={index}
+                  to={item.path || '/'}
+                  className="text-white text-sm main-font uppercase hover:text-primary transition-colors duration-200"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  key={index}
+                  data-tooltip-content="Coming Soon"
+                  data-tooltip-id="comming-soon"
+                  className="text-gray-600 cursor-pointer text-sm main-font uppercase transition-colors duration-200"
+                >
+                  {item.label}
+                </a>
+              )
+            ))}
             <ConnectButtonComponents />
           </motion.div>
+
+          <div className="md:hidden flex items-center space-x-4">
+            <ConnectButtonComponents />
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white p-2"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{
+          opacity: isMenuOpen ? 1 : 0,
+          height: isMenuOpen ? 'auto' : 0,
+        }}
+        transition={{ duration: 0.3 }}
+        className="md:hidden bg-black/95 overflow-hidden"
+      >
+        <div className="px-4 py-2 space-y-4">
+          {menuItems.map((item, index) => (
+            <div key={index} className="border-b border-gray-800 last:border-0">
+              {item.enabled ? (
+                <Link
+                  to={item.path || '/'}
+                  className="block py-3 text-white text-sm main-font uppercase hover:text-primary transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <a
+                  className="block py-3 text-gray-600 text-sm main-font uppercase cursor-pointer"
+                  data-tooltip-content="Coming Soon"
+                  data-tooltip-id="comming-soon"
+                >
+                  {item.label}
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </motion.div>
+      
+      <Tooltip id="comming-soon" />
     </nav>
   );
 };
 
-export default Navbar; 
+export default Navbar;

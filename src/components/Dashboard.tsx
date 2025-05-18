@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ApiKeyManager from './ApiKeyManager';
-import TradingPairManager from './TradingPairManager';
+import TradingPairManager from './CexAddToken';
 import { TradingPairConfig, NewTradingPairConfig, TradeHistory } from '../types/trading';
 import TradingHistory from './TradingHistory';
 import { api, PortfolioOverview, Position, ApiKey, CreateApiKeyRequest, TokenPair } from '../services/api';
@@ -12,8 +12,14 @@ import { useAccount } from 'wagmi';
 import { Link } from 'react-router-dom';
 import { FaArrowDown, FaChevronDown, FaQuestion, FaQuestionCircle } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
-import TradingContract from './TradingContract';
+import TradingContract from './DexUi';
 import TradingView from './TradingView';
+import DexUi from './DexUi';
+import CexAddToken from './CexAddToken';
+import SettingCexUi from './SettingCexUi';
+import CloseToken from './CloseToken';
+import { CaptionsOff, HistoryIcon, SettingsIcon } from 'lucide-react';
+import BigNumber from 'bignumber.js';
 
 // Tab Type Definition
 type TabType = 'tokens' | 'trading' | 'apikeys' | 'simulate';
@@ -48,6 +54,9 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalTokens, setTotalTokens] = useState(0);
   const [userGroup, setUserGroup] = useState<any[]>([]);
+  const [isSettingCexOpen, setIsSettingCexOpen] = useState(false);
+  const [isCloseTokenOpen, setIsCloseTokenOpen] = useState(false);
+  const [cexItem, setCexItem] = useState<Position | null>(null);
 
   // Fetch Portfolio Data
   const fetchPortfolioData = async () => {
@@ -86,6 +95,7 @@ const Dashboard = () => {
   }, [activeTab]);
 
   const getUserGroup = async () => {
+    return
     setLoadingGroup(true);
     const response = await api.getUserGroup();
     if (response.code === 200 && response.body.data) {
@@ -273,8 +283,8 @@ const Dashboard = () => {
               onClick={() => setMode('signals')}
               className={`${mode === 'signals' ? 'bg-gray-700 text-white' : 'border-gray-400 text-gray-400'} px-5 border py-2 rounded-md relative`}
             >
-             Trading Signals
-             {/* <span className="absolute bg-gray-500 -top-3 -right-16 text-xs px-1.5 rounded-sm  transform rotate-[-10deg] ">
+              Trading Signals
+              {/* <span className="absolute bg-gray-500 -top-3 -right-16 text-xs px-1.5 rounded-sm  transform rotate-[-10deg] ">
                 Coming Soon
               </span> */}
             </button>
@@ -282,7 +292,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-       {mode === 'web2' ? <div>
+        {mode === 'web2' ? <div>
           {renderOverviewCards()}
           <div className="mb-6">
             <div className="border-b border-gray-700">
@@ -344,7 +354,7 @@ const Dashboard = () => {
             transition={{ duration: 0.2 }}
           >
             {activeTab === 'trading' && (
-              <div className="bg-card  rounded-lg p-6">
+              <div className="bg-card  rounded-lg p-4">
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <h3 className="text-lg font-medium text-white">Trade Set</h3>
@@ -362,7 +372,7 @@ const Dashboard = () => {
                       onClick={handleOpenTradingPairManager}
                       className="px-4 py-2 cta-button"
                     >
-                      Add Trade Set
+                      Add Trading Set
                     </button>
                   </div>
                 </div>
@@ -371,143 +381,184 @@ const Dashboard = () => {
                   <div className="text-center py-8 text-gray-400">
                     Loading trade set...
                   </div>
-                ) : !userGroup?.length ? (
+                ) : !portfolioData?.positions || portfolioData?.positions.length < 1 ? (
                   <div className="text-center py-8 text-gray-400">
                     No Trade Set configured yet. Click the button above to add one.
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {userGroup.map((group) => (
-                      <div key={group.id} className="bg-card rounded-lg p-2">
 
-                        <div className='flex text-white mb-2 justify-between items-center'>
-                          <div className='text-base'>{group.groupName} ${group.groupTotalBalance}
-                            <span className={`ml-2 bg-slate-500 p-1 rounded-md ${group.active === 1 ? 'text-green-400' : 'text-red-400'}`}>{group.active === 1 ? 'Active' : 'Deactivate'}</span>
+                    <div className='grid grid-cols-1 gap-4'>
+                      {portfolioData?.positions && portfolioData.positions.map((position: any) => (
+                        <div
+                          key={position.tokenSymbol}
+                          className="bg-card rounded-lg p-4 hover:bg-gray-700/50 transition-colors duration-200"
+                        >
+                          <div className=" mb-6 gap-3 grid grid-cols-1">
+                            <div className="flex w-full items-center space-x-4">
+                              <div>
+                                <div className="text-xl font-medium text-white">{position.tokenSymbol}</div>
+
+                              </div>
+
+                              {
+                                position.trending > 0 ? (
+                                  <svg className='w-6 h-6 text-red-400' viewBox="0 0 1029 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="13956" width="48" height="48"><path d="M904.00256 308.34176l58.52672-184.32c1.56672-4.62336-1.82272-9.59488-6.8864-9.86624l-193.5104-13.13792c-6.41536-0.42496-10.53184 6.7584-6.912 12.07296l45.696 66.80576-255.2064 173.3376L467.26144 238.592a15.43168 15.43168 0 0 0-21.46816-4.06016l-325.1712 220.928c-0.31232 0.2048-0.63488 0.40448-0.9472 0.6144l-17.66912 12.03712-19.49696 13.24544a7.6288 7.6288 0 0 0-1.9456 1.93536c-13.6448 12.7232-16.30208 33.16224-5.39648 49.16736a38.8864 38.8864 0 0 0 47.44704 13.84448c1.1264-0.16384 2.2272-0.5632 3.2256-1.24416l312.44288-212.18304 78.37696 114.51904c4.864 7.02464 14.45888 8.84224 21.46304 4.06528L844.544 243.5584l45.69088 66.80576c3.61984 5.31456 11.82208 4.11136 13.76768-2.01728" fill="#1afa29" p-id="13957"></path><path d="M140.46208 666.99264c-22.6816 0-41.13408 14.70464-41.13408 32.77312v189.952c0 18.0736 18.45248 32.77312 41.13408 32.77312 22.6816 0 41.13408-14.69952 41.13408-32.77312v-189.952c0-18.0736-18.45248-32.77312-41.13408-32.77312M401.408 540.73856c-22.6816 0-41.13408 15.18592-41.13408 33.85344v314.05056c0 18.6624 18.45248 33.84832 41.13408 33.84832 22.6816 0 41.13408-15.18592 41.13408-33.8432v-314.0608c0-18.6624-18.45248-33.8432-41.13408-33.8432m260.93568 63.12448c-22.6816 0-41.12896 15.6672-41.12896 34.93376v248.7552c0 19.26144 18.44736 34.93376 41.12896 34.93376s41.13408-15.6672 41.13408-34.93376v-248.7552c0-19.26144-18.45248-34.93376-41.13408-34.93376m260.9408-185.1392c-22.6816 0-41.13408 18.45248-41.13408 41.13408v421.49376c0 22.6816 18.45248 41.13408 41.13408 41.13408 22.6816 0 41.13408-18.45248 41.13408-41.13408V459.86304c0-22.6816-18.45248-41.13408-41.13408-41.13408" fill="#1afa29" p-id="13958"></path></svg>
+                                ) : (
+                                  <svg className='w-6 h-6 text-red-400' viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12820" width="48" height="48"><path d="M196.048133 357.025609v518.161062a9.162604 9.162604 0 0 1-9.478556 9.478556H142.336316a9.162604 9.162604 0 0 1-9.478556-9.478556V357.025609a9.162604 9.162604 0 0 1 9.478556-9.478556h44.233261a9.162604 9.162604 0 0 1 9.478556 9.478556z m211.687751 116.902191h-44.233261a9.162604 9.162604 0 0 0-9.478556 9.478556v391.780315a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233261a9.162604 9.162604 0 0 0 9.478556-9.478556V483.406356a9.162604 9.162604 0 0 0-9.478556-9.478556z m221.166307-31.595187h-44.233262a9.162604 9.162604 0 0 0-9.478556 9.478556v423.375502a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233262a9.162604 9.162604 0 0 0 9.478556-9.478556V451.811169a9.162604 9.162604 0 0 0-9.478556-9.478556z m221.166306 189.57112h-44.233261a9.162604 9.162604 0 0 0-9.478556 9.478556v233.804382a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233261a9.162604 9.162604 0 0 0 9.478556-9.478556v-233.804382a9.162604 9.162604 0 0 0-9.478556-9.478556z m31.595187-211.68775a14.533786 14.533786 0 0 0-25.592101-6.950941l-35.070657 42.021598a26.539957 26.539957 0 0 0-5.687134-6.319037l-284.35668-221.166307a31.595187 31.595187 0 0 0-24.644246-6.634989 31.595187 31.595187 0 0 0-21.484727 14.849737l-76.460351 126.380747-256.236964-197.785868a31.595187 31.595187 0 1 0-38.546128 49.920394l284.35668 221.166307a31.595187 31.595187 0 0 0 24.960198 6.003086 31.595187 31.595187 0 0 0 21.484727-14.849738l76.460351-126.380747 256.236964 199.365628a31.595187 31.595187 0 0 0 5.371182 3.159519l-35.702561 42.653502a14.533786 14.533786 0 0 0 11.374267 24.012342l133.015736-2.843567a14.849738 14.849738 0 0 0 14.217834-17.061401z" fill='red' p-id="12821" ></path></svg>
+                                )
+                              }
+                              <div className='flex-1'></div>
+                              <div className="text-sm  text-gray-400 ">
+                                Initial: {position.initialUSDT} USDT
+                              </div>
+                              <div className=" hidden md:flex items-center space-x-3">
+                                <button
+                                  onClick={() => handleViewHistory({
+                                    tokenAccountID: position.tokenAccountID,
+                                    symbol: position.tokenSymbol,
+                                    initialUSDT: position.initialUSDT,
+                                    apiKeyId: '1',
+                                    enabled: position.enabled,
+                                    trending: position.trending,
+                                    createdAt: new Date(position.trendingUpdateTime),
+                                    balance: {
+                                      usdt: position.value,
+                                      token: position.tokenAmount,
+                                      tokenPrice: position.currentPrice
+                                    },
+                                    performance: {
+                                      totalValue: position.value,
+                                      pnl: position.profitRate,
+                                      pnlAmount: position.profit
+                                    }
+                                  })}
+                                  className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
+                                >
+                                  <HistoryIcon className="w-4 h-4 mr-1" />
+                                  History
+                                </button>
+                                <button onClick={() => {
+                                  setCexItem(position)
+                                  setIsSettingCexOpen(true)
+                                }} className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">
+                                  <SettingsIcon className="w-4 h-4 mr-1" />
+                                  Setting
+                                </button>
+
+                                <button onClick={() => {
+                                  setCexItem(position)
+                                  setIsCloseTokenOpen(true);
+                                }} className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">
+                                  <CaptionsOff className="w-4 h-4 mr-1" />
+                                  Close
+                                </button>
+
+
+                              </div>
+
+                            </div>
+
+
+                            <div className=" md:hidden flex items-center space-x-3">
+                              <button
+                                onClick={() => handleViewHistory({
+                                  tokenAccountID: position.tokenAccountID,
+                                  symbol: position.tokenSymbol,
+                                  initialUSDT: position.initialUSDT,
+                                  apiKeyId: '1',
+                                  enabled: position.enabled,
+                                  trending: position.trending,
+                                  createdAt: new Date(position.trendingUpdateTime),
+                                  balance: {
+                                    usdt: position.value,
+                                    token: position.tokenAmount,
+                                    tokenPrice: position.currentPrice
+                                  },
+                                  performance: {
+                                    totalValue: position.value,
+                                    pnl: position.profitRate,
+                                    pnlAmount: position.profit
+                                  }
+                                })}
+                                className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
+                              >
+                                <HistoryIcon className="w-4 h-4 mr-1" />
+                              </button>
+                              <button onClick={() => {
+                                setCexItem(position)
+                                setIsSettingCexOpen(true)
+                              }} className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">
+                                <SettingsIcon className="w-4 h-4 mr-1" />
+                                Setting
+                              </button>
+
+                              <button onClick={() => {
+                                setCexItem(position)
+                                setIsCloseTokenOpen(true);
+                              }} className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">
+                                <CaptionsOff className="w-4 h-4 mr-1" />
+                                Close
+                              </button>
+
+
+                            </div>
+
                           </div>
 
-                          {/* <FaChevronDown className='ml-2' /> */}
-                          {group.active === 1 && <button onClick={() => {
-                            deactivateGroup(group.id)
-                          }} className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">Deactivate Group</button>}
-                        </div>
-                        <div className='grid grid-cols-1 gap-4'>
-                          {group?.positions && group.positions.map((position: any) => (
-                            <div
-                              key={position.tokenSymbol}
-                              className="bg-card rounded-lg p-6 hover:bg-gray-700/50 transition-colors duration-200"
-                            >
-                              <div className=" mb-6 gap-3 grid grid-cols-1 md:grid-cols-2">
-                                <div className="flex items-center space-x-4">
-                                  <div>
-                                    <div className="text-xl font-medium text-white">{position.tokenSymbol}</div>
-                                    <div className="text-sm text-gray-400 mt-1">
-                                      Initial: {position.initialUSDT} USDT
-                                    </div>
-                                  </div>
-                                  {
-                                    position.trending > 0 ? (
-                                      <svg className='w-6 h-6 text-red-400' viewBox="0 0 1029 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="13956" width="48" height="48"><path d="M904.00256 308.34176l58.52672-184.32c1.56672-4.62336-1.82272-9.59488-6.8864-9.86624l-193.5104-13.13792c-6.41536-0.42496-10.53184 6.7584-6.912 12.07296l45.696 66.80576-255.2064 173.3376L467.26144 238.592a15.43168 15.43168 0 0 0-21.46816-4.06016l-325.1712 220.928c-0.31232 0.2048-0.63488 0.40448-0.9472 0.6144l-17.66912 12.03712-19.49696 13.24544a7.6288 7.6288 0 0 0-1.9456 1.93536c-13.6448 12.7232-16.30208 33.16224-5.39648 49.16736a38.8864 38.8864 0 0 0 47.44704 13.84448c1.1264-0.16384 2.2272-0.5632 3.2256-1.24416l312.44288-212.18304 78.37696 114.51904c4.864 7.02464 14.45888 8.84224 21.46304 4.06528L844.544 243.5584l45.69088 66.80576c3.61984 5.31456 11.82208 4.11136 13.76768-2.01728" fill="#1afa29" p-id="13957"></path><path d="M140.46208 666.99264c-22.6816 0-41.13408 14.70464-41.13408 32.77312v189.952c0 18.0736 18.45248 32.77312 41.13408 32.77312 22.6816 0 41.13408-14.69952 41.13408-32.77312v-189.952c0-18.0736-18.45248-32.77312-41.13408-32.77312M401.408 540.73856c-22.6816 0-41.13408 15.18592-41.13408 33.85344v314.05056c0 18.6624 18.45248 33.84832 41.13408 33.84832 22.6816 0 41.13408-15.18592 41.13408-33.8432v-314.0608c0-18.6624-18.45248-33.8432-41.13408-33.8432m260.93568 63.12448c-22.6816 0-41.12896 15.6672-41.12896 34.93376v248.7552c0 19.26144 18.44736 34.93376 41.12896 34.93376s41.13408-15.6672 41.13408-34.93376v-248.7552c0-19.26144-18.45248-34.93376-41.13408-34.93376m260.9408-185.1392c-22.6816 0-41.13408 18.45248-41.13408 41.13408v421.49376c0 22.6816 18.45248 41.13408 41.13408 41.13408 22.6816 0 41.13408-18.45248 41.13408-41.13408V459.86304c0-22.6816-18.45248-41.13408-41.13408-41.13408" fill="#1afa29" p-id="13958"></path></svg>
-                                    ) : (
-                                      <svg className='w-6 h-6 text-red-400' viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12820" width="48" height="48"><path d="M196.048133 357.025609v518.161062a9.162604 9.162604 0 0 1-9.478556 9.478556H142.336316a9.162604 9.162604 0 0 1-9.478556-9.478556V357.025609a9.162604 9.162604 0 0 1 9.478556-9.478556h44.233261a9.162604 9.162604 0 0 1 9.478556 9.478556z m211.687751 116.902191h-44.233261a9.162604 9.162604 0 0 0-9.478556 9.478556v391.780315a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233261a9.162604 9.162604 0 0 0 9.478556-9.478556V483.406356a9.162604 9.162604 0 0 0-9.478556-9.478556z m221.166307-31.595187h-44.233262a9.162604 9.162604 0 0 0-9.478556 9.478556v423.375502a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233262a9.162604 9.162604 0 0 0 9.478556-9.478556V451.811169a9.162604 9.162604 0 0 0-9.478556-9.478556z m221.166306 189.57112h-44.233261a9.162604 9.162604 0 0 0-9.478556 9.478556v233.804382a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233261a9.162604 9.162604 0 0 0 9.478556-9.478556v-233.804382a9.162604 9.162604 0 0 0-9.478556-9.478556z m31.595187-211.68775a14.533786 14.533786 0 0 0-25.592101-6.950941l-35.070657 42.021598a26.539957 26.539957 0 0 0-5.687134-6.319037l-284.35668-221.166307a31.595187 31.595187 0 0 0-24.644246-6.634989 31.595187 31.595187 0 0 0-21.484727 14.849737l-76.460351 126.380747-256.236964-197.785868a31.595187 31.595187 0 1 0-38.546128 49.920394l284.35668 221.166307a31.595187 31.595187 0 0 0 24.960198 6.003086 31.595187 31.595187 0 0 0 21.484727-14.849738l76.460351-126.380747 256.236964 199.365628a31.595187 31.595187 0 0 0 5.371182 3.159519l-35.702561 42.653502a14.533786 14.533786 0 0 0 11.374267 24.012342l133.015736-2.843567a14.849738 14.849738 0 0 0 14.217834-17.061401z" fill='red' p-id="12821" ></path></svg>
-                                    )
-                                  }
-                                </div>
-
-                                <div className="flex items-center space-x-3">
-                                  <button
-                                    onClick={() => handleViewHistory({
-                                      tokenAccountID: position.tokenAccountID,
-                                      symbol: position.tokenSymbol,
-                                      initialUSDT: position.initialUSDT,
-                                      apiKeyId: '1',
-                                      enabled: position.enabled,
-                                      trending: position.trending,
-                                      createdAt: new Date(position.trendingUpdateTime),
-                                      balance: {
-                                        usdt: position.value,
-                                        token: position.tokenAmount,
-                                        tokenPrice: position.currentPrice
-                                      },
-                                      performance: {
-                                        totalValue: position.value,
-                                        pnl: position.profitRate,
-                                        pnlAmount: position.profit
-                                      }
-                                    })}
-                                    className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
-                                  >
-                                    History
-                                  </button>
-                                  {/* <button
-                                    onClick={() => handleTradingPairToggle(position.id || position.tokenSymbol)}
-                                    className={`px-4 py-1.5 rounded-lg text-sm font-medium ${position.enabled
-                                      ? 'bg-primary text-white'
-                                      : 'bg-gray-700 text-gray-400'
-                                      }`}
-                                  >
-                                    {position.enabled ? 'Enabled' : 'Disabled'}
-                                  </button> */}
-
-                                </div>
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                  <div className="text-sm text-gray-400">Current Balance</div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <div className="text-sm text-gray-400">USDT</div>
-                                      <div className="text-white font-medium">
-                                        ${position.value.toFixed(2)}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="text-sm text-gray-400">{position.tokenSymbol.split('USDT')[0]}</div>
-                                      <div className="text-white font-medium">
-                                        {position.tokenAmount.toFixed(6)}
-                                        <span className="text-sm text-gray-400 ml-1">
-                                          (${(position.tokenAmount * position.currentPrice).toFixed(2)})
-                                        </span>
-                                      </div>
-                                    </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <div className="text-sm text-gray-400">Current Balance</div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <div className="text-sm text-gray-400">USDT</div>
+                                  <div className="text-white font-medium">
+                                    ${position.usdtLeft ? new BigNumber(position.usdtLeft).toFixed(2) : '0.00'}
                                   </div>
                                 </div>
-
-                                <div className="space-y-2">
-                                  <div className="text-sm text-gray-400">Performance</div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <div className="text-sm text-gray-400">Total Value</div>
-                                      <div className="text-white font-medium">
-                                        ${position.value.toFixed(2)}
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="text-sm text-gray-400">PNL</div>
-                                      <div className={`font-medium flex items-center ${position.profitRate >= 0 ? 'text-green-400' : 'text-red-400'
-                                        }`}>
-                                        {position.profitRate >= 0 ? '+' : ''}{position.profitRate}%
-                                        <span className="block ml-2 text-sm">
-                                          ${Math.abs(position.profit).toFixed(2)}
-                                        </span>
-                                      </div>
-                                    </div>
+                                <div>
+                                  <div className="text-sm text-gray-400">{position.tokenSymbol.split('USDT')[0]}</div>
+                                  <div className="text-white font-medium">
+                                    {position.tokenAmount.toFixed(6)}
+                                    <span className="text-sm text-gray-400 ml-1">
+                                      (${new BigNumber(position.tokenAmount * position.currentPrice).toFixed(2)})
+                                    </span>
                                   </div>
-                                </div>
-                              </div>
-
-                              <div className="mt-4 pt-4 border-t border-gray-700">
-                                <div className="text-sm text-gray-400">
-                                  Last Update: {position.trendingUpdateTime}
                                 </div>
                               </div>
                             </div>
-                          ))}
+
+                            <div className="space-y-2">
+                              <div className="text-sm text-gray-400">Performance</div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <div className="text-sm text-gray-400">Total Value</div>
+                                  <div className="text-white font-medium">
+                                    ${new BigNumber(position.value).toFixed(2)}
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-sm text-gray-400">PNL</div>
+                                  <div className={`font-medium flex items-center ${position.profitRate >= 0 ? 'text-green-400' : 'text-red-400'
+                                    }`}>
+                                    {position.profitRate >= 0 ? '+' : ''}{position.profitRate}%
+                                    <span className="block ml-2 text-sm">
+                                      ${Math.abs(position.profit).toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 pt-4 border-t border-gray-700">
+                            <div className="text-sm text-gray-400">
+                              Last Update: {position.trendingUpdateTime}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-
-                    ))}
-
+                      ))}
+                    </div>
 
 
                   </div>
@@ -525,7 +576,7 @@ const Dashboard = () => {
                       Total: {apiKeys.length} keys
                     </p>
                   </div>
-                  <Link to={'/intro'}><button
+                  <Link target='_blank' to={'/api_key_guide.pdf'}><button
                     className="px-4 py-2 mr-2 common-button"
                   >
                     Get API Key?
@@ -664,9 +715,9 @@ const Dashboard = () => {
               </div>
             )}
           </motion.div>
-        </div>: (mode === 'web3' ?<>
-            <TradingContract />
-        </>:<TradingView />)}
+        </div> : (mode === 'web3' ? <>
+          <DexUi />
+        </> : <TradingView />)}
       </main>
 
       <ApiKeyManager
@@ -675,12 +726,32 @@ const Dashboard = () => {
         onSave={handleApiKeySave}
       />
 
-      <TradingPairManager
+      <CexAddToken
         isOpen={isTradingPairManagerOpen}
         onClose={() => setIsTradingPairManagerOpen(false)}
-        onSave={handleTradingPairSave}
+        onSave={fetchPortfolioData}
         apiKeys={apiKeys}
       />
+
+      {cexItem && <SettingCexUi
+        isOpen={isSettingCexOpen}
+        onClose={() => {
+          setIsSettingCexOpen(false);
+        }}
+        onSave={fetchPortfolioData}
+        tokenAccountId={cexItem?.tokenAccountID}
+        initUsdt={cexItem?.initialUSDT}
+      />}
+
+      {cexItem && <CloseToken
+        isOpen={isCloseTokenOpen}
+        onClose={() => {
+          setIsCloseTokenOpen(false);
+        }}
+        isCex={true}
+        onSave={fetchPortfolioData}
+        tokenSymbol={cexItem?.tokenSymbol} />}
+
 
       {selectedPair && (
         <TradingHistory
@@ -698,4 +769,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

@@ -29,7 +29,7 @@ export const ConnectButtonComponents = () => {
     const { address } = useAccount();
 
     const togglePop = (event: React.MouseEvent) => {
-        event.stopPropagation(); // 阻止事件冒泡
+        event.stopPropagation(); 
         setShowPop(prevShowPop => !prevShowPop);
     };
 
@@ -225,7 +225,7 @@ function UserProfile() {
 
 
         try {
-            // 使用指定的参数值登录
+           
             const response = await api.login({
                 walletAddress: address?.toString() || "",
                 timestamp: now,
@@ -233,9 +233,9 @@ function UserProfile() {
             });
 
             if (response.code === 200) {
-                // 保存 token
+              
                 tokenStorage.setToken(response.body);
-                // 跳转到 dashboard
+               
                 navigate('/dashboard');
             } else {
                 console.error('Login failed:', response.message);

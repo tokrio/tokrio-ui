@@ -29,9 +29,9 @@ interface CreateSponsorModalProps {
 }
 
 interface PricingOption {
-  duration: number;  // 天数
-  price: number;    // USDT 价格
-  level: number;    // 等级
+  duration: number;  
+  price: number;    
+  level: number;    
 }
 
 const PRICING_OPTIONS: PricingOption[] = [
@@ -69,7 +69,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 如果选择了预设选项，使用预设值；否则使用自定义值
+    
     const amount = selectedOption ? selectedOption.price.toString() : customAmount;
     const duration = selectedOption ? selectedOption.duration.toString() : customDuration;
     onSubmit(amount, duration);
@@ -84,7 +84,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
       >
         <h3 className="text-xl font-bold text-white mb-4">Create Sponsor</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 等级选择 */}
+        
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Sponsorship Level
@@ -102,7 +102,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             </select>
           </div>
 
-          {/* 预设选项 */}
+        
           <div className="grid grid-cols-2 gap-4 mb-6">
             {PRICING_OPTIONS.filter(option => option.level === selectedLevel).map((option) => (
               <button
@@ -123,7 +123,7 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             ))}
           </div>
 
-          {/* 自定义输入 */}
+          
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Custom Amount (Optional)
@@ -141,7 +141,6 @@ const CreateSponsorModal: React.FC<CreateSponsorModalProps> = ({ isOpen, onClose
             />
           </div>
 
-          {/* 预估收益说明 */}
           <div className="bg-gray-700/50 rounded-lg p-4 mt-4">
             <h4 className="text-sm font-medium text-gray-300 mb-2">Level {selectedLevel} Benefits</h4>
             <ul className="space-y-2 text-sm text-gray-400">
@@ -229,7 +228,6 @@ const SponsorPage = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 使用模拟数据
   const [activeSponsor] = useState<Sponsor | null>({
     id: '1',
     creator: '0x1234...5678',
@@ -264,7 +262,6 @@ const SponsorPage = () => {
     }
   ]);
 
-  // 创建赞助
   const handleCreateSponsor = async (tokenAmount: string, duration: string) => {
     setLoading(true);
     try {
@@ -297,11 +294,9 @@ const SponsorPage = () => {
     }
   };
 
-  // 购买赞助
   const handleBuySponsor = async (sponsorId: string) => {
     setLoading(true);
     try {
-      // 模拟延迟
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success('Sponsor purchased successfully');
     } catch (error) {
@@ -311,7 +306,6 @@ const SponsorPage = () => {
     }
   };
 
-  // 分享赞助
   const handleShare = (sponsorId: string) => {
     const url = `${window.location.origin}/sponsor/${sponsorId}`;
     navigator.clipboard.writeText(url);

@@ -17,7 +17,6 @@ interface Sponsor {
 const SponsorSharePage = () => {
   const { address } = useParams();
   
-  // 模拟数据
   const userSponsors: Sponsor[] = [
     {
       id: '1',

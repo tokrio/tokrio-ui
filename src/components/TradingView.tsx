@@ -92,9 +92,11 @@ export default function TrendingView() {
                 const markers: any = response.body.markers
                 if (markers) {
                     for (const marker of markers) {
-                        marker.position = 'aboveBar';
+                        marker.time = marker.time;
+                        marker.text = marker.text;
+                        marker.position = marker.text.indexOf("sell") != -1 ? 'aboveBar':'belowBar';
                         marker.color = marker.text.indexOf("sell") != -1 ? '#26A69A' : '#EF5350';
-                        marker.shape = 'arrowDown';
+                        marker.shape = marker.text.indexOf("sell") != -1 ? 'arrowDown':'arrowUp';
                     }
                     if (candlestickSeries) {
                         createSeriesMarkers(candlestickSeries, markers);
@@ -171,7 +173,7 @@ export default function TrendingView() {
     };
 
     return <div>
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-wrap gap-4 mb-4">
             <select 
                 value={selectedToken}
                 onChange={(e) => setSelectedToken(e.target.value)}
@@ -185,18 +187,18 @@ export default function TrendingView() {
             </select>
             
             <input 
-                type="datetime-local" 
-                value={startDate.replace(' ', 'T')}
-                onChange={(e) => setStartDate(e.target.value.replace('T', ' '))}
-                className="p-2 border rounded bg-gray-800 text-white"
+                type="date" 
+                value={startDate.split(' ')[0]}
+                onChange={(e) => setStartDate(e.target.value + ' 00:00:00')}
+                className="p-2 border rounded bg-gray-800 text-white [color-scheme:lgiht] [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[1]"
                 placeholder="Start Date"
             />
             
             <input 
-                type="datetime-local" 
-                value={endDate.replace(' ', 'T')}
-                onChange={(e) => setEndDate(e.target.value.replace('T', ' '))}
-                className="p-2 border rounded bg-gray-800 text-white"
+                type="date" 
+                value={endDate.split(' ')[0]}
+                onChange={(e) => setEndDate(e.target.value + ' 23:59:59')}
+                className="p-2 border rounded bg-gray-800 text-white [color-scheme:lgiht] [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[1]"
             />
 
             <button

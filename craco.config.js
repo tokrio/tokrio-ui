@@ -12,33 +12,24 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = {
 
-    // babel: {
-    //     plugins: [
-    //         // lodash按需加载
-    //         "lodash",
-    //     ],
-    //     loaderOptions: {
-    //         // babel-loader开启缓存
-    //         cacheDirectory: true,
-    //     },
-    // },
+
     webpack: smp.wrap({
         configure: (webpackConfig, { env, paths }) => {
 
 
-            // 配置扩展扩展名优化
+           
             webpackConfig.resolve.extensions = [".tsx", ".ts", ".jsx", ".js", ".scss", ".css", ".json"];
 
-            // 开启持久化缓存
+           
             webpackConfig.cache.type = "filesystem";
 
-            // splitChunks打包优化
+          
             webpackConfig.optimization.splitChunks = {
                 ...webpackConfig.optimization.splitChunks,
                 cacheGroups: {
                     commons: {
                         chunks: "all",
-                        // 将两个以上的chunk所共享的模块打包至commons组。
+                     
                         minChunks: 2,
                         name: "commons",
                         priority: 80,
@@ -77,13 +68,13 @@ module.exports = {
             // new BundleAnalyzerPlugin(),
             ...whenProd(
                 () => [
-                    new WebpackBar(),
+                    // new WebpackBar(),
                     new TerserPlugin({
-                        test: /\.js(\?.*)?$/i,   //用来匹配需要压缩的文件
-                        include: /\/includes/,   //匹配参与压缩的文件。
-                        exclude: /\/excludes/,   //匹配不需要压缩的文件
-                        parallel: true,//使用多进程并发运行以提高构建速度。 并发运行的默认数量： os.cpus().length - 1 。
-                        extractComments: false, //是否将注释剥离到单独的文件中,默认值： true
+                        test: /\.js(\?.*)?$/i,   
+                        include: /\/includes/,   
+                        exclude: /\/excludes/,  
+                        parallel: true,
+                        extractComments: false, 
                         terserOptions: {
                             ecma: undefined,
                             warnings: false,
@@ -91,7 +82,7 @@ module.exports = {
                             compress: {
                                 drop_console: true,
                                 drop_debugger: false,
-                                pure_funcs: ['console.log'], // 移除console
+                                pure_funcs: ['console.log'], 
                             },
                         },
                     }),

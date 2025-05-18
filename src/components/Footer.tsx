@@ -51,6 +51,11 @@ const Footer = () => {
                   Documentation
                 </a>
               </li>
+              <li>
+                <a href="/privacy" className="text-gray-400 hover:text-primary">
+                  Privacy
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -69,7 +74,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://t.me/tokrio"
+                href="https://t.me/Tokrio_AI"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-primary"

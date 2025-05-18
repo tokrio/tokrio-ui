@@ -35,6 +35,18 @@ export interface  TradingPairContractConfig {
   initialUsdt: string; 
 }
 
+export interface  AddAssetConfig {
+  initialUsdt: string; 
+  tokenSymbol: string;
+  chainId: number | undefined;
+}
+
+export interface  AddAssetCexConfig {
+  apiKeyId: string; 
+  usdtAmount: string; 
+  tokenSymbol: string;
+}
+
 export interface NewTradingPairGroupConfig {
   groupId: number;
   groupName: string;
