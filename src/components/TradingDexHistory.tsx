@@ -1,24 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { TradeHistory, TradingPairConfig } from '../types/trading';
-import { api } from '../services/api';
+import { api, Position, VaultLog } from '../services/api';
+import { useAccount } from 'wagmi';
+import ReactPaginate from 'react-paginate';
 import { removeTrailingZeros } from '../util/utils';
 
 interface TradingHistoryProps {
   isOpen: boolean;
   onClose: () => void;
-  tradingPair: TradingPairConfig;
+  item: Position;
 }
 
-const TradingHistory: React.FC<TradingHistoryProps> = ({
+let page = 1;
+const pageSize = 12;
+
+const TradingDexHistory : React.FC<TradingHistoryProps> = ({
   isOpen,
   onClose,
-  tradingPair
+  item
 }) => {
-
+  const { address, chainId } = useAccount();
   const [history, setHistory] = React.useState<TradeHistory[]>([]);
   const [loadingGroup, setLoadingGroup] = React.useState(false);
-
+  const [total, setTotal] = useState(0)
   if (!isOpen) return null;
 
   useEffect(() => {
@@ -28,15 +33,32 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
   }, [isOpen])
 
   const getHistory = async () => {
+
     setLoadingGroup(true);
-    const response = await api.getOrderHistory(tradingPair.tokenAccountID);
-    if (response.code === 200 && response.body) {
-      if (response.body.trades && response.body.trades.length > 0) {
-        setHistory([...response.body.trades])
+    try {
+      const response = await api.getDexHistory(item.tokenAccountID);
+      if (response.code === 200 && response.body) {
+        setTotal(response.body.total);
+        if (response.body.trades && response.body.trades.length > 0) {
+          setHistory([...response.body.trades])
+        } else {
+
+          setHistory([]);
+        }
       }
+      setLoadingGroup(false);
+    } catch (error) {
+      console.log(error);
+      setLoadingGroup(false);
     }
-    setLoadingGroup(false);
+
+
   }
+
+  const handlePageClick = (event: any) => {
+    page = event.selected + 1;
+    getHistory();
+};
 
   return (
     <div className="fixed mx-4 inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -48,12 +70,10 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
       >
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-xl font-bold text-white">
-              {tradingPair.symbol} Trading History
+            <h2 className="text-base font-bold text-white">
+            {item.tokenSymbol} Transaction History
             </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Initial USDT: {tradingPair.initialUSDT}
-            </p>
+
           </div>
           <button
             onClick={onClose}
@@ -67,14 +87,14 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
 
         <div className="flex-1 overflow-auto">
           {loadingGroup ? (<div className="text-center py-8 text-gray-400">
-              Loading history yet...
-            </div>) : history.length === 0 ? (
+            Loading history yet...
+          </div>) : history.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
               No trading history yet.
             </div>
           ) : (
             <div className="space-y-4">
-              {history.map((trade) => (
+              {history && history.map((trade: TradeHistory) => (
                 <div
                   key={trade.id}
                   className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors duration-200"
@@ -118,9 +138,9 @@ const TradingHistory: React.FC<TradingHistoryProps> = ({
             </div>
           )}
         </div>
-      </motion.div>
-    </div>
+      </motion.div >
+    </div >
   );
 };
 
-export default TradingHistory; 
+export default TradingDexHistory; 

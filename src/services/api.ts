@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { config } from '../config/env';
-import { NewTradingPairGroupConfig, NewTradingPairGroupParam } from '../types/trading';
+import { DexHistory, NewTradingPairGroupConfig, NewTradingPairGroupParam, TradeHistory } from '../types/trading';
 
 const API_BASE_URL = config.API_BASE_URL;
 
@@ -18,9 +18,11 @@ export interface Position {
   tokenAmount: number;
   currentPrice: number;
   value: number;
+  active:number;
   initialUSDT: number;
   profit: number;
   profitRate: number;
+  tokenAddress?: string;
   trending: number;
   trendingStrength: number;
   trendingUpdateTime: string;
@@ -365,6 +367,15 @@ export const api = {
     return response.data;
   },
 
+  getDexHistory: async (tokenAccountId: number): Promise<ApiResponse<DexHistory>> => {
+    const response = await axios.get(`${API_BASE_URL}/dex/token/trade-history?tokenAccountId=${tokenAccountId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
   setTradeTokens: async (data: any): Promise<ApiResponse<TokenPairParam>> => {
     const response = await axios.post(`${API_BASE_URL}/dex/set-trade-tokens`, data);
     return response.data;
@@ -399,8 +410,18 @@ export const api = {
     return response.data; 
   },
 
+  openCexToken: async (data: CloseTokenParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/token/open`, data);
+    return response.data; 
+  },
+
   closeDexToken: async (data: CloseTokenParam): Promise<ApiResponse<TokenPairParam>> => {
     const response = await axios.post(`${API_BASE_URL}/dex/token/close`, data);
+    return response.data; 
+  },
+
+  openDexToken: async (data: CloseTokenParam): Promise<ApiResponse<TokenPairParam>> => {
+    const response = await axios.post(`${API_BASE_URL}/dex/token/open`, data);
     return response.data; 
   },
 

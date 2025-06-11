@@ -63,8 +63,8 @@ const ENV_CONFIG: Record<string, EnvConfig> = {
     TOKRIO_LEVEL: '0x0000000000000000000000000000000000000000',
     TOKRIO_VESTING: '',
     NET_SCAN_URL: 'https://bscscan.com/tx',
-    ProxyRegistry:'0xda5294a7e467cCBd1Ced8B87bC8008e8a0D71722',
-    ProxyTrading:'0xfD85be9e8777d9b6f9821F7CDE5F381A3D7b3Cb4',
+    ProxyRegistry:'0x126eae87a3E4CD1DaE8953a09B34D81B079Cb15a',
+    ProxyTrading:'0x6C8AA5CbD08Addf42cA85c82A26c102DB87401b7',
     BTC:'',
     ETH:''
   },
@@ -80,8 +80,8 @@ const ENV_CONFIG: Record<string, EnvConfig> = {
     TOKRIO_LEVEL: '0x0000000000000000000000000000000000000000',
     TOKRIO_VESTING: '',
     NET_SCAN_URL: 'https://bscscan.com/tx',
-    ProxyRegistry:'0xda5294a7e467cCBd1Ced8B87bC8008e8a0D71722',
-    ProxyTrading:'0xfD85be9e8777d9b6f9821F7CDE5F381A3D7b3Cb4',
+    ProxyRegistry:'0x126eae87a3E4CD1DaE8953a09B34D81B079Cb15a',
+    ProxyTrading:'0x6C8AA5CbD08Addf42cA85c82A26c102DB87401b7',
     BTC:'',
     ETH:''
   }

@@ -18,7 +18,7 @@ import DexUi from './DexUi';
 import CexAddToken from './CexAddToken';
 import SettingCexUi from './SettingCexUi';
 import CloseToken from './CloseToken';
-import { CaptionsOff, HistoryIcon, SettingsIcon } from 'lucide-react';
+import { Captions, CaptionsOff, HistoryIcon, SettingsIcon } from 'lucide-react';
 import BigNumber from 'bignumber.js';
 
 // Tab Type Definition
@@ -408,6 +408,7 @@ const Dashboard = () => {
                                   <svg className='w-6 h-6 text-red-400' viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12820" width="48" height="48"><path d="M196.048133 357.025609v518.161062a9.162604 9.162604 0 0 1-9.478556 9.478556H142.336316a9.162604 9.162604 0 0 1-9.478556-9.478556V357.025609a9.162604 9.162604 0 0 1 9.478556-9.478556h44.233261a9.162604 9.162604 0 0 1 9.478556 9.478556z m211.687751 116.902191h-44.233261a9.162604 9.162604 0 0 0-9.478556 9.478556v391.780315a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233261a9.162604 9.162604 0 0 0 9.478556-9.478556V483.406356a9.162604 9.162604 0 0 0-9.478556-9.478556z m221.166307-31.595187h-44.233262a9.162604 9.162604 0 0 0-9.478556 9.478556v423.375502a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233262a9.162604 9.162604 0 0 0 9.478556-9.478556V451.811169a9.162604 9.162604 0 0 0-9.478556-9.478556z m221.166306 189.57112h-44.233261a9.162604 9.162604 0 0 0-9.478556 9.478556v233.804382a9.162604 9.162604 0 0 0 9.478556 9.478556h44.233261a9.162604 9.162604 0 0 0 9.478556-9.478556v-233.804382a9.162604 9.162604 0 0 0-9.478556-9.478556z m31.595187-211.68775a14.533786 14.533786 0 0 0-25.592101-6.950941l-35.070657 42.021598a26.539957 26.539957 0 0 0-5.687134-6.319037l-284.35668-221.166307a31.595187 31.595187 0 0 0-24.644246-6.634989 31.595187 31.595187 0 0 0-21.484727 14.849737l-76.460351 126.380747-256.236964-197.785868a31.595187 31.595187 0 1 0-38.546128 49.920394l284.35668 221.166307a31.595187 31.595187 0 0 0 24.960198 6.003086 31.595187 31.595187 0 0 0 21.484727-14.849738l76.460351-126.380747 256.236964 199.365628a31.595187 31.595187 0 0 0 5.371182 3.159519l-35.702561 42.653502a14.533786 14.533786 0 0 0 11.374267 24.012342l133.015736-2.843567a14.849738 14.849738 0 0 0 14.217834-17.061401z" fill='red' p-id="12821" ></path></svg>
                                 )
                               }
+                              <span className={`ml-1 ${position.active === 1 ? 'text-green-400' : 'text-red-400'} `}>{position.active === 1 ? 'Active' : 'Inactive'}</span>
                               <div className='flex-1'></div>
                               <div className="text-sm  text-gray-400 ">
                                 Initial: {position.initialUSDT} USDT
@@ -450,8 +451,9 @@ const Dashboard = () => {
                                   setCexItem(position)
                                   setIsCloseTokenOpen(true);
                                 }} className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">
-                                  <CaptionsOff className="w-4 h-4 mr-1" />
-                                  Close
+                                  {position.active === 1 ? <CaptionsOff className="w-4 h-4 mr-1" /> :
+                                    <Captions className="w-4 h-4 mr-1" />}
+                                  {position.active === 1 ? 'Close' : 'Open'}
                                 </button>
 
 
@@ -497,8 +499,9 @@ const Dashboard = () => {
                                 setCexItem(position)
                                 setIsCloseTokenOpen(true);
                               }} className="px-3 flex items-center py-1.5 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm">
-                                <CaptionsOff className="w-4 h-4 mr-1" />
-                                Close
+                                {position.active === 1 ? <CaptionsOff className="w-4 h-4 mr-1" /> :
+                                  <Captions className="w-4 h-4 mr-1" />}
+                                {position.active === 1 ? 'Close' : 'Open'}
                               </button>
 
 
@@ -750,6 +753,7 @@ const Dashboard = () => {
         }}
         isCex={true}
         onSave={fetchPortfolioData}
+        item={cexItem}
         tokenSymbol={cexItem?.tokenSymbol} />}
 
 

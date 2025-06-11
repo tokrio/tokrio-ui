@@ -61,6 +61,13 @@ export interface NewTradingPairGroupParam {
   apiKeyId: string;
 }
 
+export interface  DexHistory {
+  tokenAccountId: number;
+  tokenSymbol: string;
+  total: number;
+  trades: TradeHistory[];
+}
+
 export interface TradeHistory {
   afterToken: number;
   afterUSDT: number;

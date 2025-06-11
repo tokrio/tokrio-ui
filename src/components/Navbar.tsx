@@ -41,11 +41,11 @@ const Navbar = ({ showMenu = true }: Props) => {
   }, [address, location.pathname])
 
   const menuItems = [
-    { path: '/proxyPurchase', label: 'Proxy Purchase', enabled: true },
-    { path: '/proxyAdmin', label: 'Proxy Admin', enabled: true },
-    { label: 'Staking', enabled: false },
-    { label: 'Jarvis', enabled: false },
-    { label: 'Market', enabled: false },
+    // { path: '/proxyPurchase', label: 'Proxy Purchase', enabled: true },
+    // { path: '/proxyAdmin', label: 'Proxy Admin', enabled: true },
+    { path: "", label: 'Staking', enabled: false },
+    { path: "", label: 'Jarvis', enabled: false },
+    { path: "", label: 'Market', enabled: false },
   ];
 
   return (
@@ -64,7 +64,7 @@ const Navbar = ({ showMenu = true }: Props) => {
             </span>
           </motion.div>
 
-          
+
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -138,7 +138,7 @@ const Navbar = ({ showMenu = true }: Props) => {
           ))}
         </div>
       </motion.div>
-      
+
       <Tooltip id="comming-soon" />
     </nav>
   );

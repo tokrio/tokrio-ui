@@ -190,7 +190,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, selected
                     </div>
                 </div>
 
-                <div>
+                {/* <div>
                     <div className='opacity-60'>Referral Code (Optional)</div>
                     <input
                         value={code}
@@ -200,7 +200,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose, selected
                         className="w-full my-2 border border-gray-600 px-4 py-3 mt-4 bg-[#222] text-white rounded-md focus:outline-none focus:ring focus:border-gray-300" />
                     <div className='text-amber-400'>* Enter a referral code to get additional benefits</div>
 
-                </div>
+                </div> */}
 
                 <div className="my-4">
                     <label className="flex items-center space-x-2">

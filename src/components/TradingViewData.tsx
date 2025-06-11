@@ -45,7 +45,6 @@ const darkTheme = {
 export default function TrendingView() {
     const containerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<any>(null);
-    const resizeObserverRef = useRef<ResizeObserver | null>(null);
     const [selectedToken, setSelectedToken] = useState('BTCUSDT');
     const [startDate, setStartDate] = useState(() => {
         const date = new Date();
@@ -55,6 +54,7 @@ export default function TrendingView() {
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 19).replace('T', ' '));
     const [tokens, setTokens] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [data, setData] = useState<string>('');
 
     const initChart = () => {
         if (!containerRef.current || chartRef.current) return;
@@ -80,17 +80,15 @@ export default function TrendingView() {
         
         setIsLoading(true);
         try {
-            const response: any = await api.tokenTrendingView(selectedToken, startDate, endDate);
             const candlestickSeries = initChart();
             
-            if (response.code === 200) {
-               
-                const data = response.body.data;
+               let body = JSON.parse(data)
+                const viewData = body.data;
                 if (candlestickSeries) {
-                    candlestickSeries.setData(data);
+                    candlestickSeries.setData(viewData);
                 }
 
-                const markers: any = response.body.markers
+                const markers: any = body.markers
                 if (markers) {
                     for (const marker of markers) {
                         marker.time = marker.time;
@@ -113,57 +111,13 @@ export default function TrendingView() {
                     },
                 });
                 chartRef.current.timeScale().fitContent();
-            }
+            
         } catch (error) {
             console.error('Failed to fetch chart data:', error);
         } finally {
             setIsLoading(false);
         }
     };
-
-    useEffect(() => {
-        if (!containerRef.current || chartRef.current) {
-            return;
-        }
-
-        getTokenTrendings();
-        // initChart();
-        fetchAndUpdateChart();
-
-        // resizeObserverRef.current = new ResizeObserver((entries) => {
-        //     for (const entry of entries) {
-        //         const { width, height } = entry.contentRect;
-        //         chartRef.current?.resize(width, height);
-        //     }
-        // });
-        // resizeObserverRef.current.observe(containerRef.current);
-
-        // return () => {
-        //     if (resizeObserverRef.current) {
-        //         resizeObserverRef.current.disconnect();
-        //     }
-        //     if (chartRef.current) {
-        //         chartRef.current.remove();
-        //         chartRef.current = null;
-        //     }
-        // };
-    }, []);
-
-    const getTokenTrendings = async () => {
-        try {
-            const response = await api.tokenTrends();
-            if (response.code === 200) {
-                const data = response.body;  
-                if(data && data.trends && data.trends.length > 0){
-                    setTokens(data.trends.map((item: any) => item.tokenSymbol))
-                } else {
-                    setTokens([])
-                }
-            } 
-        } catch (error) {
-            console.error('Failed to create API key:', error);  
-        }
-    }
 
     const handleConfirm = () => {
         if (chartRef.current) {
@@ -175,32 +129,13 @@ export default function TrendingView() {
 
     return <div>
         <div className="flex flex-wrap gap-4 mb-4">
-            <select 
-                value={selectedToken}
-                onChange={(e) => setSelectedToken(e.target.value)}
-                className="p-2 border rounded bg-gray-800 text-white"
-            >
-                {tokens.map((token: string) => (
-                    <option key={token} value={token}>
-                        {token}
-                    </option>
-                ))}
-            </select>
             
-            <input 
-                type="date" 
-                value={startDate.split(' ')[0]}
-                onChange={(e) => setStartDate(e.target.value + ' 00:00:00')}
-                className="p-2 border rounded bg-gray-800 text-white [color-scheme:lgiht] [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[1]"
-                placeholder="Start Date"
-            />
+            <textarea 
+                rows={6}
+                className="p-2 border w-full rounded bg-gray-800 text-white [color-scheme:lgiht] [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[1]"
+                value={data}
+                onChange={(e) => setData(e.target.value)} />
             
-            <input 
-                type="date" 
-                value={endDate.split(' ')[0]}
-                onChange={(e) => setEndDate(e.target.value + ' 23:59:59')}
-                className="p-2 border rounded bg-gray-800 text-white [color-scheme:lgiht] [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-[1]"
-            />
 
             <button
                 onClick={handleConfirm}
@@ -215,7 +150,7 @@ export default function TrendingView() {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
                 </div>
             )}
-            <div ref={containerRef} className="w-full h-full" />
+            <div ref={containerRef} className="w-screen h-full" />
         </div>
     </div>
 };

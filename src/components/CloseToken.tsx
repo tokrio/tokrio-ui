@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ApiKey, api, TokenPair, TokenPairsGroup, SetDexUsdtParam, SetCexUsdtParam, CloseTokenParam } from '../services/api';
+import { ApiKey, api, TokenPair, TokenPairsGroup, SetDexUsdtParam, SetCexUsdtParam, CloseTokenParam, Position } from '../services/api';
 import { NewTradingPairConfig, NewTradingPairGroupConfig } from '../types/trading';
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
@@ -10,6 +10,7 @@ import { showErr } from '../util/utils';
 interface CloseTokenProps {
     isOpen: boolean;
     tokenSymbol: string;
+    item: Position;
     isCex: boolean;
     onClose: () => void;
     onSave: () => void;
@@ -18,6 +19,7 @@ interface CloseTokenProps {
 const CloseToken: React.FC<CloseTokenProps> = ({
     isOpen,
     isCex,
+    item,
     tokenSymbol,
     onClose,
     onSave
@@ -45,21 +47,29 @@ const CloseToken: React.FC<CloseTokenProps> = ({
 
             let response;
             if (isCex) {
-                response = await api.closeCexToken(param);
+                if(item.active === 1){
+                    response = await api.closeCexToken(param);
+                } else {
+                    response = await api.openCexToken(param);
+                }
             } else {
-                response = await api.closeDexToken(param);
+                if(item.active === 1){
+                    response = await api.closeDexToken(param);
+                } else {
+                    response = await api.openDexToken(param);
+                }
             }
             if (response.code === 200) {
                 setAddLoading(false)
-                toast.success('Close successfully');
+                toast.success('Confirm successfully');
                 onSave()
                 onClose();
             } else {
                 setAddLoading(false)
-                toast.error(response.message ?? 'Close failed');
+                toast.error(response.message ?? 'Confirm failed');
             }
         } catch (error) {
-            toast.error('Close failed');
+            toast.error('Confirm failed');
             setAddLoading(false)
         }
 
@@ -76,15 +86,17 @@ const CloseToken: React.FC<CloseTokenProps> = ({
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="bg-gray-800 rounded-lg p-6 w-full max-w-md"
             >
-                <h2 className="text-xl font-bold text-white mb-6">Close Trading Bot</h2>
+                <h2 className="text-xl font-bold text-white mb-6">
+                    {item.active === 1 ? 'Close Trading Bot' : 'Open Trading Bot'}
+                </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
 
                     <div className=' font-bold'>
-                        Are you sure you want to close the trading bot for AVAX?
+                        {item.active === 1 ? `Are you sure you want to open the trading bot for ${tokenSymbol}?` : `Are you sure you want to close the trading bot for ${tokenSymbol}?`}
                     </div>
                     <div className='opacity-60'>
-                        This will stop all automated trading for this token. Your current positions will remain unchanged.
+                        {item.active === 1 ? `This will stop all automated trading for this token. Your current positions will remain unchanged.`:`This will resume automated trading with your current settings.`}
                     </div>
 
                     <div className="flex justify-end space-x-3 mt-6">
@@ -98,9 +110,9 @@ const CloseToken: React.FC<CloseTokenProps> = ({
                         <button
                             disabled={addLoading}
                             type="submit"
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-800"
+                            className={` ${item.active !== 1?'bg-green-400':'bg-red-600 '} px-4 py-2 text-white rounded-lg`}
                         >
-                            {addLoading ? "Loading..." : "Close Trading Bot"}
+                            {addLoading ? "Loading..." : item.active === 1 ? "Close Trading Bot" : "Open Trading Bot"}
                         </button>
                     </div>
                 </form>

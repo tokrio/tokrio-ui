@@ -74,7 +74,7 @@ const TradinContractHistory: React.FC<TradingHistoryProps> = ({
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-base font-bold text-white">
-              Transaction  History
+              Transaction History
             </h2>
 
           </div>

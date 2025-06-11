@@ -28,6 +28,7 @@ import ProxyPurchase from './pages/ProxyPurchase';
 import PrivacyPage from './pages/PrivacyPage';
 import { Toaster } from 'react-hot-toast';
 import TermsPage from './pages/Terms';
+import TrendingView from './components/TradingViewData';
 
 // Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -86,6 +87,10 @@ function App() {
     {
       path: "/terms",
       element: <TermsPage />
+    },
+    {
+      path: "/trending",
+      element: <TrendingView />
     },
     {
       path: "/dashboard",

@@ -156,6 +156,15 @@ export const mult = (v: any, v2: any, v3: number) => {
   }
 };
 
+export function removeTrailingZeros(num: number | string): string {
+  let numStr = num.toString();
+  if (numStr.includes('.')) {
+    numStr = numStr.replace(/0+$/, '');
+    numStr = numStr.replace(/\.$/, '');
+  }
+  return numStr;
+}
+
 export const minusFix = (v: any, v2: any, v3?: number) => {
   if (!v3) {
     v3 = 0
