@@ -49,10 +49,13 @@ export default function TrendingView() {
     const [selectedToken, setSelectedToken] = useState('BTCUSDT');
     const [startDate, setStartDate] = useState(() => {
         const date = new Date();
-        date.setMonth(date.getMonth() - 1);
-        return date.toISOString().slice(0, 19).replace('T', ' ');
+        date.setDate(date.getDate() - 7);
+        return date.toISOString().split('T')[0] + ' 00:00:00';
     });
-    const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 19).replace('T', ' '));
+    const [endDate, setEndDate] = useState(() => {
+        const date = new Date();
+        return date.toISOString().split('T')[0] + ' 23:59:59';
+    });
     const [tokens, setTokens] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 

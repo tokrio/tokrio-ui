@@ -119,7 +119,7 @@ const TradingDexHistory : React.FC<TradingHistoryProps> = ({
                         {trade.tradeTime}
                       </div>
                       <div className="text-white font-medium mt-1">
-                      Trade Volumn: {removeTrailingZeros(trade.executedAmount.toFixed(6))}
+                      Trade Volume: {removeTrailingZeros(trade.executedAmount.toFixed(6))}
                       </div>
                     </div>
                   </div>

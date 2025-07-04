@@ -579,7 +579,7 @@ const Dashboard = () => {
                       Total: {apiKeys.length} keys
                     </p>
                   </div>
-                  <Link target='_blank' to={'/api_key_guide.pdf'}><button
+                  <Link target='_blank' to={'/bn_api_key_guide.pdf'}><button
                     className="px-4 py-2 mr-2 common-button"
                   >
                     Get API Key?
