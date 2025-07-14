@@ -457,6 +457,29 @@ export const api = {
     return response.data;
   },
 
+  authCode: async (data: any): Promise<ApiResponse<any>> => {
+    const response = await axios.post(`${API_BASE_URL}/promotion/auth-code`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  getEventSign: async (data: any): Promise<ApiResponse<any>> => {
+    const response = await axios.post(`${API_BASE_URL}/sign/get-event-sign`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  },
+
+  getEventList: async (): Promise<ApiResponse<any>> => {
+    const response = await axios.get(`${API_BASE_URL}/sign/event-list`);
+    return response.data;
+  },
+
   tokenTrendingView: async (tokenSymbol: string, startTime: string, endTime: string): Promise<ApiResponse<any>> => {
     const response = await axios.get(`${API_BASE_URL}/token/analysis?tokenSymbol=${tokenSymbol}&startTime=${startTime}&endTime=${endTime}`);
     return response.data;

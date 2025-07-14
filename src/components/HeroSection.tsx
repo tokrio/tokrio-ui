@@ -32,10 +32,10 @@ const HeroSection = () => {
 
 
   useEffect(() => {
-    getPtice()
+    //getPrice()
   }, [])
 
-  const getPtice = async () => {
+  const getPrice = async () => {
     try {
       //  const response = await api.getTokenPrice(`https://router.lfj.gg/v2/aggregator/routes/avalanche?amountIn=100000000000000000000&tokenIn=0x3a804d30959448f76b8305f019d7e6590ddfb7c2&tokenOut=${config.USDT_TOKEN}`);
 
@@ -100,13 +100,23 @@ const HeroSection = () => {
           </motion.div> */}
 
 
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
 
             <AnimationButton onClick={() => {
               handleLogin()
             }}>
               Trading NOW
+            </AnimationButton>
+            <AnimationButton onClick={() => {
+              navigate('/nft');
+            }}>
+              Partner with Tokrio
+            </AnimationButton>
+            <AnimationButton onClick={() => {
+              navigate('/nftMint');
+            }}>
+              Tokers Playground
             </AnimationButton>
             {/* <AnimationButton onClick={handleBuyToken}>
               Buy TOKR

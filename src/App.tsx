@@ -29,6 +29,9 @@ import PrivacyPage from './pages/PrivacyPage';
 import { Toaster } from 'react-hot-toast';
 import TermsPage from './pages/Terms';
 import TrendingView from './components/TradingViewData';
+import NFTPage from './pages/NFTPage';
+import NFTMintingPage from './pages/NFTMintingPage';
+import { ClaimAirdrop } from './pages/ClaimAirdrop';
 
 // Lazy loading implementation
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
@@ -72,10 +75,10 @@ function App() {
       path: "/market",
       element: <MarketPage />
     },
-    {
-      path: "/claim",
-      element: <ClaimPage />
-    },
+    // {
+    //   path: "/claim",
+    //   element: <ClaimPage />
+    // },
     {
       path: "/intro",
       element: <IntroPage />
@@ -83,6 +86,18 @@ function App() {
     {
       path: "/privacy",
       element: <PrivacyPage />
+    },
+    {
+      path: "/nft",
+      element: <NFTPage />
+    },
+    {
+      path: "/claim",
+      element: <ClaimAirdrop />
+    },
+    {
+      path: "/nftMint",
+      element: <NFTMintingPage />
     },
     {
       path: "/terms",
@@ -150,7 +165,7 @@ function App() {
     <div className='absolute z-10'>
       <MatrixRain />
     </div>
-    <div className='absolute max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
+    <div className='absolute font-medium text-sm md:text-lg max-h-screen no-scrollbar bg-[#111]/50 w-full overflow-y-scroll mx-auto z-20'>
       <RouterProvider router={router} />
       <Toaster />
     </div>

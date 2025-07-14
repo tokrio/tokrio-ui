@@ -122,7 +122,7 @@ const LoginPage = () => {
         </div>
 
         {!hasRegister && address && <div>
-          <div>Enter invitation code:</div>
+          <div>Enter invitation code (Optional):</div>
           <input
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value)}

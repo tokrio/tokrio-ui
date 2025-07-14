@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation, Link, useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import { tokenStorage } from '../services/api';
+import { api, tokenStorage } from '../services/api';
 import { ConnectButtonComponents } from './ConnectButtonComponents';
 import { Tooltip } from 'react-tooltip';
 import { Menu, X } from 'lucide-react';
@@ -24,17 +24,19 @@ const Navbar = ({ showMenu = true }: Props) => {
       localStorage.setItem("code", code || "");
     }
     const lastAddress = localStorage.getItem("lastAddress")
-    console.log("address11lastAddress", lastAddress);
-    console.log("address12", address);
     if (address && lastAddress && address != lastAddress) {
       tokenStorage.removeToken();
       navigate("/")
     }
     localStorage.setItem("lastAddress", address || "");
+    // if (!tokenStorage.getToken()) {
+    //   login()
+    // }
   }, [address]) // When address changes
 
+
   useEffect(() => {
-    if (!address && location.pathname !== '/staking' && location.pathname !== '/sponsor' && location.pathname !== '/market' && location.pathname !== '/jarvis') {
+    if (!address && location.pathname !== '/staking' && location.pathname !== '/nft' && location.pathname !== '/sponsor' && location.pathname !== '/market' && location.pathname !== '/claim' && location.pathname !== '/nftMint') {
       tokenStorage.removeToken();
       navigate("/")
     }
@@ -44,7 +46,7 @@ const Navbar = ({ showMenu = true }: Props) => {
     // { path: '/proxyPurchase', label: 'Proxy Purchase', enabled: true },
     // { path: '/proxyAdmin', label: 'Proxy Admin', enabled: true },
     { path: "", label: 'Staking', enabled: false },
-    { path: "", label: 'Jarvis', enabled: false },
+    // { path: "/jarvis", label: 'Jarvis', enabled: true },
     { path: "", label: 'Market', enabled: false },
   ];
 
@@ -127,7 +129,7 @@ const Navbar = ({ showMenu = true }: Props) => {
                 </Link>
               ) : (
                 <a
-                  className="block py-3 text-gray-600 text-sm main-font uppercase cursor-pointer"
+                  className="block py-3 text-gray-300 text-sm main-font uppercase cursor-pointer"
                   data-tooltip-content="Coming Soon"
                   data-tooltip-id="comming-soon"
                 >

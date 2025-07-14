@@ -1,6 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { RobotUser, User } from '../img/FileImports';
+import { User } from '../img/FileImports';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import formatStringNumber from '../util/utils';
 import AnimationButton from './AnimationButton';
@@ -31,8 +31,8 @@ export const ConnectButtonComponents = () => {
     const navigate = useNavigate();
 
     const togglePop = (event: React.MouseEvent) => {
-        event.stopPropagation(); 
-        if(!tokenStorage.getToken()){
+        event.stopPropagation();
+        if (!tokenStorage.getToken()) {
             toast.error("Please login first");
             navigate("/login")
             return;
@@ -189,16 +189,16 @@ function UserProfile() {
         getCode();
     }, [address])
 
-    const  getCode = async () => {
+    const getCode = async () => {
 
-        if(localStorage.getItem("code" + address)){
+        if (localStorage.getItem("code" + address)) {
             setCode(localStorage.getItem("code" + address) || "")
         }
 
         const response = await api.getCode();
         if (response.code == 200 && response?.body?.inviteCode) {
             localStorage.setItem("code" + address, response.body.inviteCode)
-           setCode(response.body.inviteCode) 
+            setCode(response.body.inviteCode)
         }
     }
 
@@ -250,7 +250,7 @@ function UserProfile() {
 
 
         try {
-           
+
             const response = await api.login({
                 walletAddress: address?.toString() || "",
                 timestamp: now,
@@ -259,9 +259,9 @@ function UserProfile() {
             });
 
             if (response.code === 200) {
-                
+
                 tokenStorage.setToken(response.body);
-               
+
                 navigate('/dashboard');
             } else {
                 console.error('Login failed:', response.message);
@@ -275,7 +275,7 @@ function UserProfile() {
         toast.success('Copied to clipboard');
     };
 
-    return <div className='w-[350px] h-screen pb-28 '>
+    return <div className='w-[350px] h-screen text-base pb-28 '>
         <IncreaseEquity isUp={isUp} isOpen={isOpen} setIsOpen={setIsOpen} finish={getLevel} />
         <div className='bg-[#151515] overflow-y-auto border relative border-[#333] py-7 px-5 h-full w-full rounded-2xl'>
             <div className=' flex items-center'>
@@ -303,8 +303,17 @@ function UserProfile() {
 
             <button onClick={toDashBoard} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>To My Dashboard</button>
 
+            <button onClick={() => {
+                if (!tokenStorage.getToken()) {
+                    toast.error("Please login first");
+                    navigate("/login")
+                    return;
+                }
+                navigate('/claim');
+            }} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>Claim Airdrop</button>
+
             {code && <div className='mt-4  normal-case'>My invitation code: {code}</div>}
-            
+
             {code && <CopyToClipboard text={`Come to Tokrio (${config.WEB_URL + code}) to easily achieve AI-driven high returns + leveraged DEFI profits. We are currently offering an invite-only beta for real trading, so hurry up and give it a try!`} onCopy={copyToast}><button onClick={toDashBoard} className=' p-3 w-full mt-4 hover:bg-[#FFA41C] bg-[#222] rounded-sm '>Share link</button></CopyToClipboard>}
 
             {/* <button onClick={() => {
